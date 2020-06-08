@@ -10,7 +10,7 @@ import me.ajfleming.tworoomsio.model.CardSet;
 public class DeckBuilderService {
 	private Map<CardSet, List<Card>> possibleCardSets = CardSetMapProvider.cardMap();
 
-	public List<Card> buildDeckForNumberOfPlayers( int numberOfPlayers ) {
+	public List<Card> buildDeck( int numberOfPlayers ) {
 		List<Card> deck = new ArrayList<>();
 
 		// Add President and Bomber

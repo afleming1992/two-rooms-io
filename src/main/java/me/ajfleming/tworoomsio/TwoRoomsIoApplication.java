@@ -1,7 +1,12 @@
 package me.ajfleming.tworoomsio;
 
+import java.util.ServiceConfigurationError;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.rsocket.RSocketProperties;
 
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOServer;
@@ -14,8 +19,6 @@ import me.ajfleming.tworoomsio.service.SocketEventListenerService;
 public class TwoRoomsIoApplication {
 
 	public static void main( String[] args ) {
-		SpringApplication.run( TwoRoomsIoApplication.class, args );
-
 		Configuration config = new Configuration();
 		config.setHostname( "localhost" );
 		config.setPort( 3000 );
@@ -26,6 +29,17 @@ public class TwoRoomsIoApplication {
 
 		server.addListeners( gameService );
 
-		server.start();
+		ServerRunnable runnable = new ServerRunnable( server );
+		runnable.start();
+
+		Runtime.getRuntime().addShutdownHook( new Thread( () -> {
+			runnable.stopServer();
+			runnable.interrupt();
+			try {
+				runnable.join();
+			} catch (InterruptedException e) {
+
+			}
+		} ) );
 	}
 }

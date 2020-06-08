@@ -37,7 +37,7 @@ public class GameController {
 
 		client.sendEvent("JOIN_GAME_SUCCESS", Response.success("Joined game successfully") );
 
-		game.setDeck( deckBuilder.buildDeckForNumberOfPlayers( game.getTotalPlayerCount() ) );
+		game.setDeck( deckBuilder.buildDeck( game.getTotalPlayerCount() ) );
 	}
 
 	private void createGame( final User user ) {
