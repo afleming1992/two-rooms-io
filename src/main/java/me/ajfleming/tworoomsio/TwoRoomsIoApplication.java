@@ -1,22 +1,20 @@
 package me.ajfleming.tworoomsio;
 
-import java.util.ServiceConfigurationError;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.rsocket.RSocketProperties;
 
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOServer;
 
 import me.ajfleming.tworoomsio.controller.GameController;
-import me.ajfleming.tworoomsio.service.SocketBroadcastService;
-import me.ajfleming.tworoomsio.service.SocketEventListenerService;
+import me.ajfleming.tworoomsio.listeners.HostEventListeners;
+import me.ajfleming.tworoomsio.listeners.PlayerEventListeners;
 
 @SpringBootApplication
 public class TwoRoomsIoApplication {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger( TwoRoomsIoApplication.class );
 
 	public static void main( String[] args ) {
 		Configuration config = new Configuration();
@@ -25,21 +23,27 @@ public class TwoRoomsIoApplication {
 
 		final SocketIOServer server = new SocketIOServer( config );
 		final GameController gameController = new GameController( server );
-		final SocketEventListenerService gameService = new SocketEventListenerService( gameController );
+		final HostEventListeners hostListeners = new HostEventListeners( gameController );
+		final PlayerEventListeners playerListeners = new PlayerEventListeners( gameController );
 
-		server.addListeners( gameService );
+		server.addListeners( hostListeners );
+		server.addListeners( playerListeners );
 
 		ServerRunnable runnable = new ServerRunnable( server );
-		runnable.start();
+		try {
+			runnable.start();
+			Runtime.getRuntime().addShutdownHook( new Thread( () -> {
+				runnable.stopServer();
+				runnable.interrupt();
+				try {
+					runnable.join();
+				} catch (InterruptedException e) {
 
-		Runtime.getRuntime().addShutdownHook( new Thread( () -> {
+				}
+			} ) );
+		} catch ( Exception e ) {
+			LOGGER.error( "Exception caught. Beginning Shutdown Procedure of Server", e );
 			runnable.stopServer();
-			runnable.interrupt();
-			try {
-				runnable.join();
-			} catch (InterruptedException e) {
-
-			}
-		} ) );
+		}
 	}
 }

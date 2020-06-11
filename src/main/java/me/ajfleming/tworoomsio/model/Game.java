@@ -2,11 +2,15 @@ package me.ajfleming.tworoomsio.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import me.ajfleming.tworoomsio.exception.GameException;
+import me.ajfleming.tworoomsio.timer.RoundTimer;
 
 public class Game {
 	private String id;
@@ -14,6 +18,9 @@ public class Game {
 	private int round;
 	private List<User> players;
 	private List<Card> deck;
+	@JsonIgnore
+	private Map<String, Card> roleAssignments;
+	private RoundTimer timer;
 
 	public Game( User host ) {
 		this.host = host;
@@ -40,16 +47,12 @@ public class Game {
 		return true;
 	}
 
-	public Optional<User> findPlayer( UUID userToken ) {
-		return players.stream().filter( user -> user.equals( userToken ) ).findFirst();
-	}
-
 	public Optional<User> findPlayer( String name ) {
 		return players.stream().filter( user -> user.getName().equals( name ) ).findFirst();
 	}
 
 	public void disconnectPlayer( final UUID sessionId ) {
-		this.players = players.stream().filter( user -> user.getClient().getSessionId().equals( sessionId ) ).collect( Collectors.toList() );
+		this.players = players.stream().filter( user -> !user.getClient().getSessionId().equals( sessionId ) ).collect( Collectors.toList() );
 	}
 
 	public boolean isUserHost( final User user ) {
@@ -59,7 +62,6 @@ public class Game {
 	public void setDeck( final List<Card> deck ) {
 		this.deck = deck;
 	}
-
 
 	public String getId() {
 		return id;
@@ -81,7 +83,27 @@ public class Game {
 		return deck;
 	}
 
+	public Map<String, Card> getRoleAssignments() {
+		return roleAssignments;
+	}
+
+	public void setRoleAssignments( final Map<String, Card> roleAssignments ) {
+		this.roleAssignments = roleAssignments;
+	}
+
 	public int getTotalPlayerCount() {
 		return players.size();
+	}
+
+	public void nextRound() {
+		round++;
+	}
+
+	public void setTimer( RoundTimer timer ) {
+		this.timer = timer;
+	}
+
+	public RoundTimer getTimer() {
+		return timer;
 	}
 }

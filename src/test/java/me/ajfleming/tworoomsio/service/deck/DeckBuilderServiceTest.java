@@ -1,22 +1,17 @@
 package me.ajfleming.tworoomsio.service.deck;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import me.ajfleming.tworoomsio.model.Card;
-import me.ajfleming.tworoomsio.model.CardSet;
 
 class DeckBuilderServiceTest {
-
-	Map<CardSet, List<Card>> possibleCards = CardSetMapProvider.cardMap();
 
 	DeckBuilderService service;
 

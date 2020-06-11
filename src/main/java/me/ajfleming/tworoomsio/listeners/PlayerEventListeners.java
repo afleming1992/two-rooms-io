@@ -1,7 +1,4 @@
-package me.ajfleming.tworoomsio.service;
-
-import java.util.ArrayList;
-import java.util.List;
+package me.ajfleming.tworoomsio.listeners;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,25 +11,23 @@ import com.corundumstudio.socketio.annotation.OnEvent;
 import me.ajfleming.tworoomsio.controller.GameController;
 import me.ajfleming.tworoomsio.socket.event.JoinGameEvent;
 
-public class SocketEventListenerService {
+public class PlayerEventListeners {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger( SocketEventListenerService.class);
-	private List<SocketIOClient> connectedClients;
+	private static final Logger LOGGER = LoggerFactory.getLogger( HostEventListeners.class);
+
 	private GameController gameController;
 
-	public SocketEventListenerService( GameController gameController ) {
-		connectedClients = new ArrayList<>();
+	public PlayerEventListeners( GameController gameController ) {
 		this.gameController = gameController;
 	}
 
 	@OnConnect
 	public void onConnect(SocketIOClient client) {
-		connectedClients.add( client );
 		LOGGER.info("Client Connected - "+ client.getSessionId().toString() );
 	}
 
 	@OnEvent("GET_GAME")
-	public void onGetGame(SocketIOClient client) {
+	public void onGetGame( SocketIOClient client) {
 		LOGGER.info("Client requested Game - "+ client.getSessionId().toString() );
 	}
 
@@ -41,11 +36,6 @@ public class SocketEventListenerService {
 		gameController.joinGame( client, event.getName() );
 		LOGGER.info("Client joined Game - "+ client.getSessionId().toString() );
 		gameController.sendGameUpdate();
-	}
-
-	@OnEvent("START_GAME")
-	public void onStartGame(SocketIOClient client) {
-
 	}
 
 	@OnEvent("REVEAL_COLOUR")
