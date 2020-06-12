@@ -47,6 +47,7 @@ public class RoundTimer {
 			refreshTask.cancel( true );
 			timerRunning = false;
 			onTick.trigger( unitsLeft );
+			refreshTask = null;
 		}
 	}
 
