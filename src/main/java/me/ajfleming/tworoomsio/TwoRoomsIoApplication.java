@@ -19,7 +19,7 @@ public class TwoRoomsIoApplication {
 	public static void main( String[] args ) {
 		Configuration config = new Configuration();
 		config.setHostname( "localhost" );
-		config.setPort( 3000 );
+		config.setPort( 3001 );
 
 		final SocketIOServer server = new SocketIOServer( config );
 		final GameController gameController = new GameController( server );

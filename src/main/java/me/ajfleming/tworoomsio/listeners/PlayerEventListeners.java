@@ -10,6 +10,7 @@ import com.corundumstudio.socketio.annotation.OnEvent;
 
 import me.ajfleming.tworoomsio.controller.GameController;
 import me.ajfleming.tworoomsio.socket.event.JoinGameEvent;
+import me.ajfleming.tworoomsio.socket.event.ReloadGameSessionEvent;
 
 public class PlayerEventListeners {
 
@@ -26,9 +27,10 @@ public class PlayerEventListeners {
 		LOGGER.info("Client Connected - "+ client.getSessionId().toString() );
 	}
 
-	@OnEvent("GET_GAME")
-	public void onGetGame( SocketIOClient client) {
+	@OnEvent("RELOAD_GAME_SESSION")
+	public void onReloadGameSession( SocketIOClient client, ReloadGameSessionEvent event ) {
 		LOGGER.info("Client requested Game - "+ client.getSessionId().toString() );
+		gameController.reloadGameSession( client, event );
 	}
 
 	@OnEvent("JOIN_GAME")

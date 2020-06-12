@@ -13,6 +13,7 @@ import me.ajfleming.tworoomsio.model.Game;
 import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.service.deck.DeckDealerService;
 import me.ajfleming.tworoomsio.service.deck.DeckBuilderService;
+import me.ajfleming.tworoomsio.socket.event.ReloadGameSessionEvent;
 import me.ajfleming.tworoomsio.socket.response.Response;
 import me.ajfleming.tworoomsio.timer.RoundTimer;
 import me.ajfleming.tworoomsio.timer.TimerTrigger;
@@ -117,6 +118,10 @@ public class GameController {
 		if ( game.getRound() > 0 && game.getRound() < 4 && game.getTimer() != null ) {
 			game.getTimer().stop();
 		}
+	}
+
+	public void reloadGameSession( final SocketIOClient client, final ReloadGameSessionEvent event ) {
+
 	}
 
 	private RoundTimer setupTimer( int initialTime ) {
