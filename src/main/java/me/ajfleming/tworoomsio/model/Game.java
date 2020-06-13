@@ -40,7 +40,7 @@ public class Game {
 		}
 
 		if ( findPlayer( user.getName() ).isPresent() ) {
-			throw new GameException( "User with same name already exists" );
+			throw new GameException( "Someone has already used that name! Maybe you have a popular name like Andrew? 🤔" );
 		}
 
 		players.add( user );

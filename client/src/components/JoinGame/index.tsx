@@ -1,22 +1,17 @@
-import React, {Dispatch, useState} from "react";
+import React, {useState} from "react";
+import { bindActionCreators, Dispatch, ActionCreatorsMapObject } from 'redux';
 import Logo from "../logo";
 import PlayerLoginForm from "../PlayerLoginForm";
 import {connect, DispatchProp} from "react-redux";
-import {joinGame} from "../../redux/actions/socketActions";
-import {RootState} from "../../redux/reducers/initialState";
+import actionCreators from "../../redux/actions/creators";
+import {Action} from "typesafe-actions";
 
-interface JoinGameProps {
-    socket: SocketIOClient.Socket,
-}
-
-const JoinGame = ({socket, ...props}: JoinGameProps) => {
+const JoinGame = ({joinGame, joining, ...props}: any) => {
     const [playerName, setPlayerName] = useState();
-    const [joining, setJoining] = useState(false);
 
     function onJoining(event: any) {
-        setJoining(true);
         event.preventDefault();
-        joinGame(socket, playerName);
+        joinGame(playerName);
     }
 
     function handleChange(event: any) {
@@ -29,19 +24,20 @@ const JoinGame = ({socket, ...props}: JoinGameProps) => {
     return (
         <div id="gameLogin">
             <Logo />
-            <PlayerLoginForm onJoining={onJoining} onChange={handleChange} joining={joining} />
+            <PlayerLoginForm errors={props.errors} onJoining={onJoining} onChange={handleChange} joining={joining} />
         </div>
     )
 }
 
-const mapStateToProps = (state: RootState) => {
-    return {
-        player: state.player
-    }
-}
+const mapStateToProps = (state: any) => ({
+   player: state.player,
+   errors: state.errors,
+   joining: state.player.joining
+})
 
-const dispatchProps = {
-    joinGame
-}
+const mapDispatchToProps = (dispatch: Dispatch<Action>) =>
+    bindActionCreators({
+        joinGame: actionCreators.joinGame
+    }, dispatch);
 
-export default connect(mapStateToProps, dispatchProps)(JoinGame);
+export default connect(mapStateToProps, mapDispatchToProps)(JoinGame);

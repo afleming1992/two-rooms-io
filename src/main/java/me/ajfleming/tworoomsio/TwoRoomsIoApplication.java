@@ -23,11 +23,11 @@ public class TwoRoomsIoApplication {
 
 		final SocketIOServer server = new SocketIOServer( config );
 		final GameController gameController = new GameController( server );
-		final HostEventListeners hostListeners = new HostEventListeners( gameController );
-		final PlayerEventListeners playerListeners = new PlayerEventListeners( gameController );
+		final PlayerEventListeners playerEventListeners = new PlayerEventListeners( gameController );
+		final HostEventListeners hostEventListeners = new HostEventListeners( gameController );
 
-		server.addListeners( hostListeners );
-		server.addListeners( playerListeners );
+		server.addListeners( playerEventListeners );
+		server.addListeners( hostEventListeners );
 
 		ServerRunnable runnable = new ServerRunnable( server );
 		try {

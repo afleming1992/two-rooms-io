@@ -14,7 +14,7 @@ import me.ajfleming.tworoomsio.socket.event.ReloadGameSessionEvent;
 
 public class PlayerEventListeners {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger( HostEventListeners.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger( PlayerEventListeners.class);
 
 	private GameController gameController;
 
@@ -34,7 +34,7 @@ public class PlayerEventListeners {
 	}
 
 	@OnEvent("JOIN_GAME")
-	public void onJoinGame(SocketIOClient client, JoinGameEvent event) {
+	public void onJoinGame(SocketIOClient client, JoinGameEvent event ) {
 		gameController.joinGame( client, event.getName() );
 		LOGGER.info("Client joined Game - "+ client.getSessionId().toString() );
 		gameController.sendGameUpdate();
