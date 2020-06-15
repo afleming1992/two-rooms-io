@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.corundumstudio.socketio.Configuration;
+import com.corundumstudio.socketio.SocketConfig;
 import com.corundumstudio.socketio.SocketIOServer;
 
 import me.ajfleming.tworoomsio.controller.GameController;
@@ -21,6 +22,10 @@ public class TwoRoomsIoApplication {
 		config.setHostname( "localhost" );
 		config.setPort( 3001 );
 
+		SocketConfig socketConfig = new SocketConfig();
+		socketConfig.setReuseAddress( true );
+		config.setSocketConfig( socketConfig );
+
 		final SocketIOServer server = new SocketIOServer( config );
 		final GameController gameController = new GameController( server );
 		final PlayerEventListeners playerEventListeners = new PlayerEventListeners( gameController );
@@ -29,21 +34,6 @@ public class TwoRoomsIoApplication {
 		server.addListeners( playerEventListeners );
 		server.addListeners( hostEventListeners );
 
-		ServerRunnable runnable = new ServerRunnable( server );
-		try {
-			runnable.start();
-			Runtime.getRuntime().addShutdownHook( new Thread( () -> {
-				runnable.stopServer();
-				runnable.interrupt();
-				try {
-					runnable.join();
-				} catch (InterruptedException e) {
-
-				}
-			} ) );
-		} catch ( Exception e ) {
-			LOGGER.error( "Exception caught. Beginning Shutdown Procedure of Server", e );
-			runnable.stopServer();
-		}
+		server.start();
 	}
 }

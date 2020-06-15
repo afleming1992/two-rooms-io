@@ -40,16 +40,6 @@ public class PlayerEventListeners {
 		gameController.sendGameUpdate();
 	}
 
-	@OnEvent("REVEAL_COLOUR")
-	public void onRevealColour(SocketIOClient client) {
-
-	}
-
-	@OnEvent("REVEAL_CARD")
-	public void onRevealCard(SocketIOClient client) {
-
-	}
-
 	@OnDisconnect
 	public void onDisconnect(SocketIOClient client) {
 		LOGGER.info("Client Disconnected - "+ client.getSessionId().toString() );

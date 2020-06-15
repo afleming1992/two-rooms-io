@@ -14,7 +14,7 @@ import me.ajfleming.tworoomsio.timer.RoundTimer;
 
 public class Game {
 	private String id;
-	private final User host;
+	private User host;
 	private int round;
 	private List<User> players;
 	private List<Card> deck;
@@ -53,10 +53,18 @@ public class Game {
 
 	public void disconnectPlayer( final UUID sessionId ) {
 		this.players = players.stream().filter( user -> !user.getClient().getSessionId().equals( sessionId ) ).collect( Collectors.toList() );
+		if( isUserHost( sessionId ) && players.size() > 0 ) {
+			// Promote new player to Host
+			this.host = players.get( 0 );
+		}
 	}
 
 	public boolean isUserHost( final User user ) {
 		return host.getUserToken().equals( user.getUserToken() );
+	}
+
+	public boolean isUserHost( final UUID sessionId ) {
+		return host.getSocketSessionId().equals( sessionId );
 	}
 
 	public void setDeck( final List<Card> deck ) {

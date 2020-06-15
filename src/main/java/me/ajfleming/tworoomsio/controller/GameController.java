@@ -15,6 +15,7 @@ import me.ajfleming.tworoomsio.service.deck.DeckDealerService;
 import me.ajfleming.tworoomsio.service.deck.DeckBuilderService;
 import me.ajfleming.tworoomsio.socket.action.JoinGameAction;
 import me.ajfleming.tworoomsio.socket.event.ReloadGameSessionEvent;
+import me.ajfleming.tworoomsio.socket.response.JoinGameResponse;
 import me.ajfleming.tworoomsio.socket.response.Response;
 import me.ajfleming.tworoomsio.timer.RoundTimer;
 import me.ajfleming.tworoomsio.timer.TimerTrigger;
@@ -46,7 +47,7 @@ public class GameController {
 		}
 
 		client.joinRoom( "game/" + game.getId() );
-		client.sendEvent( "JOIN_GAME_SUCCESS", Response.success( "Joined game successfully" ) );
+		client.sendEvent( "JOIN_GAME_SUCCESS", new JoinGameResponse( user.getUserToken().toString() ) );
 		game.setDeck( deckBuilder.buildDeck( game.getTotalPlayerCount() ) );
 	}
 
@@ -61,7 +62,12 @@ public class GameController {
 	public void disconnectPlayer( SocketIOClient client ) {
 		if ( game != null ) {
 			game.disconnectPlayer( client.getSessionId() );
-			sendGameUpdate();
+			if ( game.getPlayers().size() > 0 ) {
+				sendGameUpdate();
+			} else {
+				// Shutdown Game
+				game = null;
+			}
 		}
 	}
 
@@ -83,7 +89,6 @@ public class GameController {
 	public void startGame() throws GameException {
 		verifyGameReadyToStart();
 		Map<String, Card> roleAssignments = DeckDealerService.dealDeck( game.getDeck(), game.getPlayers() );
-
 		game.nextRound();
 		game.setRoleAssignments( roleAssignments );
 		game.setTimer( setupTimer( TOTAL_ROUND_SECONDS ) );
