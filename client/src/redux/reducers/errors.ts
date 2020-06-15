@@ -1,4 +1,3 @@
-import {PlayerState} from "./types";
 import {Actions} from "../actions/types";
 
 export default function errorsReducer(state = {}, action: any) {
