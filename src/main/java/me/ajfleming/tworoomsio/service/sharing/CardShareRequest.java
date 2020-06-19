@@ -1,9 +1,18 @@
 package me.ajfleming.tworoomsio.service.sharing;
 
 public class CardShareRequest {
+	private String id;
 	private CardShareType type;
 	private String requestor;
 	private String recipient;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId( final String id ) {
+		this.id = id;
+	}
 
 	public CardShareType getType() {
 		return type;

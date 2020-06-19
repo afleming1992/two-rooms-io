@@ -1,6 +1,6 @@
 import React from 'react';
-import {Container, Divider, Grid, Segment} from "semantic-ui-react";
-import {Header as GameLobbyHeader} from "./Header";
+import {Container, Divider, Grid, Progress, Segment} from "semantic-ui-react";
+import {Header, Header as GameLobbyHeader} from "./Header";
 import {PlayerList} from "../PlayerList";
 import GameSetupPanel from "../GameSetupPanel";
 import {User} from "../../domain/User";
@@ -17,12 +17,16 @@ interface GameLobbyProps {
 
 const GameLobby = ({game, player, isHost} : GameLobbyProps) => {
     return (
-        <Container>
-            <Grid divided="vertically">
-                <Grid.Row>
-                    <GameLobbyHeader />
+        <Container className="padding-top">
+            <Grid columns="equal">
+                <Grid.Row padded>
+                    <Grid.Column>
+                        <Segment textAlign="center">
+                            <Header game={game} />
+                        </Segment>
+                    </Grid.Column>
                 </Grid.Row>
-                <Grid.Row columns={2}>
+                <Grid.Row padded columns={2}>
                     <Grid.Column width={6}>
                         <PlayerList showHostControls={isHost} players={ game.players == undefined ? new Array<User>() : game.players } />
                     </Grid.Column>

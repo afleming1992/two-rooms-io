@@ -30,7 +30,7 @@ public class PlayerEventListeners {
 	@OnEvent("RELOAD_GAME_SESSION")
 	public void onReloadGameSession( SocketIOClient client, ReloadGameSessionEvent event ) {
 		LOGGER.info("Client requested Game - "+ client.getSessionId().toString() );
-		gameController.reloadGameSession( client, event );
+		// gameController.reloadGameSession( client, event );
 	}
 
 	@OnEvent("JOIN_GAME")

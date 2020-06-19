@@ -1,6 +1,7 @@
 package me.ajfleming.tworoomsio.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import me.ajfleming.tworoomsio.exception.GameException;
+import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.timer.RoundTimer;
 
 public class Game {
@@ -20,6 +22,8 @@ public class Game {
 	private List<Card> deck;
 	@JsonIgnore
 	private Map<String, Card> roleAssignments;
+	@JsonIgnore
+	private Map<String, CardShareRequest> cardShareRequests;
 	private RoundTimer timer;
 
 	public Game( User host ) {
@@ -32,6 +36,7 @@ public class Game {
 		this.round = 0;
 		this.players = new ArrayList<>();
 		this.deck = new ArrayList<>();
+		this.cardShareRequests = new HashMap<>();
 	}
 
 	public boolean addPlayer( User user ) throws GameException {
@@ -47,8 +52,39 @@ public class Game {
 		return true;
 	}
 
+	public User addShareRequest( final CardShareRequest request ) throws GameException {
+		if ( timer.getTimerRunning() ) {
+			Optional<User> playerFindResult = findPlayerByUserToken( request.getRecipient() );
+			if ( playerFindResult.isPresent() ) {
+				cardShareRequests.put( request.getId(), request );
+				return playerFindResult.get();
+			} else {
+				throw new GameException("That user seems to have gone walkies... or maybe the user didn't exist in the first place 🤔");
+			}
+		} else {
+			throw new GameException("Card Shares are blocked whilst timer is not running");
+		}
+	}
+
+	public CardShareRequest getCardRequestIfAllowed( final String requestId ) throws GameException {
+		if ( timer.getTimerRunning() ) {
+			CardShareRequest request = cardShareRequests.remove( requestId );
+			if ( request != null) {
+				return request;
+			} else {
+				throw new GameException("Card share is no longer valid");
+			}
+		} else {
+			throw new GameException("Card shares are blocked whilst timer is not running");
+		}
+	}
+
 	public Optional<User> findPlayer( String name ) {
 		return players.stream().filter( user -> user.getName().equals( name ) ).findFirst();
+	}
+
+	public Optional<User> findPlayerByUserToken( String token ) {
+		return players.stream().filter( user -> user.getUserToken().equals( token ) ).findFirst();
 	}
 
 	public void disconnectPlayer( final UUID sessionId ) {
@@ -56,6 +92,15 @@ public class Game {
 		if( isUserHost( sessionId ) && players.size() > 0 ) {
 			// Promote new player to Host
 			this.host = players.get( 0 );
+		}
+	}
+
+	public Optional<Card> getRoleAssignmentForUser( final String userToken ) {
+		Card card = roleAssignments.get( userToken );
+		if ( card != null ) {
+			return Optional.of( card );
+		} else {
+			return Optional.empty();
 		}
 	}
 

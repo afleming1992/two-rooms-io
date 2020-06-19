@@ -12,6 +12,10 @@ const initialState: PlayerState = {
 
 export default function player(state = initialState, action: any) {
     switch(action.type) {
+        case Actions.CONNECTED:
+            return Object.assign( {}, state, { connected: true } );
+        case Actions.DISCONNECTED:
+            return Object.assign( {}, state, { connected: false } );
         case Actions.JOIN_GAME:
             return Object.assign({}, state, { joining: true });
         case Listeners.JOIN_GAME_SUCCESS:

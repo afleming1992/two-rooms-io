@@ -17,7 +17,7 @@ public class HostEventListeners {
 	}
 
 	@OnEvent("NEXT_ROUND")
-	public void onStartGame(SocketIOClient client) {
+	public void onNextRound(SocketIOClient client) {
 		gameController.startNextRound( client );
 	}
 

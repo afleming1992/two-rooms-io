@@ -5,7 +5,7 @@ import com.corundumstudio.socketio.annotation.OnEvent;
 
 import me.ajfleming.tworoomsio.controller.GameController;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
-import me.ajfleming.tworoomsio.service.sharing.CardShareType;
+import me.ajfleming.tworoomsio.service.sharing.ShareDecision;
 
 public class CardRequestListeners {
 	private GameController gameController;
@@ -16,26 +16,21 @@ public class CardRequestListeners {
 
 	@OnEvent("REQUEST_SHARE")
 	public void onRequestShare( SocketIOClient client, CardShareRequest request ) {
-
+		gameController.shareCard(client, request, false);
 	}
 
 	@OnEvent("ACCEPT_SHARE")
 	public void onAcceptShare( SocketIOClient client, String requestId ) {
-
+		gameController.answerShare(client, requestId, ShareDecision.ACCEPT);
 	}
 
 	@OnEvent("REJECT_SHARE")
 	public void onRejectShare( SocketIOClient client, String requestId ) {
-
+		gameController.answerShare(client, requestId, ShareDecision.DECLINE);
 	}
 
 	@OnEvent("PRIVATE_REVEAL")
 	public void onPrivateReveal( SocketIOClient client,  CardShareRequest request ) {
-
-	}
-
-	@OnEvent("PUBLIC_REVEAL")
-	public void onPublicReveal( SocketIOClient client, CardShareType type ) {
-
+		gameController.shareCard(client, request, true);
 	}
 }

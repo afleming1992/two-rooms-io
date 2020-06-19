@@ -20,8 +20,22 @@ export default function configureStore() {
 
     const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-    return createStore(
+    const store = createStore(
         rootReducer,
         composeEnhancers( applyMiddleware(...middlewares) )
     );
+
+    socket.on("connect", () => {
+        store.dispatch({"type":"CONNECTED"});
+    });
+
+    socket.on("reconnect", () => {
+        store.dispatch({"type":"CONNECTED"});
+    })
+
+    socket.on("disconnect", () => {
+        store.dispatch({"type":"DISCONNECTED"});
+    })
+
+    return store;
 }

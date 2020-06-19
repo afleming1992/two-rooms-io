@@ -6,7 +6,7 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class User {
-	private UUID userToken;
+	private String userToken;
 	private String name;
 	@JsonIgnore
 	private SocketIOClient client;
@@ -14,13 +14,17 @@ public class User {
 	private boolean connected;
 
 	public User( String name, SocketIOClient client) {
-		userToken = UUID.randomUUID();
+		userToken = UUID.randomUUID().toString();
 		this.name = name;
 		this.client = client;
 		connected = true;
 	}
 
-	public UUID getUserToken() {
+	public void sendEvent( String eventName, Object payload ) {
+		client.sendEvent( eventName, payload );
+	}
+
+	public String getUserToken() {
 		return userToken;
 	}
 
@@ -28,7 +32,7 @@ public class User {
 		return this.getClient().getSessionId();
 	}
 
-	public void setUserToken( final UUID userToken ) {
+	public void setUserToken( final String userToken ) {
 		this.userToken = userToken;
 	}
 

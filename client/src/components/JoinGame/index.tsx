@@ -5,6 +5,7 @@ import PlayerLoginForm from "../PlayerLoginForm";
 import {connect, DispatchProp} from "react-redux";
 import actionCreators from "../../redux/actions/creators";
 import {Action} from "typesafe-actions";
+import {Container} from "semantic-ui-react";
 
 const JoinGame = ({joinGame, joining, ...props}: any) => {
     const [playerName, setPlayerName] = useState();
@@ -22,10 +23,10 @@ const JoinGame = ({joinGame, joining, ...props}: any) => {
     }
 
     return (
-        <div id="gameLogin">
+        <Container>
             <Logo />
             <PlayerLoginForm errors={props.errors} onJoining={onJoining} onChange={handleChange} joining={joining} />
-        </div>
+        </Container>
     )
 }
 
