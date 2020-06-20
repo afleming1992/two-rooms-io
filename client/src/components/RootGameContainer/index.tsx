@@ -1,6 +1,6 @@
 import React, {ReactComponentElement, ReactNode} from 'react';
 import {Container} from "semantic-ui-react";
-import HostControl from "../HostMenuBar";
+import HostControl from "../HostControl";
 
 interface RootGameContainerProps {
     isHost: boolean,

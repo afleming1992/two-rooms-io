@@ -16,6 +16,11 @@ export default function viewReducer(state = initialState, action: any) {
     switch( action.type ) {
         case Listeners.JOIN_GAME_SUCCESS:
             return ViewState.IN_LOBBY;
+        case Listeners.GAME_UPDATE:
+            if( action.data.round > 0 ) {
+                return ViewState.IN_ROUND
+            }
+            return state;
         default:
             return state;
     }

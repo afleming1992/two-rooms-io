@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class RoundTimer {
 
+	private long initialUnits;
 	private boolean timerRunning;
 	private long unitsLeft;
 	private TimeUnit unitType;
@@ -20,6 +21,7 @@ public class RoundTimer {
 
 	public RoundTimer( int unitsLeft, TimeUnit unitType, TimerTrigger onTick, TimerTrigger onEnd ) {
 		this.timerRunning = false;
+		this.initialUnits = unitsLeft;
 		this.unitsLeft = unitsLeft;
 		this.unitType = unitType;
 		this.onTick = onTick;
@@ -27,18 +29,19 @@ public class RoundTimer {
 	}
 
 	public void start() {
-		timerRunning = true;
-		if ( refreshTask == null ) {
-			final Runnable refresh = () -> {
-				unitsLeft--;
-				if( unitsLeft < 1 ) {
-					onEnd.trigger( unitsLeft );
-					refreshTask.cancel( true );
-				} else {
+		if ( unitsLeft > 0 ) {
+			timerRunning = true;
+			if ( refreshTask == null ) {
+				final Runnable refresh = () -> {
+					unitsLeft--;
 					onTick.trigger( unitsLeft );
-				}
-			};
-			refreshTask = scheduler.scheduleAtFixedRate( refresh, 0, 1, unitType );
+					if( unitsLeft < 1 ) {
+						onEnd.trigger( unitsLeft );
+						refreshTask.cancel( true );
+					}
+				};
+				refreshTask = scheduler.scheduleAtFixedRate( refresh, 0, 1, unitType );
+			}
 		}
 	}
 
@@ -57,5 +60,9 @@ public class RoundTimer {
 
 	public long getUnitsLeft() {
 		return unitsLeft;
+	}
+
+	public long getInitialUnits() {
+		return initialUnits;
 	}
 }

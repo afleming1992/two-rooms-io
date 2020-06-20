@@ -130,6 +130,14 @@ public class GameController {
 		}
 	}
 
+	public void restartGameTimer() {
+		if ( game.getTimer().getTimerRunning() ) {
+			game.getTimer().stop();
+		}
+		game.setTimer( setupTimer( TOTAL_ROUND_SECONDS ) );
+		sendGameUpdate();
+	}
+
 	public void shareCard( final SocketIOClient client, final CardShareRequest request,
 			final boolean isReveal ) {
 		if ( isReveal ) {

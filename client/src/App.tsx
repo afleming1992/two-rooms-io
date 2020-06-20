@@ -2,15 +2,13 @@ import React from 'react';
 import './App.css';
 import {Container, Icon, Message} from "semantic-ui-react";
 import {connect} from "react-redux";
-import io from "socket.io-client";
 import JoinGame from "./components/JoinGame";
 import {PlayerState} from "./redux/reducers/types";
 import {ViewState} from "./redux/reducers/view";
 import GameLobby from "./components/GameLobby";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import RootGameContainer from "./components/RootGameContainer";
 import {isHost} from "./utils/isHost";
+import RootGame from "./components/RootGame";
 
 interface AppProps {
     player: PlayerState,
@@ -33,6 +31,10 @@ const App = ({ player, view, isHost,
                     {
                         view == ViewState.IN_LOBBY &&
                         <GameLobby />
+                    }
+                    {
+                        view == ViewState.IN_ROUND &&
+                        <RootGame />
                     }
                     </RootGameContainer>
                 }

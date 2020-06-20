@@ -3,4 +3,5 @@ export interface PlayerState {
     joining: boolean
     gameToken: string | undefined
     userToken: string | undefined
+    userSecret: string | undefined
 }

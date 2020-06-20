@@ -1,8 +1,5 @@
 package me.ajfleming.tworoomsio.listeners;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.annotation.OnEvent;
 
@@ -30,4 +27,7 @@ public class HostEventListeners {
 	public void onPauseTimer(SocketIOClient client) {
 		gameController.pauseGameTimer();
 	}
+
+	@OnEvent("RESTART_TIMER")
+	public void onRestartTimer(SocketIOClient client) { gameController.restartGameTimer(); }
 }

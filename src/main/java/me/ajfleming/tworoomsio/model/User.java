@@ -9,12 +9,15 @@ public class User {
 	private String userToken;
 	private String name;
 	@JsonIgnore
+	private String userSecret;
+	@JsonIgnore
 	private SocketIOClient client;
 	@JsonIgnore
 	private boolean connected;
 
 	public User( String name, SocketIOClient client) {
 		userToken = UUID.randomUUID().toString();
+		userSecret = UUID.randomUUID().toString();
 		this.name = name;
 		this.client = client;
 		connected = true;
@@ -54,5 +57,9 @@ public class User {
 
 	public boolean isConnected() {
 		return connected;
+	}
+
+	public String getUserSecret() {
+		return userSecret;
 	}
 }
