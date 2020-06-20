@@ -13,18 +13,13 @@ declare global {
     }
 }
 
-const socket = io.connect(`http://localhost:3001`);
+const socket = io.connect();
 
 const socketIoMiddleware = createSocketIoMiddleware(socket, actionListeners());
 
 const middlewares = [socketIoMiddleware]
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-
-const persistConfig = {
-    key: 'tworoomsio',
-    storage
-}
 
 export default function configureStore() {
     let store = createStore(

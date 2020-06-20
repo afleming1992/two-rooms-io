@@ -30,11 +30,13 @@
     "typesafe-actions": "~5.1.0",
     "typescript": "~3.7.2"
   },
+  "proxy": "http://localhost:3001",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "ngrok": "ngrok http 3000 -host-header='localhost:3000'"
   },
   "eslintConfig": {
     "extends": "react-app"
