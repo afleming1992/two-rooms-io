@@ -52,11 +52,26 @@ const restartTimer = (): SocketAction => {
     }
 }
 
+const reloadGameSession = (gameToken: String, playerToken: String, playerSecret: String): SocketAction => {
+    return {
+        type: Actions.RELOAD_GAME_SESSION,
+        meta: {
+            remote: true
+        },
+        payload: {
+            gameToken,
+            playerToken,
+            playerSecret
+        }
+    }
+}
+
 export default {
     joinGame,
     nextRound,
     startTimer,
     pauseTimer,
-    restartTimer
+    restartTimer,
+    reloadGameSession
 }
 

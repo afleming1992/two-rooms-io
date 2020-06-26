@@ -52,21 +52,22 @@ public class GameController {
 		}
 
 		addPlayerToGameComms( client );
-		client.sendEvent( "JOIN_GAME_SUCCESS", new JoinGameResponse( user.getUserToken() ) );
+		client.sendEvent( "JOIN_GAME_SUCCESS", new JoinGameResponse( game.getId(), user.getUserToken(), user.getUserSecret() ) );
 		game.setDeck( deckBuilder.buildDeck( game.getTotalPlayerCount() ) );
 	}
 
 	public void reloadGameSession( final SocketIOClient client, final ReloadGameSessionEvent event ) {
-		if ( game.getId().equals( event.getGameToken() ) ) {
+		if ( game != null && game.getId().equals( event.getGameToken() ) ) {
 			User user = new User( event.getPlayerToken(), event.getPlayerSecret(), client );
 			if ( game.reconnectPlayer( user ) ) {
-				client.sendEvent("RELOAD_GAME_SESSION_SUCCESS");
+				client.sendEvent("RELOAD_GAME_SESSION_SUCCESS", new JoinGameResponse( game.getId(), user.getUserToken(), user.getUserSecret() ) );
 				addPlayerToGameComms( client );
 				sendGameUpdate();
 				reloadPlayerGameData( client, user.getUserToken() );
 			} else {
 				client.sendEvent("RELOAD_GAME_SESSION_ERROR", Response.error( "Failed to reconnect user" ) );
 			}
+			sendGameUpdate();
 		} else {
 			client.sendEvent( "RELOAD_GAME_SESSION_ERROR", Response.error("Game is no longer live"));
 		}

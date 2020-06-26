@@ -31,7 +31,6 @@ public class PlayerEventListeners {
 	public void onReloadGameSession( SocketIOClient client, ReloadGameSessionEvent event ) {
 		LOGGER.info("Client is reloading a game session - "+ client.getSessionId().toString() );
 		gameController.reloadGameSession( client, event );
-		gameController.sendGameUpdate();
 	}
 
 	@OnEvent("JOIN_GAME")

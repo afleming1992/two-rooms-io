@@ -7,7 +7,7 @@ import {User} from "../../domain/User";
 import {connect} from "react-redux";
 import {GameState} from "../../redux/reducers/game";
 import {isHost} from "../../utils/isHost";
-import {PlayerState} from "../../redux/reducers/types";
+import {PlayerState} from "../../redux/reducers/player";
 
 interface GameLobbyProps {
     game: GameState,

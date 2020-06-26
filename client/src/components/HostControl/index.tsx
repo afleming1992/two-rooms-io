@@ -4,12 +4,12 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faClock, faPause, faPlay, faRedo, faStar} from "@fortawesome/free-solid-svg-icons";
 import {isHost} from "../../utils/isHost";
 import {GameState} from "../../redux/reducers/game";
-import {PlayerState} from "../../redux/reducers/types";
 import {ViewState} from "../../redux/reducers/view";
 import {connect} from "react-redux";
 import {bindActionCreators, Dispatch} from "redux";
 import actionCreators from "../../redux/actions/creators";
 import {Action} from "typesafe-actions";
+import {PlayerState} from "../../redux/reducers/player";
 
 interface HostControlProps {
     game: GameState,

@@ -3,12 +3,12 @@ import './App.css';
 import {Container, Icon, Message} from "semantic-ui-react";
 import {connect} from "react-redux";
 import JoinGame from "./components/JoinGame";
-import {PlayerState} from "./redux/reducers/types";
 import {ViewState} from "./redux/reducers/view";
 import GameLobby from "./components/GameLobby";
 import RootGameContainer from "./components/RootGameContainer";
 import {isHost} from "./utils/isHost";
 import RootGame from "./components/RootGame";
+import {PlayerState} from "./redux/reducers/player";
 
 interface AppProps {
     player: PlayerState,
