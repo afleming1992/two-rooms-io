@@ -17,6 +17,7 @@ import me.ajfleming.tworoomsio.service.deck.DeckBuilderService;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.service.sharing.CardShareType;
 import me.ajfleming.tworoomsio.service.sharing.ShareDecision;
+import me.ajfleming.tworoomsio.socket.event.ReloadGameSessionEvent;
 import me.ajfleming.tworoomsio.socket.response.CardRevealResponse;
 import me.ajfleming.tworoomsio.socket.response.JoinGameResponse;
 import me.ajfleming.tworoomsio.socket.response.RequestShareResponse;
@@ -50,9 +51,35 @@ public class GameController {
 			return;
 		}
 
-		client.joinRoom( "game/" + game.getId() );
-		client.sendEvent( "JOIN_GAME_SUCCESS", new JoinGameResponse( user.getUserToken().toString() ) );
+		addPlayerToGameComms( client );
+		client.sendEvent( "JOIN_GAME_SUCCESS", new JoinGameResponse( user.getUserToken() ) );
 		game.setDeck( deckBuilder.buildDeck( game.getTotalPlayerCount() ) );
+	}
+
+	public void reloadGameSession( final SocketIOClient client, final ReloadGameSessionEvent event ) {
+		if ( game.getId().equals( event.getGameToken() ) ) {
+			User user = new User( event.getPlayerToken(), event.getPlayerSecret(), client );
+			if ( game.reconnectPlayer( user ) ) {
+				client.sendEvent("RELOAD_GAME_SESSION_SUCCESS");
+				addPlayerToGameComms( client );
+				sendGameUpdate();
+				reloadPlayerGameData( client, user.getUserToken() );
+			} else {
+				client.sendEvent("RELOAD_GAME_SESSION_ERROR", Response.error( "Failed to reconnect user" ) );
+			}
+		} else {
+			client.sendEvent( "RELOAD_GAME_SESSION_ERROR", Response.error("Game is no longer live"));
+		}
+	}
+
+	private void reloadPlayerGameData( SocketIOClient client, String userToken ) {
+		if ( game.hasStarted() ) {
+			client.sendEvent( "CARD_UPDATE", game.getRoleAssignmentForUser( userToken ).get() );
+		}
+	}
+
+	private void addPlayerToGameComms( final SocketIOClient client ) {
+		client.joinRoom( "game/" + game.getId() );
 	}
 
 	private void createGame( final User user ) {
@@ -65,7 +92,7 @@ public class GameController {
 
 	public void disconnectPlayer( SocketIOClient client ) {
 		if ( game != null ) {
-			game.disconnectPlayer( client.getSessionId() );
+			game.disconnectPlayer( client.getSessionId().toString() );
 			if ( game.getPlayers().size() > 0 ) {
 				sendGameUpdate();
 			} else {
@@ -74,6 +101,7 @@ public class GameController {
 			}
 		}
 	}
+
 
 	public void startNextRound( final SocketIOClient client ) {
 		try {

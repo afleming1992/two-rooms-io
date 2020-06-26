@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -45,11 +46,26 @@ public class Game {
 		}
 
 		if ( findPlayer( user.getName() ).isPresent() ) {
-			throw new GameException( "Someone has already used that name! Maybe you have a popular name like Andrew? 🤔" );
+			throw new GameException(
+					"Someone has already used that name! Maybe you have a popular name like Andrew? 🤔" );
 		}
 
 		players.add( user );
 		return true;
+	}
+
+	public boolean reconnectPlayer( User reconnectingUser ) {
+		AtomicBoolean reconnected = new AtomicBoolean( false );
+
+		this.players.stream()
+				.filter( user -> user.authenticateUser( reconnectingUser.getUserToken(),
+						reconnectingUser.getUserSecret() ) )
+				.forEach( user -> {
+					user.reconnectPlayer( reconnectingUser.getClient() );
+					reconnected.set( true );
+				} );
+
+		return reconnected.get();
 	}
 
 	public User addShareRequest( final CardShareRequest request ) throws GameException {
@@ -59,7 +75,8 @@ public class Game {
 				cardShareRequests.put( request.getId(), request );
 				return playerFindResult.get();
 			} else {
-				throw new GameException("That user seems to have gone walkies... or maybe the user didn't exist in the first place 🤔");
+				throw new GameException(
+						"That user seems to have gone walkies... or maybe the user didn't exist in the first place 🤔" );
 			}
 		} else {
 			throw new GameException("Card Shares are blocked whilst timer is not running");
@@ -87,12 +104,33 @@ public class Game {
 		return players.stream().filter( user -> user.getUserToken().equals( token ) ).findFirst();
 	}
 
-	public void disconnectPlayer( final UUID sessionId ) {
-		this.players = players.stream().filter( user -> !user.getClient().getSessionId().equals( sessionId ) ).collect( Collectors.toList() );
-		if( isUserHost( sessionId ) && players.size() > 0 ) {
-			// Promote new player to Host
-			this.host = players.get( 0 );
+	public Optional<User> findPlayerBySocketSessionId( String sessionId ) {
+		return players.stream()
+				.filter( user -> user.getSocketSessionId().equals( sessionId ) )
+				.findFirst();
+	}
+
+	public void disconnectPlayer( final String sessionId ) {
+		Optional<User> search = findPlayerBySocketSessionId( sessionId );
+		if ( search.isPresent() ) {
+			if ( hasStarted() || isUserHost( search.get() ) ) {
+				// Soft Disconnect the User (Mark as Disconnected)
+				this.players.stream().forEach( user -> {
+					if ( user.getSocketSessionId().toString().equals( sessionId ) ) {
+						user.disconnectPlayer();
+					}
+				} );
+			} else {
+				// Hard Disconnect the user (Remove them completely)
+				this.players = this.players.stream()
+						.filter( user -> !user.getSocketSessionId().equals( sessionId ) )
+						.collect( Collectors.toList() );
+			}
 		}
+	}
+
+	public boolean hasStarted() {
+		return round > 0;
 	}
 
 	public Optional<Card> getRoleAssignmentForUser( final String userToken ) {

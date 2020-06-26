@@ -4,13 +4,15 @@ import errorsReducer from "./errors";
 import viewReducer from "./view";
 import gameReducer from './game';
 import timerReducer from './timer';
+import cardReducer from "./card";
 
 const rootReducer = combineReducers({
         game: gameReducer,
         player: playerReducer,
         errors: errorsReducer,
         view: viewReducer,
-        timer: timerReducer
+        timer: timerReducer,
+        card: cardReducer
     }
 );
 

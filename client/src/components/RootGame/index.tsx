@@ -4,13 +4,17 @@ import {Container, Grid, Segment} from "semantic-ui-react";
 import {ViewState} from "../../redux/reducers/view";
 import RoundTimer from "../RoundTimer";
 import {TimerState} from "../../redux/reducers/timer";
+import {CardState} from "../../redux/reducers/card";
+import PlayerCard from "../PlayerCard";
+import MainGameOperations from "../MainGameOperations";
 
 interface RootGameProps {
+    playerCardState: CardState,
     timer: TimerState,
     view: ViewState
 }
 
-const RootGame = ({timer, view, ...props}: RootGameProps) => {
+const RootGame = ({playerCardState, timer, view, ...props}: RootGameProps) => {
     return (
         <Container className="padding-top">
             <Grid columns={2}>
@@ -19,11 +23,11 @@ const RootGame = ({timer, view, ...props}: RootGameProps) => {
                         <RoundTimer timer={timer} />
                     </Grid.Row>
                     <Grid.Row className="padding-top">
-                        <Segment></Segment>
+                        <PlayerCard card={playerCardState.card == undefined ? undefined : playerCardState.card}/>
                     </Grid.Row>
                 </Grid.Column>
                 <Grid.Column width={10}>
-                    <Segment />
+                    <MainGameOperations />
                 </Grid.Column>
             </Grid>
         </Container>
@@ -33,7 +37,8 @@ const RootGame = ({timer, view, ...props}: RootGameProps) => {
 const mapStateToProps = (state: any) => {
     return {
         timer: state.timer,
-        view: state.view
+        view: state.view,
+        playerCardState: state.card
     }
 }
 
