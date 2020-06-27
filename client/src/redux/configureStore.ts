@@ -56,8 +56,9 @@ export default function configureStore() {
         const session = store.getState().session;
         if( session != null && session.game != null && session.token != null && session.secret != null ) {
             store.dispatch(actionCreators.reloadGameSession( session.game, session.token, session.secret ));
+        } else {
+            store.dispatch({"type":"CONNECTED"});
         }
-        store.dispatch({"type":"CONNECTED"});
     });
 
     socket.on("reconnect", () => {

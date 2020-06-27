@@ -11,6 +11,7 @@ import com.corundumstudio.socketio.SocketIOServer;
 import me.ajfleming.tworoomsio.exception.GameException;
 import me.ajfleming.tworoomsio.model.Card;
 import me.ajfleming.tworoomsio.model.Game;
+import me.ajfleming.tworoomsio.model.RoundMap;
 import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.service.deck.DeckDealerService;
 import me.ajfleming.tworoomsio.service.deck.DeckBuilderService;
@@ -31,6 +32,7 @@ public class GameController {
 	private DeckBuilderService deckBuilder;
 
 	private static final int TOTAL_ROUND_SECONDS = 180;
+	private static final int MAX_ROUNDS = 3;
 
 	public GameController( SocketIOServer server ) {
 		this.game = null;
@@ -123,13 +125,18 @@ public class GameController {
 		verifyGameReadyToStart();
 		Map<String, Card> roleAssignments = DeckDealerService.dealDeck( game.getDeck(), game.getPlayers() );
 		game.nextRound();
+		game.setRoundData( RoundMap.getRoundData( game.getTotalPlayerCount() ) );
 		game.setRoleAssignments( roleAssignments );
 		game.setTimer( setupTimer( TOTAL_ROUND_SECONDS ) );
 	}
 
 	public void nextRound() {
-		game.nextRound();
-		game.setTimer( setupTimer( TOTAL_ROUND_SECONDS ) );
+		if ( game.getRound() >= MAX_ROUNDS ) {
+			sendGameUpdate();
+		} else {
+			game.nextRound();
+			game.setTimer( setupTimer( TOTAL_ROUND_SECONDS ) );
+		}
 	}
 
 	private boolean isSocketHost( final SocketIOClient client ) {

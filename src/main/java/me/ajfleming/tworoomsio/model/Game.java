@@ -26,6 +26,7 @@ public class Game {
 	@JsonIgnore
 	private Map<String, CardShareRequest> cardShareRequests;
 	private RoundTimer timer;
+	private List<Round> roundData;
 
 	public Game( User host ) {
 		this.host = host;
@@ -196,5 +197,13 @@ public class Game {
 
 	public RoundTimer getTimer() {
 		return timer;
+	}
+
+	public void setRoundData( List<Round> roundData ) {
+		this.roundData = roundData;
+	}
+
+	public List<Round> getRoundData() {
+		return roundData;
 	}
 }

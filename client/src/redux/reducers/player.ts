@@ -24,7 +24,9 @@ export default function player(state = initialState, action: any) {
             return Object.assign({}, state, { joining: true });
         case Listeners.JOIN_GAME_SUCCESS:
         case Listeners.RELOAD_GAME_SESSION_SUCCESS:
-            return Object.assign( {}, state, { joining: false, userToken: action.data.userToken } );
+            return Object.assign( {}, state, { connected: true, joining: false, userToken: action.data.userToken } );
+        case Listeners.RELOAD_GAME_SESSION_ERROR:
+            return Object.assign( {}, state, { connected: true } );
         case Listeners.JOIN_GAME_ERROR:
             return Object.assign( {}, state, {
                 joining: false

@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Menu} from "semantic-ui-react";
+import {Button, Dropdown, Icon, Menu} from "semantic-ui-react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faClock, faPause, faPlay, faRedo, faStar} from "@fortawesome/free-solid-svg-icons";
 import {isHost} from "../../utils/isHost";
@@ -30,10 +30,6 @@ const canGameStart = (game: GameState): boolean => {
 }
 
 const HostControl = ({game, player, view, isHost, nextRound, startTimer, pauseTimer, restartTimer, ...props}: HostControlProps) => {
-    const onStartGame = () => {
-        nextRound();
-    }
-
     const onStartTimer = () => {
         startTimer();
     }
@@ -48,7 +44,32 @@ const HostControl = ({game, player, view, isHost, nextRound, startTimer, pauseTi
 
     return (
         <Menu inverted size="huge" attached='top'>
-            <Menu.Item header><FontAwesomeIcon icon={faStar}/>&nbsp;&nbsp; Host</Menu.Item>
+            <Menu.Item header><Icon name="star" /> Host Menu</Menu.Item>
+            {
+                view == ViewState.IN_ROUND &&
+                <>
+                  <Dropdown item icon="clock">
+                      <Dropdown.Menu>
+                          <Dropdown.Item onClick={onStartTimer}>
+                            <Icon name='play' color="green" /> Start
+                          </Dropdown.Item>
+                          <Dropdown.Item icon="pause" onClick={onPauseTimer}>
+                            <Icon name='pause' color="red" /> Pause
+                          </Dropdown.Item>
+                          <Dropdown.Item icon="redo" onClick={onRestartTimer}>
+                            <Icon name='redo' /> Restart
+                          </Dropdown.Item>
+                      </Dropdown.Menu>
+                  </Dropdown>
+                  <Menu.Menu position="right">
+                    <Menu.Item>
+                      <Button color="green" onClick={nextRound}>
+                        Next Round
+                      </Button>
+                    </Menu.Item>
+                  </Menu.Menu>
+                </>
+            }
             {
                 view == ViewState.IN_LOBBY &&
                 <Menu.Menu position="right">
@@ -60,26 +81,14 @@ const HostControl = ({game, player, view, isHost, nextRound, startTimer, pauseTi
                 </Menu.Menu>
             }
             {
-                view == ViewState.IN_ROUND &&
+                view == ViewState.END_GAME &&
                 <Menu.Menu position="right">
                     <Menu.Item>
-                      <Button.Group>
-                        <Button disabled icon>
-                            <FontAwesomeIcon icon={faClock} /> Timer
-                        </Button>
-                        <Button icon color="green" onClick={onStartTimer}>
-                            <FontAwesomeIcon icon={faPlay} />
-                        </Button>
-                        <Button icon color="red" onClick={onPauseTimer}>
-                            <FontAwesomeIcon icon={faPause} />
-                        </Button>
-                        <Button icon onClick={onRestartTimer}>
-                            <FontAwesomeIcon icon={faRedo} />
-                        </Button>
-                      </Button.Group>
+                        <Button>Testing</Button>
                     </Menu.Item>
                 </Menu.Menu>
             }
+
         </Menu>
     );
 }

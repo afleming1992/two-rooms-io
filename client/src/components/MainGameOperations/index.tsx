@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Button, ButtonGroup, Grid, GridColumn, Label, Menu, Segment, SegmentGroup, Tab} from "semantic-ui-react";
+import {Button, ButtonGroup, Grid, GridColumn, Icon, Label, Menu, Segment, SegmentGroup, Tab} from "semantic-ui-react";
 import {connect} from "react-redux";
 import {DeckList} from "../DeckList";
 import {GameState} from "../../redux/reducers/game";
@@ -25,9 +25,9 @@ const MainGameOperations = ({ deck, players } : MainGameOperationsStats) => {
 
     return (
         <>
-        <Menu pointing secondary widths={3}>
+        <Menu size="large" pointing secondary widths={3}>
             <Menu.Item active={ view == MainGameViewState.PLAYERS } onClick={ () => setView( MainGameViewState.PLAYERS )}>
-                Players
+                <Icon name="users" /> Players
             </Menu.Item>
             <Menu.Item active={ view == MainGameViewState.EVENTS } onClick={ () => setView( MainGameViewState.EVENTS )}>
                 Events

@@ -7,14 +7,17 @@ import {TimerState} from "../../redux/reducers/timer";
 import {CardState} from "../../redux/reducers/card";
 import PlayerCard from "../PlayerCard";
 import MainGameOperations from "../MainGameOperations";
+import RoundTracker from "../RoundTracker";
+import {GameState} from "../../redux/reducers/game";
 
 interface RootGameProps {
     playerCardState: CardState,
     timer: TimerState,
-    view: ViewState
+    view: ViewState,
+    game: GameState
 }
 
-const RootGame = ({playerCardState, timer, view, ...props}: RootGameProps) => {
+const RootGame = ({playerCardState, timer, view, game, ...props}: RootGameProps) => {
     return (
         <Container className="padding-top">
             <Grid columns={2}>
@@ -27,6 +30,9 @@ const RootGame = ({playerCardState, timer, view, ...props}: RootGameProps) => {
                     </Grid.Row>
                 </Grid.Column>
                 <Grid.Column width={10}>
+                    <Grid.Row>
+                        <RoundTracker currentRound={game.round} roundData={game.roundData} />
+                    </Grid.Row>
                     <MainGameOperations />
                 </Grid.Column>
             </Grid>
@@ -38,7 +44,8 @@ const mapStateToProps = (state: any) => {
     return {
         timer: state.timer,
         view: state.view,
-        playerCardState: state.card
+        playerCardState: state.card,
+        game: state.game,
     }
 }
 

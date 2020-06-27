@@ -66,6 +66,18 @@ const reloadGameSession = (gameToken: String, playerToken: String, playerSecret:
     }
 }
 
+const requestShare = () => {
+    return {
+        type: Actions.REQUEST_SHARE,
+        meta: {
+            remote: true
+        },
+        payload: {
+        }
+    }
+}
+
+
 export default {
     joinGame,
     nextRound,
