@@ -8,7 +8,10 @@ import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketConfig;
 import com.corundumstudio.socketio.SocketIOServer;
 
-import me.ajfleming.tworoomsio.controller.GameController;
+import me.ajfleming.tworoomsio.controller.UserActionController;
+import me.ajfleming.tworoomsio.engine.GameEngine;
+import me.ajfleming.tworoomsio.engine.GameEngineImpl;
+import me.ajfleming.tworoomsio.engine.UserManager;
 import me.ajfleming.tworoomsio.listeners.HostEventListeners;
 import me.ajfleming.tworoomsio.listeners.PlayerEventListeners;
 
@@ -27,9 +30,13 @@ public class TwoRoomsIoApplication {
 		config.setSocketConfig( socketConfig );
 
 		final SocketIOServer server = new SocketIOServer( config );
-		final GameController gameController = new GameController( server );
-		final PlayerEventListeners playerEventListeners = new PlayerEventListeners( gameController );
-		final HostEventListeners hostEventListeners = new HostEventListeners( gameController );
+		final GameEngine gameEngine = new GameEngineImpl( server );
+		final UserManager userManager = new UserManager();
+		final UserActionController userActionController = new UserActionController( gameEngine, userManager );
+
+		final PlayerEventListeners playerEventListeners = new PlayerEventListeners(
+				userActionController );
+		final HostEventListeners hostEventListeners = new HostEventListeners( userActionController );
 
 		server.addListeners( playerEventListeners );
 		server.addListeners( hostEventListeners );

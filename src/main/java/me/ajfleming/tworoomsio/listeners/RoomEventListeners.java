@@ -1,13 +1,11 @@
 package me.ajfleming.tworoomsio.listeners;
 
-import com.corundumstudio.socketio.annotation.OnEvent;
-
-import me.ajfleming.tworoomsio.controller.GameController;
+import me.ajfleming.tworoomsio.controller.UserActionController;
 
 public class RoomEventListeners {
-	private GameController gameController;
+	private UserActionController userActionController;
 
-	public RoomEventListeners( GameController gameController ) {
-		this.gameController = gameController;
+	public RoomEventListeners( UserActionController userActionController ) {
+		this.userActionController = userActionController;
 	}
 }

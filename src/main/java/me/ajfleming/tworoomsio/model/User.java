@@ -47,6 +47,10 @@ public class User {
 		this.connected = true;
 	}
 
+	public boolean is( User user ) {
+		return getUserToken().equals( user.getUserToken() );
+	}
+
 	public String getUserToken() {
 		return userToken;
 	}

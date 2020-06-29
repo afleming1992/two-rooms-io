@@ -34,9 +34,9 @@ public class RoundTimer {
 			if ( refreshTask == null ) {
 				final Runnable refresh = () -> {
 					unitsLeft--;
-					onTick.trigger( unitsLeft );
+					onTick.trigger( this );
 					if( unitsLeft < 1 ) {
-						onEnd.trigger( unitsLeft );
+						onEnd.trigger( this );
 						refreshTask.cancel( true );
 					}
 				};
@@ -49,12 +49,12 @@ public class RoundTimer {
 		if ( refreshTask != null ) {
 			refreshTask.cancel( true );
 			timerRunning = false;
-			onTick.trigger( unitsLeft );
+			onTick.trigger( this );
 			refreshTask = null;
 		}
 	}
 
-	public boolean getTimerRunning() {
+	public boolean isTimerRunning() {
 		return timerRunning;
 	}
 

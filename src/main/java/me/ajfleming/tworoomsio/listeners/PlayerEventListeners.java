@@ -8,7 +8,7 @@ import com.corundumstudio.socketio.annotation.OnConnect;
 import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
 
-import me.ajfleming.tworoomsio.controller.GameController;
+import me.ajfleming.tworoomsio.controller.UserActionController;
 import me.ajfleming.tworoomsio.socket.event.JoinGameEvent;
 import me.ajfleming.tworoomsio.socket.event.ReloadGameSessionEvent;
 
@@ -16,10 +16,10 @@ public class PlayerEventListeners {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger( PlayerEventListeners.class);
 
-	private GameController gameController;
+	private UserActionController userActionController;
 
-	public PlayerEventListeners( GameController gameController ) {
-		this.gameController = gameController;
+	public PlayerEventListeners( UserActionController userActionController ) {
+		this.userActionController = userActionController;
 	}
 
 	@OnConnect
@@ -30,19 +30,18 @@ public class PlayerEventListeners {
 	@OnEvent("RELOAD_GAME_SESSION")
 	public void onReloadGameSession( SocketIOClient client, ReloadGameSessionEvent event ) {
 		LOGGER.info("Client is reloading a game session - "+ client.getSessionId().toString() );
-		gameController.reloadGameSession( client, event );
+		userActionController.reloadGameSession( client, event );
 	}
 
 	@OnEvent("JOIN_GAME")
 	public void onJoinGame(SocketIOClient client, JoinGameEvent event ) {
-		gameController.joinGame( client, event.getName() );
 		LOGGER.info("Client joined Game - "+ client.getSessionId().toString() );
-		gameController.sendGameUpdate();
+		userActionController.joinGame( client, event.getName() );
 	}
 
 	@OnDisconnect
 	public void onDisconnect(SocketIOClient client) {
 		LOGGER.info("Client Disconnected - "+ client.getSessionId().toString() );
-		gameController.disconnectPlayer( client );
+		userActionController.disconnectPlayer( client );
 	}
 }

@@ -5,12 +5,14 @@ import me.ajfleming.tworoomsio.model.Team;
 
 public class CardRevealResponse {
 	public boolean isReveal;
+	public String requestId;
 	public String userToken;
 	public Team team;
 	public Card role;
 
-	public static CardRevealResponse roleShare( String userToken, Card role ) {
+	public static CardRevealResponse roleShare( String requestId, String userToken, Card role ) {
 		CardRevealResponse response = new CardRevealResponse();
+		response.setRequestId( requestId );
 		response.setReveal( false );
 		response.setUserToken( userToken );
 		response.setRole( role );
@@ -25,8 +27,9 @@ public class CardRevealResponse {
 		return response;
 	}
 
-	public static CardRevealResponse colourShare( String userToken, Card card ) {
+	public static CardRevealResponse colourShare( String requestId, String userToken, Card card ) {
 		CardRevealResponse response = new CardRevealResponse();
+		response.setRequestId( requestId );
 		response.setReveal( false );
 		response.setUserToken( userToken );
 		response.setTeam( card.getTeam() );
@@ -71,5 +74,13 @@ public class CardRevealResponse {
 
 	public void setRole( final Card role ) {
 		this.role = role;
+	}
+
+	public String getRequestId() {
+		return requestId;
+	}
+
+	public void setRequestId( final String requestId ) {
+		this.requestId = requestId;
 	}
 }

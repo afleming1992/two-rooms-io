@@ -20,7 +20,7 @@ public class DeckDealerService {
 		for( User user: shuffledUsers ) {
 			Card card = shuffledCards.remove(0);
 			user.getClient().sendEvent( "CARD_UPDATE", card );
-			result.put( user.getUserToken().toString(), card );
+			result.put( user.getUserToken(), card );
 		}
 
 		return result;
