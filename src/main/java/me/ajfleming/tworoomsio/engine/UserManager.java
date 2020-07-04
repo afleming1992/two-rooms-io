@@ -1,4 +1,5 @@
 package me.ajfleming.tworoomsio.engine;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -35,9 +36,19 @@ public class UserManager {
 
 	public Optional<User> reconnectDisconnectedUser( SocketIOClient client,
 			ReloadGameSessionEvent event ) {
-		User user = disconnectedUsers.get( event.getGameToken() );
+		User user = disconnectedUsers.get( event.getPlayerToken() );
+		if ( user == null ) {
+			Optional<User> connectedUserResult = findConnectedUserByPlayerId( event.getPlayerToken() );
+			if ( connectedUserResult.isPresent() ) {
+				user = connectedUserResult.get();
+				user.getClient().disconnect();
+			}
+		}
 		if ( user != null && user.authenticateUser( event.getPlayerToken(),
 				event.getPlayerSecret() ) ) {
+			user.setClient( client );
+			disconnectedUsers.remove( event.getPlayerToken() );
+			connectedUsers.put( client.getSessionId().toString(), user );
 			return Optional.of( user );
 		} else {
 			return Optional.empty();
@@ -49,9 +60,13 @@ public class UserManager {
 		if ( user != null ) {
 			user.disconnectPlayer();
 			disconnectedUsers.put( user.getUserToken(), user );
-			return Optional.of(user);
+			return Optional.of( user );
 		}
 		return Optional.empty();
+	}
+
+	private Optional<User> findConnectedUserByPlayerId( String playerToken ) {
+		return connectedUsers.values().stream().filter( user -> user.getUserToken().equals( playerToken ) ).findFirst();
 	}
 
 	private String sessionId( SocketIOClient client ) {

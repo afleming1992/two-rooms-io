@@ -123,6 +123,10 @@ export default {
     startTimer,
     pauseTimer,
     restartTimer,
-    reloadGameSession
+    reloadGameSession,
+    requestShare,
+    acceptShare,
+    rejectShare,
+    privateReveal
 }
 

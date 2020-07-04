@@ -1,4 +1,5 @@
 export enum CardShareType {
+    NONE = "NONE",
     COLOUR = "COLOUR",
     ROLE = "ROLE"
 }

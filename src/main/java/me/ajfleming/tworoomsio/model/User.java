@@ -55,6 +55,7 @@ public class User {
 		return userToken;
 	}
 
+	@JsonIgnore
 	public UUID getSocketSessionId() {
 		return this.getClient().getSessionId();
 	}

@@ -12,6 +12,7 @@ import me.ajfleming.tworoomsio.controller.UserActionController;
 import me.ajfleming.tworoomsio.engine.GameEngine;
 import me.ajfleming.tworoomsio.engine.GameEngineImpl;
 import me.ajfleming.tworoomsio.engine.UserManager;
+import me.ajfleming.tworoomsio.listeners.CardRequestListeners;
 import me.ajfleming.tworoomsio.listeners.HostEventListeners;
 import me.ajfleming.tworoomsio.listeners.PlayerEventListeners;
 
@@ -37,9 +38,11 @@ public class TwoRoomsIoApplication {
 		final PlayerEventListeners playerEventListeners = new PlayerEventListeners(
 				userActionController );
 		final HostEventListeners hostEventListeners = new HostEventListeners( userActionController );
+		final CardRequestListeners cardRequestListeners = new CardRequestListeners( userActionController );
 
 		server.addListeners( playerEventListeners );
 		server.addListeners( hostEventListeners );
+		server.addListeners( cardRequestListeners );
 
 		server.start();
 	}

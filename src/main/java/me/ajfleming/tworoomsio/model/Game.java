@@ -69,26 +69,20 @@ public class Game {
 		return players.stream().filter( user -> user.getUserToken().equals( token ) ).findFirst();
 	}
 
-	public Optional<User> findPlayerBySocketSessionId( String sessionId ) {
-		return players.stream()
-				.filter( user -> user.getSocketSessionId().equals( sessionId ) )
-				.findFirst();
-	}
-
-	public void disconnectPlayer( final String sessionId ) {
-		Optional<User> search = findPlayerBySocketSessionId( sessionId );
+	public void disconnectPlayer( final String userToken ) {
+		Optional<User> search = findPlayerByUserToken( userToken );
 		if ( search.isPresent() ) {
 			if ( hasStarted() || isUserHost( search.get() ) ) {
 				// Soft Disconnect the User (Mark as Disconnected)
 				this.players.stream().forEach( user -> {
-					if ( user.getSocketSessionId().toString().equals( sessionId ) ) {
+					if ( user.getUserToken().equals( userToken ) ) {
 						user.disconnectPlayer();
 					}
 				} );
 			} else {
 				// Hard Disconnect the user (Remove them completely)
 				this.players = this.players.stream()
-						.filter( user -> !user.getSocketSessionId().equals( sessionId ) )
+						.filter( user -> !user.getUserToken().equals( userToken ) )
 						.collect( Collectors.toList() );
 			}
 		}
