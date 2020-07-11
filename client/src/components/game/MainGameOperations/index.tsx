@@ -1,32 +1,31 @@
 import React, {useState} from 'react';
-import {Button, ButtonGroup, Grid, GridColumn, Icon, Label, Menu, Segment, SegmentGroup, Tab} from "semantic-ui-react";
+import {Icon, Label, Menu} from "semantic-ui-react";
 import {connect} from "react-redux";
 import {DeckList} from "../../common/DeckList";
-import {GameState} from "../../../redux/reducers/game";
 import {Card} from "../../../domain/Card";
 import GamePlayerList from "../GamePlayerList";
 import {User} from "../../../domain/User";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faComments, faLayerGroup, faShareSquare, faUsers} from "@fortawesome/free-solid-svg-icons";
-import GameActionList from "../GameActionList";
+import {faComments, faLayerGroup} from "@fortawesome/free-solid-svg-icons";
 import GameEventsList from '../GameEventsList';
 import {CardState} from "../../../redux/reducers/card";
+import {EventsState} from "../../../redux/reducers/events";
 
 interface MainGameOperationsStats {
     activePlayer: User,
     deck: Card[],
     players: User[],
-    playerCard: CardState
+    playerCard: CardState,
+    events: EventsState
 }
 
 enum MainGameViewState {
     PLAYERS,
     EVENTS,
-    DECK,
-    ACTIONS
+    DECK
 }
 
-const MainGameOperations = ({ activePlayer, deck, players, playerCard } : MainGameOperationsStats) => {
+const MainGameOperations = ({ activePlayer, deck, players, playerCard, events } : MainGameOperationsStats) => {
     const [ view, setView ] = useState( MainGameViewState.PLAYERS );
 
     return (
@@ -35,8 +34,8 @@ const MainGameOperations = ({ activePlayer, deck, players, playerCard } : MainGa
             <Menu.Item active={ view == MainGameViewState.PLAYERS } onClick={ () => setView( MainGameViewState.PLAYERS )}>
                 <Icon name="users" /> Players
             </Menu.Item>
-            <Menu.Item active={ view == MainGameViewState.ACTIONS } onClick={ () => setView( MainGameViewState.ACTIONS)}>
-               <FontAwesomeIcon icon={faComments} />&nbsp; Events<Label circular>0</Label>
+            <Menu.Item active={ view == MainGameViewState.EVENTS } onClick={ () => setView( MainGameViewState.EVENTS)}>
+               <FontAwesomeIcon icon={faComments} />&nbsp; Events<Label circular>{ events != undefined ? events.pending.length : "0"}</Label>
             </Menu.Item>
             <Menu.Item active={ view == MainGameViewState.DECK } onClick={ () => setView( MainGameViewState.DECK )}>
                 <FontAwesomeIcon icon={faLayerGroup} />&nbsp; Deck
@@ -47,8 +46,8 @@ const MainGameOperations = ({ activePlayer, deck, players, playerCard } : MainGa
                 <GamePlayerList playerCard={playerCard} activePlayer={activePlayer} players={ players } />
             }
             {
-                view == MainGameViewState.ACTIONS &&
-                <GameActionList />
+                view == MainGameViewState.EVENTS &&
+                <GameEventsList />
             }
             {
                 view == MainGameViewState.DECK &&
@@ -63,7 +62,8 @@ const mapStateToProps = (state: any) => {
         deck: state.game.deck,
         activePlayer: state.player,
         players: state.game.players,
-        playerCard: state.card
+        playerCard: state.card,
+        events: state.events
     }
 }
 

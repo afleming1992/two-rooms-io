@@ -12,7 +12,13 @@ export enum Actions {
     ACCEPT_SHARE = "ACCEPT_SHARE",
     REJECT_SHARE = "REJECT_SHARE",
     PRIVATE_REVEAL = "PRIVATE_REVEAL",
+    DISMISS_EVENT = "DISMISS_EVENT",
     OTHER_ACTION = "__any_other_action_type__",
+}
+
+export enum RevealActions {
+    DO_REVEAL = "DO_REVEAL",
+    CLEAR_REVEAL = "CLEAR_REVEAL"
 }
 
 export interface SocketAction {

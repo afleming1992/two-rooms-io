@@ -31,8 +31,9 @@ public class TwoRoomsIoApplication {
 		config.setSocketConfig( socketConfig );
 
 		final SocketIOServer server = new SocketIOServer( config );
-		final GameEngine gameEngine = new GameEngineImpl( server );
 		final UserManager userManager = new UserManager();
+
+		final GameEngine gameEngine = new GameEngineImpl( server, userManager );
 		final UserActionController userActionController = new UserActionController( gameEngine, userManager );
 
 		final PlayerEventListeners playerEventListeners = new PlayerEventListeners(

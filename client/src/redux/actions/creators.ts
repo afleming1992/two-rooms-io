@@ -87,7 +87,7 @@ const acceptShare = ( id: string ) => {
             remote: true
         },
         payload: {
-            id
+            requestId: id
         }
     }
 }
@@ -99,7 +99,7 @@ const rejectShare = ( id: string ) => {
             remote: true
         },
         payload: {
-            id
+            requestId: id
         }
     }
 }
@@ -117,6 +117,15 @@ const privateReveal = ( type: CardShareType, recipient: string ) => {
     }
 }
 
+const dismissEvent = ( id: string ) => {
+    return {
+        type: Actions.DISMISS_EVENT,
+        payload: {
+            id
+        }
+    }
+}
+
 export default {
     joinGame,
     nextRound,
@@ -127,6 +136,7 @@ export default {
     requestShare,
     acceptShare,
     rejectShare,
-    privateReveal
+    privateReveal,
+    dismissEvent
 }
 

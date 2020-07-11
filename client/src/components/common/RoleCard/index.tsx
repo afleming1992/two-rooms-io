@@ -14,7 +14,7 @@ export const RoleCard = ({card}: RoleCardProps) => {
         return (<SemanticCard onClick={ () => setFlipped(false)}><Image src="cards/card_back.png"/></SemanticCard>);
     } else {
         return (
-            <Popup content={card.howToWin} header={card.title} trigger={<SemanticCard onClick={ () => setFlipped(true)} key={card.title}><Image
+            <Popup content={card.howToWin} header={card.title} trigger={<SemanticCard centered onClick={ () => setFlipped(true)} key={card.title}><Image
                 src={`cards/${card.cardImage}.png`}/></SemanticCard>}/>
         );
     }

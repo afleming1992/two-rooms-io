@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.corundumstudio.socketio.SocketIOClient;
 
+import me.ajfleming.tworoomsio.exception.UserException;
 import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.socket.event.ReloadGameSessionEvent;
 
@@ -42,6 +43,7 @@ public class UserManager {
 			if ( connectedUserResult.isPresent() ) {
 				user = connectedUserResult.get();
 				user.getClient().disconnect();
+				user.setClient( client );
 			}
 		}
 		if ( user != null && user.authenticateUser( event.getPlayerToken(),
@@ -63,6 +65,16 @@ public class UserManager {
 			return Optional.of( user );
 		}
 		return Optional.empty();
+	}
+
+	public void sendEvent( String playerToken, String eventName, Object payload ) throws
+			UserException {
+		Optional<User> userResult = findConnectedUserByPlayerId( playerToken );
+		if ( userResult.isPresent() ) {
+			userResult.get().sendEvent( eventName, payload );
+		} else {
+			throw new UserException("Failed to send event to user");
+		}
 	}
 
 	private Optional<User> findConnectedUserByPlayerId( String playerToken ) {

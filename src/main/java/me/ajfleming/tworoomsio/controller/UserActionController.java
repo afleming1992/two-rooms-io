@@ -20,6 +20,7 @@ import me.ajfleming.tworoomsio.service.deck.DeckBuilderService;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.service.sharing.CardShareType;
 import me.ajfleming.tworoomsio.service.sharing.ShareDecision;
+import me.ajfleming.tworoomsio.socket.action.ShareDecisionRequest;
 import me.ajfleming.tworoomsio.socket.event.ReloadGameSessionEvent;
 import me.ajfleming.tworoomsio.socket.response.CardRevealResponse;
 import me.ajfleming.tworoomsio.socket.response.JoinGameResponse;
@@ -112,6 +113,7 @@ public class UserActionController {
 	public void requestShare( final SocketIOClient client, CardShareRequest request ) {
 		Optional<User> requestor = userManager.getUser( client );
 		if ( requestor.isPresent() ) {
+			request.setRequestor( requestor.get().getUserToken() );
 			try {
 				CardShareRequest approvedRequest = gameEngine.requestShare( requestor.get(), request );
 				client.sendEvent("REQUEST_SHARE_SUCCESS", approvedRequest );
@@ -137,6 +139,7 @@ public class UserActionController {
 		if( requestor.isPresent() ) {
 			try {
 				gameEngine.rejectShare( requestor.get(), requestId );
+				client.sendEvent("REJECT_SHARE_SUCCESS", new RequestShareResponse( requestId ) );
 			} catch ( GameException e ) {
 				client.sendEvent( "ANSWER_SHARE_ERROR", e.getMessage() );
 			}

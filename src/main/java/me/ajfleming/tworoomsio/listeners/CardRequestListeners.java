@@ -5,6 +5,7 @@ import com.corundumstudio.socketio.annotation.OnEvent;
 
 import me.ajfleming.tworoomsio.controller.UserActionController;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
+import me.ajfleming.tworoomsio.socket.action.ShareDecisionRequest;
 
 public class CardRequestListeners {
 	private UserActionController userActionController;
@@ -19,13 +20,13 @@ public class CardRequestListeners {
 	}
 
 	@OnEvent("ACCEPT_SHARE")
-	public void onAcceptShare( SocketIOClient client, String requestId ) {
-		userActionController.acceptShare(client, requestId);
+	public void onAcceptShare( SocketIOClient client, ShareDecisionRequest request ) {
+		userActionController.acceptShare(client, request.getRequestId());
 	}
 
 	@OnEvent("REJECT_SHARE")
-	public void onRejectShare( SocketIOClient client, String requestId ) {
-		userActionController.rejectShare(client, requestId);
+	public void onRejectShare( SocketIOClient client, ShareDecisionRequest request ) {
+		userActionController.rejectShare(client, request.getRequestId());
 	}
 
 	@OnEvent("PRIVATE_REVEAL")

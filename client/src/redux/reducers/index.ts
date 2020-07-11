@@ -6,6 +6,8 @@ import gameReducer from './game';
 import timerReducer from './timer';
 import cardReducer from "./card";
 import sessionReducer from "./session";
+import eventsReducer from "./events";
+import revealReducer from "./reveal";
 
 const rootReducer = combineReducers({
         game: gameReducer,
@@ -15,6 +17,8 @@ const rootReducer = combineReducers({
         timer: timerReducer,
         card: cardReducer,
         session: sessionReducer,
+        events: eventsReducer,
+        reveal: revealReducer
     }
 );
 

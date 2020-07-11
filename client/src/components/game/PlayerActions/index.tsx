@@ -6,7 +6,6 @@ import {
     Button,
     ButtonGroup,
     Icon,
-    Segment,
     Select,
     Grid,
     Header
@@ -128,7 +127,7 @@ const playersToOptions = ( players: User[] | undefined, activePlayer: PlayerStat
 
     if( players !== undefined ) {
         players.forEach( (player) => {
-            if ( player.userToken !== activePlayer.userToken ) {
+            if ( player.userToken !== activePlayer.userToken && player.name !== activePlayer.name ) {
                 list.push( {
                     key: player.userToken,
                     value: player.userToken,

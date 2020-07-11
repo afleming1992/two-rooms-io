@@ -2,9 +2,11 @@ package me.ajfleming.tworoomsio.socket.response;
 
 import me.ajfleming.tworoomsio.model.Card;
 import me.ajfleming.tworoomsio.model.Team;
+import me.ajfleming.tworoomsio.service.sharing.CardShareType;
 
 public class CardRevealResponse {
 	public boolean isReveal;
+	private CardShareType type;
 	public String requestId;
 	public String userToken;
 	public Team team;
@@ -16,6 +18,7 @@ public class CardRevealResponse {
 		response.setReveal( false );
 		response.setUserToken( userToken );
 		response.setRole( role );
+		response.setType( CardShareType.ROLE );
 		return response;
 	}
 
@@ -24,6 +27,7 @@ public class CardRevealResponse {
 		response.setReveal( true );
 		response.setUserToken( userToken );
 		response.setRole( role );
+		response.setType( CardShareType.ROLE );
 		return response;
 	}
 
@@ -33,6 +37,7 @@ public class CardRevealResponse {
 		response.setReveal( false );
 		response.setUserToken( userToken );
 		response.setTeam( card.getTeam() );
+		response.setType( CardShareType.COLOUR );
 		return response;
 	}
 
@@ -41,6 +46,7 @@ public class CardRevealResponse {
 		response.setReveal( true );
 		response.setUserToken( userToken );
 		response.setTeam( card.getTeam() );
+		response.setType( CardShareType.COLOUR );
 		return response;
 	}
 
@@ -82,5 +88,13 @@ public class CardRevealResponse {
 
 	public void setRequestId( final String requestId ) {
 		this.requestId = requestId;
+	}
+
+	public CardShareType getType() {
+		return type;
+	}
+
+	public void setType( final CardShareType type ) {
+		this.type = type;
 	}
 }

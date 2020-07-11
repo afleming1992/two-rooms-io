@@ -13,7 +13,7 @@ import GameResult from "./components/result/GameResult";
 
 interface AppProps {
     player: PlayerState,
-    view: ViewState
+    view: ViewState,
     isHost: boolean
 }
 
@@ -64,7 +64,7 @@ const mapStateToProps = (state: any) => {
     return {
         player: state.player,
         view: state.view,
-        isHost: isHost(state.player, state.game.host)
+        isHost: isHost(state.player, state.game.host),
     }
 }
 

@@ -14,6 +14,8 @@ const initialState = ViewState.JOIN_GAME;
 
 export default function viewReducer(state = initialState, action: any) {
     switch( action.type ) {
+        case Actions.DISCONNECTED:
+            return ViewState.JOIN_GAME
         case Listeners.JOIN_GAME_SUCCESS:
             return ViewState.IN_LOBBY;
         case Listeners.GAME_UPDATE:

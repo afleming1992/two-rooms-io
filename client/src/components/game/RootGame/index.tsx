@@ -10,6 +10,8 @@ import MainGameOperations from "../MainGameOperations";
 import RoundTracker from "../RoundTracker";
 import {GameState} from "../../../redux/reducers/game";
 import HostageInfo from "../HostageInfo";
+import PlayerActions from "../PlayerActions";
+import RevealModal from "../RevealModal";
 
 interface RootGameProps {
     playerCardState: CardState,
@@ -35,10 +37,16 @@ const RootGame = ({playerCardState, timer, view, game, ...props}: RootGameProps)
                 </Grid.Row>
                 <Grid.Row>
                     <Grid.Column>
+                        <PlayerActions />
+                    </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                    <Grid.Column>
                         <MainGameOperations />
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
+            <RevealModal />
         </Container>
     );
 }

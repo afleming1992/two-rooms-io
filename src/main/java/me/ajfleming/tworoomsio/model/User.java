@@ -38,7 +38,6 @@ public class User {
 	}
 
 	public void disconnectPlayer() {
-		this.client = null;
 		this.connected = false;
 	}
 

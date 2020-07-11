@@ -25,8 +25,10 @@ const initialState: GameState = {
 
 export default function gameReducer(state: GameState = initialState, action: any) {
     switch( action.type ) {
+        case Actions.DISCONNECTED:
+            return initialState;
         case Listeners.GAME_UPDATE:
-            return action.data;
+            return {...state, players: action.data.players, round: action.data.round, roundData: action.data.roundData, host: action.data.host, id: action.data.id, deck: action.data.deck }
         default:
             return state;
     }

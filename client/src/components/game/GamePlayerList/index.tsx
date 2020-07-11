@@ -30,11 +30,6 @@ interface GamePlayerListProps {
 const GamePlayerList = ({activePlayer, players, playerCard} : GamePlayerListProps) => {
     return (
         <Grid>
-            <Grid.Row>
-                <Grid.Column>
-                    <PlayerActions />
-                </Grid.Column>
-            </Grid.Row>
             <Grid.Row columns={2}>
                 <Grid.Column width={12}>
                     <Card.Group>

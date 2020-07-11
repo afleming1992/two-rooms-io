@@ -9,6 +9,7 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 
 import me.ajfleming.tworoomsio.exception.GameException;
+import me.ajfleming.tworoomsio.exception.UserException;
 import me.ajfleming.tworoomsio.model.Card;
 import me.ajfleming.tworoomsio.model.Game;
 import me.ajfleming.tworoomsio.model.RoundMap;
@@ -23,13 +24,15 @@ public class GameEngineImpl implements GameEngine {
 	private Game game;
 	private final SocketIOServer socketServer;
 	private DeckBuilderService deckBuilder;
+	private UserManager userManager;
 
 	private static final int TOTAL_ROUND_SECONDS = 180;
 	private static final int MAX_ROUNDS = 3;
 
-	public GameEngineImpl( SocketIOServer socketServer ) {
+	public GameEngineImpl( SocketIOServer socketServer, UserManager userManager ) {
 		this.socketServer = socketServer;
 		this.deckBuilder = new DeckBuilderService();
+		this.userManager = userManager;
 	}
 
 	@Override
@@ -75,7 +78,12 @@ public class GameEngineImpl implements GameEngine {
 			throw new GameException("Failed to reconnect to game");
 		}
 		addPlayerToGameComms( reconnectingUser );
-		reloadPlayerGameData( reconnectingUser.getClient(), reconnectingUser );
+		try {
+			reloadPlayerGameData( reconnectingUser.getClient(), reconnectingUser );
+		} catch ( UserException e ) {
+			throw new GameException("Failed to reload user into game");
+		}
+
 		triggerGameUpdateEvent();
 	}
 
@@ -157,7 +165,12 @@ public class GameEngineImpl implements GameEngine {
 			if ( recipient.isPresent() ) {
 				request.setId( UUID.randomUUID().toString() );
 				game.addShareRequest( request );
-				recipient.get().sendEvent( "SHARE_REQUEST_RECEIVED", request );
+				try {
+					userManager.sendEvent( recipient.get().getUserToken(), "SHARE_REQUEST_RECEIVED",
+							request );
+				} catch ( UserException e ) {
+					throw new GameException( e.getMessage() );
+				}
 				return request;
 			} else {
 				throw new GameException("Selected Player is not in the game");
@@ -168,13 +181,28 @@ public class GameEngineImpl implements GameEngine {
 	}
 
 	@Override
+	public void privateReveal( final User requestor, final CardShareRequest request )
+			throws GameException {
+		if ( game.getTimer().isTimerRunning() ) {
+			Optional<User> user = game.findPlayerByUserToken( request.getRecipient() );
+			if ( user.isPresent() ) {
+				sendCardDataToPlayer( request, user.get(), requestor );
+			} else {
+				throw new GameException( "Failed to accept Private Reveal. Requestor isn't currently online" );
+			}
+		} else {
+			throw new GameException( "Reveals can only occur whilst the timer is running" );
+		}
+	}
+
+	@Override
 	public void acceptShare( final User recipient, final String requestId ) throws GameException {
 		CardShareRequest request = confirmIfShareAnswerIsAllowed( recipient, requestId );
 
 		Optional<User> requestor = game.findPlayerByUserToken( request.getRequestor() );
 		if ( requestor.isPresent() ) {
-			applyCardShare( request, requestor.get(), recipient );
-			applyCardShare( request, recipient, requestor.get() );
+			sendCardDataToPlayer( request, requestor.get(), recipient );
+			sendCardDataToPlayer( request, recipient, requestor.get() );
 			game.invalidateCardShareRequest( request.getId() );
 		} else {
 			throw new GameException(
@@ -188,7 +216,11 @@ public class GameEngineImpl implements GameEngine {
 
 		Optional<User> requestor = game.findPlayerByUserToken( request.getRequestor() );
 		if ( requestor.isPresent() ) {
-			requestor.get().sendEvent( "SHARE_REQUEST_REJECTED", request );
+			try {
+				userManager.sendEvent( requestor.get().getUserToken(), "SHARE_REQUEST_REJECTED", request );
+			} catch ( UserException e ) {
+				throw new GameException( e.getMessage() );
+			}
 		}
 
 		game.invalidateCardShareRequest( request.getId() );
@@ -207,12 +239,7 @@ public class GameEngineImpl implements GameEngine {
 		}
 	}
 
-	@Override
-	public void privateReveal( final User requestor, final CardShareRequest request ) {
-
-	}
-
-	private void applyCardShare( final CardShareRequest request, final User userToSend, final User cardOwner ) throws GameException {
+	private void sendCardDataToPlayer( final CardShareRequest request, final User userToSend, final User cardOwner ) throws GameException {
 		CardRevealResponse event;
 		Optional<Card> card = game.getRoleAssignmentForUser( cardOwner.getUserToken() );
 
@@ -222,7 +249,13 @@ public class GameEngineImpl implements GameEngine {
 			} else {
 				event = CardRevealResponse.colourShare( request.getId(), cardOwner.getUserToken(), card.get() );
 			}
-			userToSend.sendEvent( "CARD_SHARE", event );
+			String eventName = !request.getId().isEmpty() ? "CARD_SHARE_ACCEPTED" : "PRIVATE_REVEAL";
+
+			try {
+				userManager.sendEvent( userToSend.getUserToken(), eventName, event );
+			} catch ( UserException e ) {
+				throw new GameException( e.getMessage() );
+			}
 		} else {
 			throw new GameException( "Failed to find role assignment for user" );
 		}
@@ -242,9 +275,9 @@ public class GameEngineImpl implements GameEngine {
 		user.getClient().joinRoom( "game/"+ game.getId() );
 	}
 
-	private void reloadPlayerGameData( final SocketIOClient client, final User user ) {
+	private void reloadPlayerGameData( final SocketIOClient client, final User user ) throws UserException {
 		if ( game.hasStarted() ) {
-			client.sendEvent("CARD_UPDATE", game.getRoleAssignmentForUser( user.getUserToken() ).get() );
+			userManager.sendEvent( user.getUserToken(), "CARD_UPDATE", game.getRoleAssignmentForUser( user.getUserToken() ).get() );
 		}
 	}
 }

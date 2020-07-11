@@ -23,7 +23,7 @@ interface HostControlProps {
 }
 
 const canGameStart = (game: GameState): boolean => {
-    if (game.deck != undefined && game.players != undefined) {
+    if (game.deck !== undefined && game.players !== undefined) {
         return game.players.length >= game.deck.length;
     }
     return false;
