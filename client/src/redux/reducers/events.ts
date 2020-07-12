@@ -38,13 +38,17 @@ export default function eventsReducer(state: EventsState = initialState, action:
             updateEventsOnShareAccept( pendingEvents, action.data );
             updateEventsOnShareAccept( awaitingEvents, action.data );
             return {...state, pending: pendingEvents, awaitingResponse: awaitingEvents }
-        case Listeners.PRIVATE_REVEAL:
-            if ( action.payload.type === "ROLE" ) {
-                gameEvent = GameEvent.privateRoleReveal( action.payload.userToken, action.payload.role )
+        case Listeners.PRIVATE_REVEAL_RECEIVED:
+            if ( action.data.type === "ROLE" ) {
+                gameEvent = buildGameEventForReveal( action.data )
             } else {
-                gameEvent = GameEvent.privateColourReveal( action.payload.userToken, action.payload.team )
+                gameEvent = buildGameEventForReveal( action.data )
             }
-            pendingEvents.push( gameEvent );
+
+            if( gameEvent !== undefined ) {
+                pendingEvents.push( gameEvent );
+            }
+
             return {...state, pending: pendingEvents}
         case Listeners.SHARE_REQUEST_REJECTED:
             updateEventsOnShareDecline( pendingEvents, action.data );
@@ -69,6 +73,18 @@ const buildGameEventForShare = ( data: any ) => {
         gameEvent = GameEvent.roleRequest( data.id, data.requestor, data.recipient );
     } else if ( data.type === "COLOUR" ) {
         gameEvent = GameEvent.colourRequest( data.id, data.requestor, data.recipient );
+    }
+
+    return gameEvent;
+}
+
+const buildGameEventForReveal = ( data: any ) => {
+    let gameEvent = undefined;
+
+    if ( data.type === "ROLE" ) {
+        gameEvent = GameEvent.privateRoleReveal( data.userToken, data.role );
+    } else if ( data.type === "COLOUR" ) {
+        gameEvent = GameEvent.privateColourReveal( data.userToken, data.team );
     }
 
     return gameEvent;

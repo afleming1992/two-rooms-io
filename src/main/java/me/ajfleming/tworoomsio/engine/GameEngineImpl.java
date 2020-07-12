@@ -249,7 +249,11 @@ public class GameEngineImpl implements GameEngine {
 			} else {
 				event = CardRevealResponse.colourShare( request.getId(), cardOwner.getUserToken(), card.get() );
 			}
-			String eventName = !request.getId().isEmpty() ? "CARD_SHARE_ACCEPTED" : "PRIVATE_REVEAL";
+
+			String eventName = "PRIVATE_REVEAL_RECEIVED";
+			if ( request.getId() != null && !request.getId().isEmpty() ) {
+				eventName = "CARD_SHARE_ACCEPTED";
+			}
 
 			try {
 				userManager.sendEvent( userToSend.getUserToken(), eventName, event );

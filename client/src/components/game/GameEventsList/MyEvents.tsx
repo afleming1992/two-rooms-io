@@ -1,6 +1,6 @@
 import React from "react";
 import {Feed, Header} from "semantic-ui-react";
-import GameEvent from "./GameEvent";
+import BaseEvent from './BaseEvent'
 import {EventsState} from "../../../redux/reducers/events";
 
 import {connect} from "react-redux";
@@ -17,7 +17,7 @@ const MyEvents = ({events, ...props} : MyEventsProps) => {
                 {
                     events.awaitingResponse.map( ( event ) =>  {
                         return (
-                            <GameEvent event={event} />
+                            <BaseEvent event={event} />
                         )
                     })
                 }

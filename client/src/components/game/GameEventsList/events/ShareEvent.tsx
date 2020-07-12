@@ -110,4 +110,4 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>) => bindActionCreators(
     }, dispatch
 )
 
-export default connect(mapDispatchToProps, mapDispatchToProps)(ShareEvent);
+export default connect(mapStateToProps, mapDispatchToProps)(ShareEvent);
