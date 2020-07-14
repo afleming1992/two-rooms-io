@@ -22,7 +22,8 @@ public class Game {
 	private List<User> players;
 	private List<Card> deck;
 	@JsonIgnore
-	private Map<String, Card> roleAssignments;
+	private Map<String, Card> cardAssignments;
+	private Map<String, Card> revealedCardAssignments;
 	@JsonIgnore
 	private Map<String, CardShareRequest> cardShareRequests;
 	private RoundTimer timer;
@@ -93,12 +94,29 @@ public class Game {
 	}
 
 	public Optional<Card> getRoleAssignmentForUser( final String userToken ) {
-		Card card = roleAssignments.get( userToken );
+		Card card = cardAssignments.get( userToken );
 		if ( card != null ) {
 			return Optional.of( card );
 		} else {
 			return Optional.empty();
 		}
+	}
+
+	public List<User> getUserAssignmentForCard( final Card card ) {
+		List<String> userTokens = cardAssignments.entrySet()
+				.stream()
+				.filter( entry -> entry.getValue() == card )
+				.map( entry -> entry.getKey() )
+				.collect( Collectors.toList() );
+
+		return players.stream()
+				.filter( user -> userTokens.contains( user.getUserToken() ) )
+				.collect( Collectors.toList() );
+	}
+
+	public void permanentRevealUserCard( final User player ) {
+		Card card = cardAssignments.get( player.getUserToken() );
+		revealedCardAssignments.put( player.getUserToken(), card );
 	}
 
 	public boolean isUserHost( final User user ) {
@@ -129,12 +147,12 @@ public class Game {
 		this.deck = deck;
 	}
 
-	public Map<String, Card> getRoleAssignments() {
-		return roleAssignments;
+	public Map<String, Card> getCardAssignments() {
+		return cardAssignments;
 	}
 
-	public void setRoleAssignments( final Map<String, Card> roleAssignments ) {
-		this.roleAssignments = roleAssignments;
+	public void setCardAssignments( final Map<String, Card> cardAssignments ) {
+		this.cardAssignments = cardAssignments;
 	}
 
 	public int getTotalPlayerCount() {
@@ -175,6 +193,7 @@ public class Game {
 			template.players = new ArrayList<>();
 			template.deck = new ArrayList<>();
 			template.cardShareRequests = new HashMap<>();
+			template.revealedCardAssignments = new HashMap<>();
 			return this;
 		}
 

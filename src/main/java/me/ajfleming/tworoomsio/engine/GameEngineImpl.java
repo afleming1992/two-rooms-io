@@ -2,6 +2,7 @@ package me.ajfleming.tworoomsio.engine;
 
 import static me.ajfleming.tworoomsio.timer.TimerUtils.setupTimer;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -106,7 +107,7 @@ public class GameEngineImpl implements GameEngine {
 		if ( isGameReadyToStart() && game.isUserHost( requestor ) ) {
 			game.nextRound();
 			game.setRoundData( RoundMap.getRoundData( game.getTotalPlayerCount() ) );
-			game.setRoleAssignments( DeckDealerService.dealDeck( game.getDeck(), game.getPlayers() ) );
+			game.setCardAssignments( DeckDealerService.dealDeck( game.getDeck(), game.getPlayers() ) );
 			game.setTimer( setupTimer( TOTAL_ROUND_SECONDS, game.getId(), socketServer ) );
 			triggerGameUpdateEvent();
 		}
@@ -152,6 +153,21 @@ public class GameEngineImpl implements GameEngine {
 			}
 
 			game.setTimer( setupTimer( TOTAL_ROUND_SECONDS, game.getId(), socketServer ) );
+		}
+		triggerGameUpdateEvent();
+	}
+
+	@Override
+	public void revealCardAssignment( final User host, final Card card ) throws GameException {
+		if ( game.isUserHost( host ) ) {
+			List<User> users = game.getUserAssignmentForCard( card );
+			if ( users.size() > 0 ) {
+				for ( User user : users ) {
+					game.permanentRevealUserCard( user );
+				}
+			} else {
+				throw new GameException( String.format("Card %s doesn't have a player assigned to it", card) );
+			}
 		}
 		triggerGameUpdateEvent();
 	}

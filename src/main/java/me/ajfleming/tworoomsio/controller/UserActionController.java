@@ -1,33 +1,19 @@
 package me.ajfleming.tworoomsio.controller;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import com.corundumstudio.socketio.SocketIOClient;
-import com.corundumstudio.socketio.SocketIOServer;
 
 import me.ajfleming.tworoomsio.engine.GameEngine;
 import me.ajfleming.tworoomsio.engine.UserManager;
 import me.ajfleming.tworoomsio.exception.GameException;
 import me.ajfleming.tworoomsio.model.Card;
-import me.ajfleming.tworoomsio.model.Game;
-import me.ajfleming.tworoomsio.model.RoundMap;
 import me.ajfleming.tworoomsio.model.User;
-import me.ajfleming.tworoomsio.service.deck.DeckDealerService;
-import me.ajfleming.tworoomsio.service.deck.DeckBuilderService;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
-import me.ajfleming.tworoomsio.service.sharing.CardShareType;
-import me.ajfleming.tworoomsio.service.sharing.ShareDecision;
-import me.ajfleming.tworoomsio.socket.action.ShareDecisionRequest;
 import me.ajfleming.tworoomsio.socket.event.ReloadGameSessionEvent;
-import me.ajfleming.tworoomsio.socket.response.CardRevealResponse;
 import me.ajfleming.tworoomsio.socket.response.JoinGameResponse;
 import me.ajfleming.tworoomsio.socket.response.RequestShareResponse;
 import me.ajfleming.tworoomsio.socket.response.Response;
-import me.ajfleming.tworoomsio.timer.RoundTimer;
-import me.ajfleming.tworoomsio.timer.TimerTrigger;
 
 public class UserActionController {
 	private GameEngine gameEngine;
@@ -107,6 +93,19 @@ public class UserActionController {
 
 		if ( user.isPresent() ) {
 			gameEngine.restartTimer( user.get() );
+		}
+	}
+
+
+	public void revealCardAssignment( final SocketIOClient client, final Card card ) {
+		Optional<User> user = userManager.getUser( client );
+
+		if ( user.isPresent() ) {
+			try {
+				gameEngine.revealCardAssignment( user.get(), card );
+			} catch ( GameException e ) {
+				client.sendEvent("REVEAL_CARD_ASSIGNMENT_ERROR", e.getMessage());
+			}
 		}
 	}
 
