@@ -13,11 +13,13 @@ export enum Actions {
     REJECT_SHARE = "REJECT_SHARE",
     PRIVATE_REVEAL = "PRIVATE_REVEAL",
     DISMISS_EVENT = "DISMISS_EVENT",
+    REVEAL_CARD_ASSIGNMENT = "REVEAL_CARD_ASSIGNMENT",
     OTHER_ACTION = "__any_other_action_type__",
 }
 
 export enum RevealActions {
-    DO_REVEAL = "DO_REVEAL",
+    DO_CARD_REVEAL = "DO_CARD_REVEAL",
+    DO_COLOUR_REVEAL = "DO_COLOUR_REVEAL",
     CLEAR_REVEAL = "CLEAR_REVEAL"
 }
 

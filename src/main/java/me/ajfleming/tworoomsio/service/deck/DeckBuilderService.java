@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import me.ajfleming.tworoomsio.model.Card;
+import me.ajfleming.tworoomsio.model.CardInfo;
 import me.ajfleming.tworoomsio.model.CardSet;
 
 public class DeckBuilderService {
@@ -14,7 +15,7 @@ public class DeckBuilderService {
 		List<Card> deck = new ArrayList<>();
 
 		// Add President and Bomber
-		deck.addAll( possibleCardSets.get(CardSet.CORE) );
+		deck.addAll( possibleCardSets.get( CardSet.CORE ) );
 
 		// If Odd number of players, add Gambler
 		deck = addGamblerIfOddNumberOfPlayers( deck, numberOfPlayers );

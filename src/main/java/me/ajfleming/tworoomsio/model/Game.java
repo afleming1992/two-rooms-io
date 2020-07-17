@@ -19,6 +19,7 @@ public class Game {
 	private String id;
 	private User host;
 	private int round;
+	private int numberOfRounds;
 	private List<User> players;
 	private List<Card> deck;
 	@JsonIgnore
@@ -102,10 +103,10 @@ public class Game {
 		}
 	}
 
-	public List<User> getUserAssignmentForCard( final Card card ) {
+	public List<User> getUserAssignmentForCard( final CardKey card ) {
 		List<String> userTokens = cardAssignments.entrySet()
 				.stream()
-				.filter( entry -> entry.getValue() == card )
+				.filter( entry -> entry.getValue().getKey() == card )
 				.map( entry -> entry.getKey() )
 				.collect( Collectors.toList() );
 
@@ -155,6 +156,10 @@ public class Game {
 		this.cardAssignments = cardAssignments;
 	}
 
+	public Map<String, Card> getRevealedCardAssignments() {
+		return revealedCardAssignments;
+	}
+
 	public int getTotalPlayerCount() {
 		return players.size();
 	}
@@ -179,6 +184,18 @@ public class Game {
 		this.roundData = roundData;
 	}
 
+	public int getNumberOfRounds() {
+		return numberOfRounds;
+	}
+
+	public void setNumberOfRounds( final int numberOfRounds ) {
+		this.numberOfRounds = numberOfRounds;
+	}
+
+	public void resetCardShares() {
+		this.cardShareRequests = new HashMap<>();
+	}
+
 	public static class Builder {
 		private final Game template;
 
@@ -194,6 +211,7 @@ public class Game {
 			template.deck = new ArrayList<>();
 			template.cardShareRequests = new HashMap<>();
 			template.revealedCardAssignments = new HashMap<>();
+			template.numberOfRounds = 3;
 			return this;
 		}
 
@@ -205,6 +223,7 @@ public class Game {
 			game.players = template.players;
 			game.deck = template.deck;
 			game.cardShareRequests = template.cardShareRequests;
+			game.revealedCardAssignments = template.revealedCardAssignments;
 			return game;
 		}
 	}

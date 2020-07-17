@@ -2,6 +2,7 @@ import {Card} from "./Card";
 import {Team} from "./Team";
 import {RequestResponse} from "./RequestResponse";
 import * as uuid from "uuid";
+import deepEquals from "deep-equal";
 
 export enum GameEventType {
     COLOUR_SHARE = "COLOUR_SHARE",
@@ -55,5 +56,9 @@ export default class GameEvent {
         gameEvent.id = uuid.v4();
         gameEvent.shownColour = colour;
         return gameEvent;
+    }
+
+    equals( otherEvent : GameEvent ) {
+        return deepEquals( this, otherEvent );
     }
 }

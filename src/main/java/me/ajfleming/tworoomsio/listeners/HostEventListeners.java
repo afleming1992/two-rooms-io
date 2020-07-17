@@ -4,7 +4,9 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.annotation.OnEvent;
 
 import me.ajfleming.tworoomsio.controller.UserActionController;
-import me.ajfleming.tworoomsio.model.Card;
+import me.ajfleming.tworoomsio.model.CardInfo;
+import me.ajfleming.tworoomsio.model.CardKey;
+import me.ajfleming.tworoomsio.socket.event.RevealPlayerAssignmentEvent;
 
 public class HostEventListeners {
 
@@ -33,7 +35,7 @@ public class HostEventListeners {
 	public void onRestartTimer(SocketIOClient client) { userActionController.restartGameTimer( client ); }
 
 	@OnEvent("REVEAL_CARD_ASSIGNMENT")
-	public void onRevealCardAssignment(SocketIOClient client, Card card ) {
-		userActionController.revealCardAssignment( client, card );
+	public void onRevealCardAssignment(SocketIOClient client, RevealPlayerAssignmentEvent event ) {
+		userActionController.revealCardAssignment( client, event.getCard() );
 	}
 }

@@ -126,6 +126,18 @@ const dismissEvent = ( id: string ) => {
     }
 }
 
+const revealPlayerAssignment = ( cardKey: string ) => {
+    return {
+        type: Actions.REVEAL_CARD_ASSIGNMENT,
+        meta: {
+            remote: true
+        },
+        payload: {
+            card: cardKey
+        }
+    }
+}
+
 export default {
     joinGame,
     nextRound,
@@ -137,6 +149,7 @@ export default {
     acceptShare,
     rejectShare,
     privateReveal,
-    dismissEvent
+    dismissEvent,
+    revealPlayerAssignment
 }
 

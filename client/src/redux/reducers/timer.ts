@@ -19,17 +19,21 @@ export default function timerReducer(state = initialState, action: any) {
             if( action.data.timer != undefined ) {
                 return Object.assign( {}, state, {
                     initialTime: action.data.timer.initialUnits,
-                    timerRunning: action.data.timer.timerRunning,
+                    timerRunning: checkTimerRunning( action.data.timerRunning, action.data.unitsLeft ),
                     secondsLeft: action.data.timer.unitsLeft
                 });
             }
             return state;
         case Listeners.TIMER_UPDATE:
             return Object.assign( {}, state, {
-                timerRunning: action.data.timerRunning,
+                timerRunning: checkTimerRunning( action.data.timerRunning, action.data.unitsLeft ),
                 secondsLeft: action.data.unitsLeft
             })
         default:
             return state;
     }
+}
+
+const checkTimerRunning = ( timerRunning: boolean, secondsLeft: number ) => {
+    return (timerRunning && secondsLeft > 0);
 }

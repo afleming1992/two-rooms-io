@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import me.ajfleming.tworoomsio.model.Card;
+import me.ajfleming.tworoomsio.model.CardInfo;
 
 class DeckBuilderServiceTest {
 
@@ -27,7 +28,7 @@ class DeckBuilderServiceTest {
 		List<Card> deck = service.buildDeck( 2 );
 
 		// Then
-		assertThat( deck, containsInAnyOrder( Card.PRESIDENT, Card.BOMBER ) );
+		assertThat( deck, containsInAnyOrder( CardInfo.PRESIDENT, CardInfo.BOMBER ) );
 	}
 
 	@Test
@@ -37,7 +38,7 @@ class DeckBuilderServiceTest {
 		List<Card> deck = service.buildDeck( 3 );
 
 		// Then
-		assertThat( deck, containsInAnyOrder( Card.PRESIDENT, Card.BOMBER, Card.GAMBLER ) );
+		assertThat( deck, containsInAnyOrder( CardInfo.PRESIDENT, CardInfo.BOMBER, CardInfo.GAMBLER ) );
 	}
 
 	@Test
@@ -49,7 +50,7 @@ class DeckBuilderServiceTest {
 
 		// Then
 		assertThat( deck,
-				containsInAnyOrder( Card.PRESIDENT, Card.BOMBER, Card.BLUE_TEAM, Card.RED_TEAM ) );
+				containsInAnyOrder( CardInfo.PRESIDENT, CardInfo.BOMBER, CardInfo.BLUE_TEAM, CardInfo.RED_TEAM ) );
 	}
 
 	@Test
@@ -60,8 +61,8 @@ class DeckBuilderServiceTest {
 
 		// Then
 		assertThat( deck,
-				containsInAnyOrder( Card.PRESIDENT, Card.BOMBER, Card.BLUE_TEAM, Card.RED_TEAM,
-						Card.BLUE_TEAM, Card.RED_TEAM, Card.BLUE_TEAM, Card.RED_TEAM,
-						Card.BLUE_TEAM, Card.RED_TEAM ) );
+				containsInAnyOrder( CardInfo.PRESIDENT, CardInfo.BOMBER, CardInfo.BLUE_TEAM, CardInfo.RED_TEAM,
+						CardInfo.BLUE_TEAM, CardInfo.RED_TEAM, CardInfo.BLUE_TEAM, CardInfo.RED_TEAM,
+						CardInfo.BLUE_TEAM, CardInfo.RED_TEAM ) );
 	}
 }

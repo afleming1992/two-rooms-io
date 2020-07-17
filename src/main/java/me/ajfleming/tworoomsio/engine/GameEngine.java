@@ -1,12 +1,10 @@
 package me.ajfleming.tworoomsio.engine;
 
-import java.util.Optional;
-
 import me.ajfleming.tworoomsio.exception.GameException;
-import me.ajfleming.tworoomsio.model.Card;
+import me.ajfleming.tworoomsio.model.CardInfo;
+import me.ajfleming.tworoomsio.model.CardKey;
 import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
-import me.ajfleming.tworoomsio.service.sharing.ShareDecision;
 
 /**
  * Responsible for taking effects triggered by users and applying them to the Game
@@ -36,6 +34,6 @@ public interface GameEngine {
 
 	void rejectShare( User user, String requestId ) throws GameException;
 
-	void revealCardAssignment( User user, Card card ) throws GameException;
+	void revealCardAssignment( User user, CardKey card ) throws GameException;
 }
 

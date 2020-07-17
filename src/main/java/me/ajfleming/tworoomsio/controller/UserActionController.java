@@ -7,7 +7,8 @@ import com.corundumstudio.socketio.SocketIOClient;
 import me.ajfleming.tworoomsio.engine.GameEngine;
 import me.ajfleming.tworoomsio.engine.UserManager;
 import me.ajfleming.tworoomsio.exception.GameException;
-import me.ajfleming.tworoomsio.model.Card;
+import me.ajfleming.tworoomsio.model.CardInfo;
+import me.ajfleming.tworoomsio.model.CardKey;
 import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.socket.event.ReloadGameSessionEvent;
@@ -97,7 +98,7 @@ public class UserActionController {
 	}
 
 
-	public void revealCardAssignment( final SocketIOClient client, final Card card ) {
+	public void revealCardAssignment( final SocketIOClient client, final CardKey card ) {
 		Optional<User> user = userManager.getUser( client );
 
 		if ( user.isPresent() ) {

@@ -1,113 +1,104 @@
 import React, {ReactNode} from 'react';
-import GameEventData, {GameEventType} from "../../../../domain/GameEvent";
 import {User} from "../../../../domain/User";
 import {Button, ButtonGroup, Feed, Image} from 'semantic-ui-react';
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faSpinner} from "@fortawesome/free-solid-svg-icons";
 import {Action} from "typesafe-actions";
 import creators from "../../../../redux/actions/creators";
 import {bindActionCreators, Dispatch} from 'redux';
 import {connect} from "react-redux";
-import {PlayerState} from "../../../../redux/reducers/player";
 import {RequestResponse} from "../../../../domain/RequestResponse";
 import revealCreators from "../../../../redux/actions/revealCreators";
-import reveal from "../../../../redux/reducers/reveal";
+import {Team} from "../../../../domain/Team";
+import {Card} from "../../../../domain/Card";
+import {CardShareType} from "../../../../domain/Sharing";
 
 interface ShareEventProps {
-    event: GameEventData,
-    activePlayer: PlayerState,
-    players: Array<User>,
+    eventId: string | undefined,
+    isRequestor: boolean,
+    otherParty: User,
+    shareType: CardShareType,
+    responded: boolean | undefined,
+    shownCard: Card | undefined,
+    shownColour: Team | undefined,
+    recipientResponse: RequestResponse,
     acceptShare: any,
     declineShare: any,
-    doReveal: any,
+    doCardReveal: any,
+    doColourReveal: any,
     dismissEvent: any
 }
 
-const ShareEvent = ({event, activePlayer, players, acceptShare, declineShare, doReveal, dismissEvent, ...props} : ShareEventProps) => {
-    let isRequestor = false;
-    let playerToken : string | undefined = event.requestor;
+const ShareEvent = ({eventId, otherParty, isRequestor, responded, shareType, recipientResponse, ...props} : ShareEventProps) => {
 
-    if ( event.requestor === activePlayer.userToken ) {
-        playerToken = event.recipient;
-        isRequestor = true;
+    if ( recipientResponse == undefined ) {
+       recipientResponse = RequestResponse.NO_ANSWER;
+   }
+
+    const buildText = () => {
+        switch( shareType ) {
+            case CardShareType.COLOUR:
+                return <><Feed.User>{ otherParty.name }</Feed.User> - SHARE COLOUR</>;
+            case CardShareType.ROLE:
+                return <><Feed.User>{ otherParty.name }</Feed.User> - SHARE CARD</>;
+        }
     }
 
-    const player = players.filter( ( player ) => {
-        return player.userToken === playerToken;
-    } )[0];
+    const buildActions = () : ReactNode => {
+        switch ( recipientResponse ) {
+            case RequestResponse.ACCEPTED:
+                let action = () => {
+                    props.doColourReveal(eventId, props.shownColour, otherParty.name);
+                    props.dismissEvent(eventId);
+                }
+                if ( shareType === CardShareType.ROLE ) {
+                    action = () => {
+                        props.doCardReveal(eventId, props.shownCard, otherParty.name);
+                        props.dismissEvent(eventId);
+                    }
+                }
+
+                return <Button color="green" onClick={action}>Reveal</Button>
+            case RequestResponse.DECLINED:
+                return (
+                    <Button color="red">Dismiss</Button>
+                )
+            default:
+                if ( isRequestor ) {
+                    return <></>;
+                } else {
+                    if( !responded ) {
+                        return (
+                            <ButtonGroup>
+                                <Button onClick={ () => props.acceptShare(eventId)} inverted color="green">Accept</Button>
+                                <Button onClick={ () => props.declineShare(eventId)} inverted color="red">Decline</Button>
+                            </ButtonGroup>
+                        );
+                    }
+                }
+        }
+    }
+
 
     return (
         <Feed.Event>
-            <Feed.Label><Image size="mini" src={`https://api.adorable.io/avatars/${ player.userToken }.png`} /></Feed.Label>
+            <Feed.Label><Image size="mini" src={`https://api.adorable.io/avatars/${ otherParty.userToken }.png`} /></Feed.Label>
             <Feed.Content>
-                <Feed.Summary>{ buildText( event, player.name ) }</Feed.Summary>
+                <Feed.Summary>{ buildText() }</Feed.Summary>
             </Feed.Content>
             <Feed.Meta>
-                { buildActions( event, isRequestor, acceptShare, declineShare, doReveal, dismissEvent, player ) }
+                { buildActions() }
             </Feed.Meta>
         </Feed.Event>
     )
-}
-
-const buildText = ( event: GameEventData, player: string | undefined ) => {
-    switch( event.type ) {
-        case GameEventType.COLOUR_SHARE:
-            return <><Feed.User>{ player }</Feed.User> - SHARE COLOUR</>;
-        case GameEventType.ROLE_SHARE:
-            return <><Feed.User>{ player }</Feed.User> - SHARE ROLE</>;
-    }
-}
-
-const buildActions = ( gameEvent: GameEventData, isRequestor: boolean, acceptShare: any, declineShare: any, doReveal: any, dismissEvent:any, player: User ) : ReactNode => {
-    const handleReveal = () => {
-        doReveal(gameEvent, player)
-        dismissEvent( gameEvent.id )
-    }
-
-    switch ( gameEvent.recipientResponse ) {
-        case RequestResponse.ACCEPTED:
-            return (
-                <Button color="green" onClick={handleReveal}>Reveal</Button>
-            )
-        case RequestResponse.DECLINED:
-            return (
-                <Button color="red">Dismiss</Button>
-            )
-        default:
-            if ( isRequestor ) {
-                return <></>;
-            } else {
-                if( !gameEvent.responded ) {
-                    return (
-                        <ButtonGroup>
-                            <Button onClick={ () => acceptShare(gameEvent.id)} inverted color="green">Accept</Button>
-                            <Button onClick={ () => declineShare(gameEvent.id)} inverted color="red">Decline</Button>
-                        </ButtonGroup>
-                    );
-                } else {
-                    return (
-                        <Button color={ gameEvent.accepted ? "green" : "red" } disabled={true}><FontAwesomeIcon icon={faSpinner} spin /></Button>
-                    );
-                }
-            }
-    }
-}
-
-
-
-const mapStateToProps = (state: any) => {
-    return {
-
-    };
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>) => bindActionCreators(
     {
         acceptShare: creators.acceptShare,
         declineShare: creators.rejectShare,
-        doReveal: revealCreators.doReveal,
+        doCardReveal: revealCreators.doCardReveal,
+        doColourReveal: revealCreators.doColourReveal,
         dismissEvent: creators.dismissEvent
     }, dispatch
 )
 
-export default connect(mapStateToProps, mapDispatchToProps)(ShareEvent);
+export default connect(() => {}, mapDispatchToProps)(ShareEvent);

@@ -10,6 +10,8 @@ import {bindActionCreators, Dispatch} from "redux";
 import actionCreators from "../../../redux/actions/creators";
 import {Action} from "typesafe-actions";
 import {PlayerState} from "../../../redux/reducers/player";
+import {Card} from "../../../domain/Card";
+import reveal from "../../../redux/reducers/reveal";
 
 interface HostControlProps {
     game: GameState,
@@ -19,7 +21,8 @@ interface HostControlProps {
     nextRound: any,
     startTimer: any,
     pauseTimer: any,
-    restartTimer: any
+    restartTimer: any,
+    revealPlayerAssignment: any
 }
 
 const canGameStart = (game: GameState): boolean => {
@@ -29,7 +32,7 @@ const canGameStart = (game: GameState): boolean => {
     return false;
 }
 
-const HostControl = ({game, player, view, isHost, nextRound, startTimer, pauseTimer, restartTimer, ...props}: HostControlProps) => {
+const HostControl = ({game, player, view, isHost, nextRound, startTimer, pauseTimer, restartTimer, revealPlayerAssignment, ...props}: HostControlProps) => {
     const onStartTimer = () => {
         startTimer();
     }
@@ -40,6 +43,30 @@ const HostControl = ({game, player, view, isHost, nextRound, startTimer, pauseTi
 
     const onRestartTimer = () => {
         restartTimer();
+    }
+
+    const buildCardRevealMenu = ( deck: Card[] | undefined ) => {
+        if ( deck === undefined ) {
+            return <></>
+        }
+
+        const handleCardReveal = ( card: Card ) => {
+            revealPlayerAssignment( card.key );
+        }
+
+        return (
+            <Dropdown item text="Reveal">
+                <Dropdown.Menu>
+                    {
+                        deck.map( card =>
+                            <Dropdown.Item key={card.title} onClick={ () => handleCardReveal(card)}>
+                                { card.title }
+                            </Dropdown.Item>
+                        )
+                    }
+                </Dropdown.Menu>
+            </Dropdown>
+        );
     }
 
     return (
@@ -82,11 +109,9 @@ const HostControl = ({game, player, view, isHost, nextRound, startTimer, pauseTi
             }
             {
                 view == ViewState.END_GAME &&
-                <Menu.Menu position="right">
-                    <Menu.Item>
-                        <Button>Testing</Button>
-                    </Menu.Item>
-                </Menu.Menu>
+                <>
+                    { buildCardRevealMenu( game.deck ) }
+                </>
             }
 
         </Menu>
@@ -107,7 +132,8 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>) =>
         nextRound: actionCreators.nextRound,
         startTimer: actionCreators.startTimer,
         pauseTimer: actionCreators.pauseTimer,
-        restartTimer: actionCreators.restartTimer
+        restartTimer: actionCreators.restartTimer,
+        revealPlayerAssignment: actionCreators.revealPlayerAssignment
     }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(HostControl);

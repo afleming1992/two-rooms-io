@@ -14,11 +14,11 @@ interface RevealModalProps {
     isOpen: boolean,
     card: Card | undefined,
     team: Team | undefined,
-    player: User | undefined
+    playerName: string | undefined,
     clearReveal: any
 }
 
-const RevealModal = ({ isOpen, card, team, player, clearReveal } : RevealModalProps ) => {
+const RevealModal = ({ isOpen, card, team, playerName, clearReveal } : RevealModalProps ) => {
 
     const handleClose = () => {
         clearReveal();
@@ -34,7 +34,7 @@ const RevealModal = ({ isOpen, card, team, player, clearReveal } : RevealModalPr
             basic
             centered
         >
-        <Header textAlign="center">{ player?.name }'s { card !== undefined ? "Card" : "Colour"}</Header>
+        <Header textAlign="center">{ playerName }'s { card !== undefined ? "Card" : "Colour"}</Header>
         {
             card !== undefined &&
             <RoleCard card={card}/>
@@ -53,7 +53,7 @@ const mapStateToProps = (state: any) => {
         isOpen: state.reveal.isOpen,
         card: state.reveal.card,
         team: state.reveal.team,
-        player: state.reveal.player
+        playerName: state.reveal.player
     }
 }
 

@@ -11,7 +11,8 @@ export interface GameState {
     round: number | undefined,
     players: Array<User> | undefined
     deck: Array<Card> | undefined,
-    roundData: Array<Round> | undefined
+    roundData: Array<Round> | undefined,
+    revealedCardAssignments: any
 }
 
 const initialState: GameState = {
@@ -20,7 +21,8 @@ const initialState: GameState = {
     round: undefined,
     players: new Array<User>(),
     deck: new Array<Card>(),
-    roundData: new Array<Round>()
+    roundData: new Array<Round>(),
+    revealedCardAssignments: {}
 }
 
 export default function gameReducer(state: GameState = initialState, action: any) {
@@ -28,7 +30,7 @@ export default function gameReducer(state: GameState = initialState, action: any
         case Actions.DISCONNECTED:
             return initialState;
         case Listeners.GAME_UPDATE:
-            return {...state, players: action.data.players, round: action.data.round, roundData: action.data.roundData, host: action.data.host, id: action.data.id, deck: action.data.deck }
+            return {...state, players: action.data.players, round: action.data.round, roundData: action.data.roundData, host: action.data.host, id: action.data.id, deck: action.data.deck, revealedCardAssignments: action.data.revealedCardAssignments }
         default:
             return state;
     }

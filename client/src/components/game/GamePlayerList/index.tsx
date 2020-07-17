@@ -40,7 +40,7 @@ const GamePlayerList = ({activePlayer, players, playerCard} : GamePlayerListProp
                                         players.map( (player) => {
                                             const isActivePlayer = activePlayer.userToken === player.userToken;
                                             return (
-                                                <Item>
+                                                <Item key={player.userToken}>
                                                     <Responsive as={Item.Image} minWidth={768} src={`https://api.adorable.io/avatars//${player.userToken}.png`} size="mini" />
                                                     <Item.Content verticalAlign='middle'>
                                                         <Item.Header>{ player.name }</Item.Header>

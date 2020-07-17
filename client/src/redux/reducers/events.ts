@@ -15,8 +15,8 @@ const initialState: EventsState = {
 
 export default function eventsReducer(state: EventsState = initialState, action: any) {
     let gameEvent = undefined;
-    let awaitingEvents = state.awaitingResponse;
-    let pendingEvents = state.pending;
+    let awaitingEvents = [...state.awaitingResponse];
+    let pendingEvents = [...state.pending];
     switch( action.type ) {
         case Listeners.REQUEST_SHARE_SUCCESS:
             gameEvent = buildGameEventForShare( action.data );
@@ -53,14 +53,14 @@ export default function eventsReducer(state: EventsState = initialState, action:
         case Listeners.SHARE_REQUEST_REJECTED:
             updateEventsOnShareDecline( pendingEvents, action.data );
             updateEventsOnShareDecline( awaitingEvents, action.data );
-            return {...state, pending: pendingEvents, awaiting: awaitingEvents }
+            return {...state, pending: pendingEvents, awaitingResponse: awaitingEvents }
         case Listeners.REJECT_SHARE_SUCCESS:
             pendingEvents = removeEvent(pendingEvents, action.data.id);
             return {...state, pending: pendingEvents };
         case Actions.DISMISS_EVENT:
-            pendingEvents = removeEvent(pendingEvents, action.payload.id);
-            awaitingEvents = removeEvent(awaitingEvents, action.payload.id);
-            return {...state, pending: pendingEvents, awaiting: awaitingEvents }
+            return {...state, pending: removeEvent(pendingEvents, action.payload.id), awaitingResponse: removeEvent(awaitingEvents, action.payload.id) }
+        case Listeners.CLEAR_EVENTS:
+            return {...state, pending: new Array<GameEvent>(), awaitingResponse: new Array<GameEvent>()}
         default:
             return state;
     }
@@ -91,18 +91,22 @@ const buildGameEventForReveal = ( data: any ) => {
 }
 
 const updateEventToResponded = ( events : Array<GameEvent>, event_id: String, accepted: boolean) => {
-    events.forEach( ( event ) => {
+    const updatedEvents = [...events];
+
+    updatedEvents.forEach( ( event ) => {
       if( event.id === event_id ) {
           event.responded = true;
           event.accepted = accepted;
       }
     } )
 
-    return events;
+    return updatedEvents;
 }
 
 const updateEventsOnShareAccept = ( events: Array<GameEvent>, shareInfo: any ) => {
-    events.forEach( ( event ) => {
+    const updatedEvents = [...events];
+
+    updatedEvents.forEach( ( event ) => {
         if( event.id === shareInfo.requestId ) {
             event.recipientResponse = RequestResponse.ACCEPTED;
             if ( shareInfo.type === "ROLE" ) {
@@ -112,18 +116,26 @@ const updateEventsOnShareAccept = ( events: Array<GameEvent>, shareInfo: any ) =
             }
         }
     })
+
+    return updatedEvents;
 }
 
 const updateEventsOnShareDecline = (events: Array<GameEvent>, shareInfo: any ) => {
-    events.forEach((  event) => {
+    const updatedEvents = [...events];
+
+    updatedEvents.forEach((  event) => {
         if ( event.id === shareInfo.requestId ) {
             event.recipientResponse = RequestResponse.DECLINED;
         }
     })
+
+    return updatedEvents;
 }
 
-const removeEvent = (events: Array<GameEvent>, id: string ) => {
-    return events.filter( (event) => {
-        return event.id !== id
-    });
+const removeEvent = (events: Array<GameEvent>, idTobeRemoved: string ) => {
+    let updatedEvents = [...events];
+
+    updatedEvents = updatedEvents.filter( event => event.id !== idTobeRemoved )
+
+    return updatedEvents;
 }

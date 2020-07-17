@@ -1,19 +1,24 @@
 import React from "react";
-import { Dispatch, bindActionCreators } from "redux";
 import {connect} from "react-redux";
-import {Action} from "typesafe-actions";
-import {Grid, Segment} from "semantic-ui-react";
-import PendingEvents from "./PendingEvents";
-import MyEvents from "./MyEvents";
+import {Grid} from "semantic-ui-react";
+import EventList from "./EventList";
+import GameEvent from "../../../domain/GameEvent";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faInbox} from "@fortawesome/free-solid-svg-icons";
 
-const GameEventList = () => {
+interface GameEventTabProps {
+    pending: Array<GameEvent>,
+    awaitingResponse: Array<GameEvent>
+}
+
+const GameEventTab = ({ pending, awaitingResponse } : GameEventTabProps) => {
     return (
         <Grid columns={2}>
             <Grid.Column>
-                <PendingEvents />
+                <EventList title={<><FontAwesomeIcon icon={faInbox} /> Requests sent to me</>} events={pending}/>
             </Grid.Column>
             <Grid.Column>
-                <MyEvents />
+                <EventList title={<><FontAwesomeIcon icon={faInbox} /> Requests I've sent</>} events={awaitingResponse} />
             </Grid.Column>
         </Grid>
     )
@@ -21,13 +26,9 @@ const GameEventList = () => {
 
 const mapStateToProps = (state: any) => {
     return {
-
+        pending: state.events.pending,
+        awaitingResponse: state.events.awaitingResponse
     }
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<Action>) =>
-    bindActionCreators({
-
-    }, dispatch);
-
-export default connect(mapStateToProps, mapDispatchToProps)(GameEventList);
+export default connect(mapStateToProps)(GameEventTab);

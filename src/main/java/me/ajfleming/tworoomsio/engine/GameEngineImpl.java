@@ -12,6 +12,8 @@ import com.corundumstudio.socketio.SocketIOServer;
 import me.ajfleming.tworoomsio.exception.GameException;
 import me.ajfleming.tworoomsio.exception.UserException;
 import me.ajfleming.tworoomsio.model.Card;
+import me.ajfleming.tworoomsio.model.CardInfo;
+import me.ajfleming.tworoomsio.model.CardKey;
 import me.ajfleming.tworoomsio.model.Game;
 import me.ajfleming.tworoomsio.model.RoundMap;
 import me.ajfleming.tworoomsio.model.User;
@@ -126,8 +128,14 @@ public class GameEngineImpl implements GameEngine {
 				game.nextRound();
 				game.setTimer( setupTimer( TOTAL_ROUND_SECONDS, game.getId(), socketServer ) );
 			}
+			clearEventsAndRequests();
 			triggerGameUpdateEvent();
 		}
+	}
+
+	private void clearEventsAndRequests() throws GameException {
+		sendEventToGame( "CLEAR_EVENTS", null );
+		game.resetCardShares();
 	}
 
 	@Override
@@ -158,7 +166,7 @@ public class GameEngineImpl implements GameEngine {
 	}
 
 	@Override
-	public void revealCardAssignment( final User host, final Card card ) throws GameException {
+	public void revealCardAssignment( final User host, final CardKey card ) throws GameException {
 		if ( game.isUserHost( host ) ) {
 			List<User> users = game.getUserAssignmentForCard( card );
 			if ( users.size() > 0 ) {

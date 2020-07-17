@@ -8,7 +8,8 @@ import {
     Icon,
     Select,
     Grid,
-    Header
+    Header,
+    Segment
 } from "semantic-ui-react";
 import {User} from "../../../domain/User";
 import {faPalette, faUserTie} from "@fortawesome/free-solid-svg-icons";
@@ -21,7 +22,8 @@ interface PlayerActionsProps {
     players: User[] | undefined,
     activePlayer: PlayerState,
     requestShare: any,
-    privateReveal: any
+    privateReveal: any,
+    gameLive: boolean
 }
 
 enum PlayerActionsView {
@@ -36,7 +38,7 @@ enum ActionType {
     REVEAL = "Reveal"
 }
 
-const PlayerActions = ({players, activePlayer, requestShare, privateReveal, ...props}: PlayerActionsProps) => {
+const PlayerActions = ({players, activePlayer, requestShare, privateReveal, gameLive, ...props}: PlayerActionsProps) => {
     const [ view, setView ] = useState( PlayerActionsView.ACTIONS )
     const [ action, setAction ] = useState( ActionType.NONE )
     const [ type, setType ] = useState( CardShareType.NONE )
@@ -85,10 +87,15 @@ const PlayerActions = ({players, activePlayer, requestShare, privateReveal, ...p
         <div id="playerActions">
             {
                 view == PlayerActionsView.ACTIONS &&
-                <Button.Group fluid>
-                  <Button color="teal" onClick={onShareAction}><Icon name="share square" />Share</Button>
-                  <Button color="orange" onClick={onRevealAction}><Icon name="eye" />Reveal</Button>
-                </Button.Group>
+                <>
+                <Segment disabled={!gameLive}>
+                  <Button.Group fluid>
+                    <Button disabled={!gameLive} color="teal" onClick={onShareAction}><Icon name="share square" />Share</Button>
+                    <Button disabled={!gameLive} color="orange" onClick={onRevealAction}><Icon name="eye" />Reveal</Button>
+                  </Button.Group>
+                </Segment>
+
+                </>
             }
             {
                 view == PlayerActionsView.TYPE &&
@@ -144,7 +151,8 @@ const playersToOptions = ( players: User[] | undefined, activePlayer: PlayerStat
 const mapStateToProps = (state: any) => {
     return {
         players: state.game.players,
-        activePlayer: state.player
+        activePlayer: state.player,
+        gameLive: state.timer.timerRunning
     }
 }
 

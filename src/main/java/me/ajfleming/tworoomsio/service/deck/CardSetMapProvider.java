@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import me.ajfleming.tworoomsio.model.Card;
+import me.ajfleming.tworoomsio.model.CardInfo;
+import me.ajfleming.tworoomsio.model.CardKey;
+import me.ajfleming.tworoomsio.model.CardMap;
 import me.ajfleming.tworoomsio.model.CardSet;
 
 public class CardSetMapProvider {
@@ -19,14 +22,14 @@ public class CardSetMapProvider {
 	}
 
 	public static List<Card> coreSet() {
-		return List.of( Card.PRESIDENT, Card.BOMBER );
+		return List.of( CardMap.get( CardKey.PRESIDENT ), CardMap.get( CardKey.BOMBER ) );
 	}
 
 	public static List<Card> gambler() {
-		return List.of( Card.GAMBLER );
+		return List.of( CardMap.get( CardKey.GAMBLER ) );
 	}
 
 	public static List<Card> filler() {
-		return List.of( Card.BLUE_TEAM, Card.RED_TEAM );
+		return List.of( CardMap.get( CardKey.BLUE_TEAM ) , CardMap.get( CardKey.RED_TEAM ) );
 	}
 }

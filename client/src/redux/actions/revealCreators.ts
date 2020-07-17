@@ -1,13 +1,28 @@
 import {RevealActions} from "./types";
 import GameEvent from "../../domain/GameEvent";
 import {User} from "../../domain/User";
+import {Reveal} from "semantic-ui-react";
+import {Team} from "../../domain/Team";
+import {Card} from "../../domain/Card";
 
-const doReveal = ( event: GameEvent, player: User ) => {
+const doColourReveal = (eventId: string, shownColour: Team, playerName: String) => {
     return {
-        type: RevealActions.DO_REVEAL,
+        type: RevealActions.DO_COLOUR_REVEAL,
         data: {
-            event,
-            player
+            eventId,
+            shownColour,
+            playerName,
+        }
+    }
+}
+
+const doCardReveal = (eventId: string, shownCard: Card, playerName: String) => {
+    return {
+        type: RevealActions.DO_CARD_REVEAL,
+        data: {
+            eventId,
+            shownCard,
+            playerName
         }
     }
 }
@@ -19,6 +34,7 @@ const clearReveal = () => {
 }
 
 export default {
-    doReveal,
+    doCardReveal,
+    doColourReveal,
     clearReveal
 }

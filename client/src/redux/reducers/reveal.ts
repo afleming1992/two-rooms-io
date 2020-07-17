@@ -6,7 +6,7 @@ import GameEvent, {GameEventType} from "../../domain/GameEvent";
 
 interface RevealState {
     isOpen: boolean,
-    player: User | undefined,
+    player: string | undefined,
     card: Card | undefined,
     team: Team | undefined,
 }
@@ -20,18 +20,10 @@ const initialState: RevealState = {
 
 export default function reveal(state = initialState, action: any) {
     switch( action.type ) {
-        case RevealActions.DO_REVEAL:
-            const event: GameEvent = action.data.event;
-            switch ( event.type ) {
-                case GameEventType.COLOUR_SHARE:
-                case GameEventType.COLOUR_REVEAL:
-                    return { ...state, isOpen: true, team: event.shownColour, player: action.data.player }
-                case GameEventType.ROLE_SHARE:
-                case GameEventType.ROLE_REVEAL:
-                    return { ...state, isOpen: true, card: event.shownCard, player: action.data.player }
-                default:
-                    return state;
-            }
+        case RevealActions.DO_COLOUR_REVEAL:
+            return { ...state, isOpen: true, team: action.data.shownColour, player: action.data.playerName}
+        case RevealActions.DO_CARD_REVEAL:
+            return { ...state, isOpen: true, card: action.data.shownCard, player: action.data.playerName }
         case RevealActions.CLEAR_REVEAL:
             return {...state, isOpen: false, player: undefined, card: undefined, team: undefined }
         default:
