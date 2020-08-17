@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import me.ajfleming.tworoomsio.exception.GameException;
+import me.ajfleming.tworoomsio.model.room.Room;
+import me.ajfleming.tworoomsio.model.room.RoomName;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.timer.RoundTimer;
 
@@ -29,6 +31,7 @@ public class Game {
 	private Map<String, CardShareRequest> cardShareRequests;
 	private RoundTimer timer;
 	private List<Round> roundData;
+	private Map<RoomName, Room> rooms;
 
 	public boolean addPlayer( User user ) {
 		return this.players.add( user );
@@ -204,6 +207,26 @@ public class Game {
 
 	public void resetCardShares() {
 		this.cardShareRequests = new HashMap<>();
+	}
+
+	public Room getRoom( RoomName roomName ) {
+		return rooms.get( roomName );
+	}
+
+	public void updateRoom( Room updatedRoom ) {
+		rooms.put( updatedRoom.getRoomName(), updatedRoom );
+	}
+
+	public Map<RoomName, Room> getRooms() {
+		return rooms;
+	}
+
+	public void setRooms( final Map<RoomName, Room> rooms ) {
+		this.rooms = rooms;
+	}
+
+	public int getMaxHostages() {
+		return getRoundData().get( round - 1 ).getHostagesRequired();
 	}
 
 	public static class Builder {

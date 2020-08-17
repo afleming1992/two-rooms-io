@@ -12,22 +12,29 @@ import com.corundumstudio.socketio.SocketIOServer;
 import me.ajfleming.tworoomsio.exception.GameException;
 import me.ajfleming.tworoomsio.exception.UserException;
 import me.ajfleming.tworoomsio.model.Card;
-import me.ajfleming.tworoomsio.model.CardInfo;
 import me.ajfleming.tworoomsio.model.CardKey;
 import me.ajfleming.tworoomsio.model.Game;
 import me.ajfleming.tworoomsio.model.RoundMap;
 import me.ajfleming.tworoomsio.model.User;
+import me.ajfleming.tworoomsio.model.UsurpAttempt;
+import me.ajfleming.tworoomsio.model.room.LeadershipVote;
+import me.ajfleming.tworoomsio.model.room.Room;
+import me.ajfleming.tworoomsio.model.room.RoomName;
 import me.ajfleming.tworoomsio.service.deck.DeckBuilderService;
 import me.ajfleming.tworoomsio.service.deck.DeckDealerService;
+import me.ajfleming.tworoomsio.service.rooms.HostageSwitchService;
+import me.ajfleming.tworoomsio.service.rooms.RoomAllocationService;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.service.sharing.CardShareType;
+import me.ajfleming.tworoomsio.socket.event.ShowHostagesEvent;
+import me.ajfleming.tworoomsio.socket.event.UsurpAttemptEvent;
 import me.ajfleming.tworoomsio.socket.response.CardRevealResponse;
 
 public class GameEngineImpl implements GameEngine {
 	private Game game;
 	private final SocketIOServer socketServer;
-	private DeckBuilderService deckBuilder;
-	private UserManager userManager;
+	private final DeckBuilderService deckBuilder;
+	private final UserManager userManager;
 
 	private static final int TOTAL_ROUND_SECONDS = 180;
 	private static final int MAX_ROUNDS = 3;
@@ -108,6 +115,7 @@ public class GameEngineImpl implements GameEngine {
 	private void startGame( final User requestor ) throws GameException {
 		if ( isGameReadyToStart() && game.isUserHost( requestor ) ) {
 			game.nextRound();
+			game.setRooms( RoomAllocationService.generateAndAllocateToRooms( game ) );
 			game.setRoundData( RoundMap.getRoundData( game.getTotalPlayerCount() ) );
 			game.setCardAssignments( DeckDealerService.dealDeck( game.getDeck(), game.getPlayers() ) );
 			game.setTimer( setupTimer( TOTAL_ROUND_SECONDS, game.getId(), socketServer ) );
@@ -178,6 +186,126 @@ public class GameEngineImpl implements GameEngine {
 			}
 		}
 		triggerGameUpdateEvent();
+	}
+
+	@Override
+	public void nominateLeader( final RoomName roomName, final User nominator, final User nominee ) throws GameException {
+		Room room = game.getRoom( roomName );
+		if ( room.isPlayerInRoom( nominator ) && room.getLeader() == null ) {
+			room.setFirstLeader( nominee );
+			game.updateRoom( room );
+			sendEventToRoom( room, "NEW_LEADER", nominee.getUserToken() );
+		} else {
+			throw new GameException("Invalid operation");
+		}
+	}
+
+	@Override
+	public void nominateHostage( final RoomName roomName, final User leader, final User hostage )
+			throws GameException {
+		Room room = game.getRoom( roomName );
+		if ( room.isPlayerLeader( leader ) && !room.isPlayerLeader( hostage )) {
+			room.nominateHostage( hostage, game.getMaxHostages() );
+			game.updateRoom( room );
+			sendEventToRoom( room, "HOSTAGE_UPDATE", room.getHostages() );
+		} else {
+			throw new GameException( "You are currently not the leader of the room" );
+		}
+	}
+
+	@Override
+	public void showHostages( final User host ) throws GameException {
+		if ( game.isUserHost( host ) && !game.getTimer().isTimerRunning() ) {
+			sendEventToGame( "SHOW_HOSTAGES", new ShowHostagesEvent( game.getRooms() ) );
+		} else {
+			throw new GameException("Operation is not available whilst game is running");
+		}
+	}
+
+	@Override
+	public void performHostageSwitch( final User host ) throws GameException {
+		if ( game.isUserHost( host ) ) {
+			HostageSwitchService.performHostageSwitch( game );
+		}
+	}
+
+	@Override
+	public void abdicateAsLeader( final RoomName roomName, final User leader, final User replacement )
+			throws GameException {
+		Room room = game.getRoom( roomName );
+		if ( room.isPlayerLeader( leader ) ) {
+			room.setReplacementLeader( replacement );
+			replacement.sendEvent( "ROOM_LEADER_OFFER", roomName );
+		} else {
+			throw new GameException("You are currently not the room leader!");
+		}
+	}
+
+	@Override
+	public void acceptLeadership( final RoomName roomName, final User newLeader )
+			throws GameException {
+		Room room = game.getRoom( roomName );
+		if ( room.getReplacementLeader().is( newLeader ) && game.getTimer().isTimerRunning() ) {
+			room.setReplacementLeader( null );
+			room.setLeader( newLeader );
+			game.updateRoom( room );
+			sendEventToRoom( room, "LEADER_UPDATE", newLeader.getUserToken() );
+		} else {
+			throw new GameException("You aren't currently the leaders nominee");
+		}
+	}
+
+	@Override
+	public void declineLeadership( final RoomName roomName, final User decliner )
+			throws GameException {
+		Room room = game.getRoom( roomName );
+		if ( room.getReplacementLeader().is( decliner ) ) {
+			room.setReplacementLeader( null );
+			room.getReplacementLeader().sendEvent( "ABDICATE_DECLINED", decliner.getName() + " did not accept room leadership" );
+		}
+	}
+
+	@Override
+	public void beginUsurp( final RoomName roomName, final User usurper, final User leadershipNominee )
+			throws GameException {
+		Room room = game.getRoom( roomName );
+		if ( room.isPlayerInRoom( usurper ) && room.isPlayerInRoom( leadershipNominee ) ) {
+			if ( room.getUsurpAttempt() == null ) {
+				UsurpAttempt usurpAttempt = new UsurpAttempt( roomName, usurper, leadershipNominee, room.getPlayers(), this );
+				room.setUsurpAttempt( usurpAttempt );
+				sendEventToRoom( room, "USURP_ATTEMPT", new UsurpAttemptEvent( usurper, leadershipNominee ) );
+				usurpAttempt.initiateUsurpVote();
+			} else {
+				throw new GameException("A usurp attempt is already in progress");
+			}
+		} else {
+			throw new GameException("You can only usurp in your own room");
+		}
+	}
+
+	@Override
+	public void leadershipVote( final RoomName roomName, final User voter, final LeadershipVote vote )
+			throws GameException {
+		Room room = game.getRoom( roomName );
+		UsurpAttempt attempt = room.getUsurpAttempt();
+		if( attempt != null ) {
+			attempt.registerVote( voter, vote );
+		}
+	}
+
+	@Override
+	public void resolveLeadershipVote( final RoomName roomName, final LeadershipVote result ) {
+		Room room = game.getRoom( roomName );
+		UsurpAttempt attempt = room.getUsurpAttempt();
+		if ( attempt != null ) {
+			if ( result == LeadershipVote.AGREED ) {
+				room.setLeader( room.getUsurpAttempt().getNominee() );
+				sendEventToRoom( room, "USURP_ATTEMPT_SUCCESSFUL", new UsurpAttemptEvent( attempt.getInitiator(), attempt.getNominee() ) );
+			} else {
+				room.setUsurpAttempt( null );
+				sendEventToRoom( room, "USURP_ATTEMPT_FAILED", new UsurpAttemptEvent( attempt.getInitiator(), attempt.getNominee() ) );
+			}
+		}
 	}
 
 	// Sharing Operations
@@ -301,6 +429,10 @@ public class GameEngineImpl implements GameEngine {
 
 	private void sendEventToGame( String name, Object data ) {
 		socketServer.getRoomOperations("game/"+ game.getId() ).sendEvent(name, data);
+	}
+
+	private void sendEventToRoom( Room room, String name, Object data ) {
+		socketServer.getRoomOperations( room.getChannelName() ).sendEvent( name, data );
 	}
 
 	private void addPlayerToGameComms( final User user ) {
