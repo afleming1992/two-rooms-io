@@ -21,6 +21,8 @@ public interface GameEngine {
 
 	// Host Operations
 
+	void startGame( User user ) throws GameException;
+
 	void nextRound( User requestor ) throws GameException;
 
 	void startTimer( User requestor );

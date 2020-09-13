@@ -2,8 +2,6 @@ package me.ajfleming.tworoomsio.service.rooms;
 
 import java.util.List;
 
-import com.corundumstudio.socketio.SocketIOServer;
-
 import me.ajfleming.tworoomsio.model.Game;
 import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.model.room.Room;

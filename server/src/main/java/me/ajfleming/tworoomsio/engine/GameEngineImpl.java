@@ -14,6 +14,7 @@ import me.ajfleming.tworoomsio.exception.UserException;
 import me.ajfleming.tworoomsio.model.Card;
 import me.ajfleming.tworoomsio.model.CardKey;
 import me.ajfleming.tworoomsio.model.Game;
+import me.ajfleming.tworoomsio.model.GameStage;
 import me.ajfleming.tworoomsio.model.RoundMap;
 import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.model.UsurpAttempt;
@@ -112,15 +113,18 @@ public class GameEngineImpl implements GameEngine {
 
 	// Game Management Operations
 
-	private void startGame( final User requestor ) throws GameException {
-		if ( isGameReadyToStart() && game.isUserHost( requestor ) ) {
-			game.nextRound();
-			game.setRooms( RoomAllocationService.generateAndAllocateToRooms( game ) );
-			game.setRoundData( RoundMap.getRoundData( game.getTotalPlayerCount() ) );
-			game.setCardAssignments( DeckDealerService.dealDeck( game.getDeck(), game.getPlayers() ) );
-			game.setTimer( setupTimer( TOTAL_ROUND_SECONDS, game.getId(), socketServer ) );
-			triggerGameUpdateEvent();
-		}
+	public void startGame( final User requestor ) throws GameException {
+		enforceGameCheck( isGameReadyToStart(), "Game cannot be currently started");
+		enforceGameCheck( game.isUserHost( requestor ), "User is not host" );
+		game.setRooms( RoomAllocationService.generateAndAllocateToRooms( game ) );
+		game.setRoundData( RoundMap.getRoundData( game.getTotalPlayerCount() ) );
+		game.setStage( GameStage.FIRST_ROOM_ALLOCATION );
+		triggerGameUpdateEvent();
+	}
+
+	private void startFirstRound( final User requestor ) throws GameException {
+		game.setCardAssignments( DeckDealerService.dealDeck( game.getDeck(), game.getPlayers() ) );
+		game.nextRound();
 	}
 
 	private boolean isGameReadyToStart() {
@@ -131,11 +135,11 @@ public class GameEngineImpl implements GameEngine {
 	public void nextRound( final User requestor ) throws GameException {
 		if( game.isUserHost( requestor ) ) {
 			if ( game.getRound() == 0 ) {
-				startGame( requestor );
+				startFirstRound( requestor );
 			} else {
 				game.nextRound();
-				game.setTimer( setupTimer( TOTAL_ROUND_SECONDS, game.getId(), socketServer ) );
 			}
+			game.setTimer( setupTimer( TOTAL_ROUND_SECONDS, game.getId(), socketServer ) );
 			clearEventsAndRequests();
 			triggerGameUpdateEvent();
 		}
@@ -442,6 +446,13 @@ public class GameEngineImpl implements GameEngine {
 	private void reloadPlayerGameData( final SocketIOClient client, final User user ) throws UserException {
 		if ( game.hasStarted() ) {
 			userManager.sendEvent( user.getUserToken(), "CARD_UPDATE", game.getRoleAssignmentForUser( user.getUserToken() ).get() );
+		}
+	}
+
+
+	private void enforceGameCheck( final boolean conditionMet, final String exceptionMessage ) throws GameException {
+		if( !conditionMet ) {
+			throw new GameException( exceptionMessage );
 		}
 	}
 }

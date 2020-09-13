@@ -24,7 +24,7 @@ const EventList = ({events, title, players, activePlayer, ...props} : MyEventsPr
                 <Segment fluid textAlign="center" color="red">
                     <Header size="huge">
                         <small>No Requests</small>
-                    ‍</Header>
+                    </Header>
                 </Segment>
             </>
         )

@@ -15,6 +15,7 @@ export enum Listeners {
     PRIVATE_REVEAL_RECEIVED = "PRIVATE_REVEAL_RECEIVED",
     ANSWER_SHARE_ERROR = "ANSWER_SHARE_ERROR",
     CLEAR_EVENTS = "CLEAR_EVENTS",
+    ROOM_UPDATE = "ROOM_UPDATE"
 }
 
 export const actionListeners = () => {

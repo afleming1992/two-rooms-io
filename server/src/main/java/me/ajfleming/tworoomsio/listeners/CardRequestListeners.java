@@ -8,7 +8,7 @@ import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.socket.action.ShareDecisionRequest;
 
 public class CardRequestListeners {
-	private UserActionController userActionController;
+	private final UserActionController userActionController;
 
 	public CardRequestListeners( UserActionController userActionController ) {
 		this.userActionController = userActionController;

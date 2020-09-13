@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.ajfleming.tworoomsio.engine.UserManager;
 import me.ajfleming.tworoomsio.model.Game;
 import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.model.room.Room;
@@ -19,14 +20,13 @@ public class RoomAllocationService {
 		Room alpha = buildRoom( game.getId(), RoomName.ALPHA );
 		Room omega = buildRoom( game.getId(), RoomName.OMEGA );
 
-		List<User> players = new ArrayList<>();
-		Collections.copy( players, game.getPlayers() );
+		List<User> players = new ArrayList<>( game.getPlayers() );
 		Collections.shuffle( players );
 
 		int maximumPlayers = calculateMaximumPlayersInRoom( players.size() );
 
-		alpha.addPlayers( players.subList( 0, maximumPlayers - 1 ) );
-		omega.addPlayers( players.subList( maximumPlayers, players.size() - 1 ) );
+		alpha.addPlayers( players.subList( 0, maximumPlayers ) );
+		omega.addPlayers( players.subList( maximumPlayers, players.size() ) );
 
 		rooms.put( RoomName.ALPHA, alpha );
 		rooms.put( RoomName.OMEGA, omega );
@@ -34,12 +34,12 @@ public class RoomAllocationService {
 		return rooms;
 	}
 
-	public static int calculateMaximumPlayersInRoom( int playerNumber ) {
+	private static int calculateMaximumPlayersInRoom( int playerNumber ) {
 		int remainder = playerNumber % 2;
 		return ( playerNumber / 2 ) + remainder;
 	}
 
-	public static Room buildRoom( String gameId, RoomName name ) {
+	private static Room buildRoom( String gameId, RoomName name ) {
 		Room room = new Room();
 		room.setRoomName( name );
 		room.setChannelName( gameId );

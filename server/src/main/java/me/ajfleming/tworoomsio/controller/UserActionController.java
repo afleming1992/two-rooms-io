@@ -60,6 +60,18 @@ public class UserActionController {
 		disconnectingUser.ifPresent( gameEngine::disconnectPlayer );
 	}
 
+	public void startGame( final SocketIOClient client ) {
+		Optional<User> user = userManager.getUser(client);
+
+		if ( user.isPresent() ) {
+			try {
+				gameEngine.startGame( user.get() );
+			} catch ( GameException e ) {
+				client.sendEvent("START_GAME_ERROR", Response.error(e.getMessage()));
+			}
+		}
+	}
+
 	public void startNextRound( final SocketIOClient client ) {
 		Optional<User> user = userManager.getUser( client );
 

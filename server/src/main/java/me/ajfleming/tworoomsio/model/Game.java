@@ -20,6 +20,7 @@ import me.ajfleming.tworoomsio.timer.RoundTimer;
 public class Game {
 	private String id;
 	private User host;
+	private GameStage stage;
 	private int round;
 	private int numberOfRounds;
 	private List<User> players;
@@ -179,6 +180,7 @@ public class Game {
 
 	public void nextRound() {
 		round++;
+		stage = GameStage.IN_ROUND;
 	}
 
 	public RoundTimer getTimer() {
@@ -225,8 +227,21 @@ public class Game {
 		this.rooms = rooms;
 	}
 
+	public GameStage getStage() {
+		return stage;
+	}
+
+	public void setStage( final GameStage stage ) {
+		this.stage = stage;
+	}
+
+	@JsonIgnore
 	public int getMaxHostages() {
-		return getRoundData().get( round - 1 ).getHostagesRequired();
+		if ( roundData != null ) {
+			return getRoundData().get( round - 1 ).getHostagesRequired();
+		} else {
+			return 0;
+		}
 	}
 
 	public static class Builder {
@@ -245,6 +260,7 @@ public class Game {
 			template.cardShareRequests = new HashMap<>();
 			template.revealedCardAssignments = new ArrayList<>();
 			template.numberOfRounds = 3;
+			template.stage = GameStage.CREATED;
 			return this;
 		}
 
@@ -257,6 +273,7 @@ public class Game {
 			game.deck = template.deck;
 			game.cardShareRequests = template.cardShareRequests;
 			game.revealedCardAssignments = template.revealedCardAssignments;
+			game.stage = template.stage;
 			return game;
 		}
 	}

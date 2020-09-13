@@ -11,6 +11,7 @@ import revealReducer from "./reveal";
 
 const rootReducer = combineReducers({
         game: gameReducer,
+        room: roomReducer,
         player: playerReducer,
         errors: errorsReducer,
         view: viewReducer,

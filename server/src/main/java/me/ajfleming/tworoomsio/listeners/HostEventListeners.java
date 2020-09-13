@@ -4,17 +4,18 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.annotation.OnEvent;
 
 import me.ajfleming.tworoomsio.controller.UserActionController;
-import me.ajfleming.tworoomsio.model.CardInfo;
-import me.ajfleming.tworoomsio.model.CardKey;
 import me.ajfleming.tworoomsio.socket.event.RevealPlayerAssignmentEvent;
 
 public class HostEventListeners {
 
-	private UserActionController userActionController;
+	private final UserActionController userActionController;
 
 	public HostEventListeners( UserActionController userActionController ) {
 		this.userActionController = userActionController;
 	}
+
+	@OnEvent("START_GAME")
+	public void onStartGame(SocketIOClient client) { userActionController.startGame(client); }
 
 	@OnEvent("NEXT_ROUND")
 	public void onNextRound(SocketIOClient client) {
