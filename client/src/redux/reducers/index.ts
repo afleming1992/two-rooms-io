@@ -8,6 +8,7 @@ import cardReducer from "./card";
 import sessionReducer from "./session";
 import eventsReducer from "./events";
 import revealReducer from "./reveal";
+import roomReducer from './room';
 
 const rootReducer = combineReducers({
         game: gameReducer,

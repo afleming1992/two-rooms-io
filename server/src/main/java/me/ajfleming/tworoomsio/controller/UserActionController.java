@@ -72,6 +72,18 @@ public class UserActionController {
 		}
 	}
 
+	public void endRound( final SocketIOClient client ) {
+		Optional<User> user = userManager.getUser( client );
+
+		if ( user.isPresent() ) {
+			try {
+				gameEngine.endRound( user.get() );
+			} catch ( GameException e ) {
+				client.sendEvent("END_ROUND_ERROR", Response.error(e.getMessage()));
+			}
+		}
+	}
+
 	public void startNextRound( final SocketIOClient client ) {
 		Optional<User> user = userManager.getUser( client );
 
@@ -98,7 +110,6 @@ public class UserActionController {
 
 	public void restartGameTimer( final SocketIOClient client) {
 		Optional<User> user = userManager.getUser( client );
-
 		user.ifPresent( gameEngine::restartTimer );
 	}
 

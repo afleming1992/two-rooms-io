@@ -10,6 +10,7 @@ import {isHost} from "./utils/isHost";
 import RootGame from "./components/game/RootGame";
 import {PlayerState} from "./redux/reducers/player";
 import GameResult from "./components/result/GameResult";
+import InitialRoomsAllocation from "./components/initialRooms/InitialRooms";
 
 interface AppProps {
     player: PlayerState,
@@ -32,6 +33,10 @@ const App = ({ player, view, isHost,
                     {
                         view == ViewState.IN_LOBBY &&
                         <GameLobby />
+                    }
+                    {
+                        view == ViewState.INITIAL_ROOM_ALLOCATION &&
+                        <InitialRoomsAllocation />
                     }
                     {
                         view == ViewState.IN_ROUND &&

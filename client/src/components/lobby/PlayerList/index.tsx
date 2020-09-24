@@ -38,9 +38,13 @@ export const Player = ({player, showHostControls} : PlayerProps) => {
     return (
         <List.Item>
             <List.Content floated='right'>
-                <ButtonGroup size="tiny">
-                    <Button>Kick</Button>
-                </ButtonGroup>
+                {
+                    showHostControls &&
+                    <ButtonGroup size="tiny">
+                      <Button>Kick</Button>
+                    </ButtonGroup>
+                }
+
             </List.Content>
             <Image avatar src={`https://api.adorable.io/avatars//${player.userToken}.png`} />
             <List.Content>{player.name}</List.Content>

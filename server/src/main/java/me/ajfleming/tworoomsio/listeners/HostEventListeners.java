@@ -17,6 +17,9 @@ public class HostEventListeners {
 	@OnEvent("START_GAME")
 	public void onStartGame(SocketIOClient client) { userActionController.startGame(client); }
 
+	@OnEvent("END_ROUND")
+	public void onEndRound(SocketIOClient client) { userActionController.endRound(client); }
+
 	@OnEvent("NEXT_ROUND")
 	public void onNextRound(SocketIOClient client) {
 		userActionController.startNextRound( client );

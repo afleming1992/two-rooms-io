@@ -27,6 +27,7 @@ import me.ajfleming.tworoomsio.service.rooms.HostageSwitchService;
 import me.ajfleming.tworoomsio.service.rooms.RoomAllocationService;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.service.sharing.CardShareType;
+import me.ajfleming.tworoomsio.socket.event.JoinRoomEvent;
 import me.ajfleming.tworoomsio.socket.event.ShowHostagesEvent;
 import me.ajfleming.tworoomsio.socket.event.UsurpAttemptEvent;
 import me.ajfleming.tworoomsio.socket.response.CardRevealResponse;
@@ -80,14 +81,8 @@ public class GameEngineImpl implements GameEngine {
 	@Override
 	public void reloadPlayerIntoGame( String gameToken, User reconnectingUser )
 			throws GameException {
-		if ( game == null || !game.getId().equals( gameToken ) ) {
-			throw new GameException(
-					"The game you're attempting to reload into doesn't exist anymore!" );
-		}
-
-		if( !game.reconnectPlayer( reconnectingUser ) ) {
-			throw new GameException("Failed to reconnect to game");
-		}
+		enforceGameCheck(  game != null && game.getId().equals( gameToken ), "The game you're attempting to reload into doesn't exist anymore!" );
+		enforceGameCheck( game.reconnectPlayer( reconnectingUser ), "Failed to reconnect to game" );
 		addPlayerToGameComms( reconnectingUser );
 		try {
 			reloadPlayerGameData( reconnectingUser.getClient(), reconnectingUser );
@@ -122,26 +117,45 @@ public class GameEngineImpl implements GameEngine {
 		triggerGameUpdateEvent();
 	}
 
-	private void startFirstRound( final User requestor ) throws GameException {
-		game.setCardAssignments( DeckDealerService.dealDeck( game.getDeck(), game.getPlayers() ) );
-		game.nextRound();
-	}
-
 	private boolean isGameReadyToStart() {
 		return game.getDeck().size() == game.getPlayers().size();
 	}
 
 	@Override
+	public void endRound( final User requestor ) throws GameException {
+		enforceGameCheck( game.isUserHost( requestor ), "User is not host" );
+		enforceGameCheck( !game.getTimer().isTimerRunning(), "Timer must not be running in order to proceed" );
+		enforceGameCheck( checkHostageCounts(), "Not enough hostages" );
+		game.setStage( GameStage.END_OF_ROUND );
+		triggerGameUpdateEvent();
+		sendEventToGame( "REVEAL_HOSTAGES", new ShowHostagesEvent( game.getRooms() ) );
+	}
+
+	public boolean checkHostageCounts() {
+		for ( Room room : game.getRooms().values() ) {
+			if ( room.getHostageCount() != game.getMaxHostages() ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
 	public void nextRound( final User requestor ) throws GameException {
 		if( game.isUserHost( requestor ) ) {
-			if ( game.getRound() == 0 ) {
-				startFirstRound( requestor );
+			if ( game.getRound() >= MAX_ROUNDS ) {
+				endGameAndCalculateResults();
 			} else {
+				if ( game.getRound() == 0 ) {
+					// Deal Cards for First Round
+					game.setCardAssignments( DeckDealerService.dealDeck( game.getDeck(), game.getPlayers() ) );
+				}
 				game.nextRound();
+				game.setTimer( setupTimer( TOTAL_ROUND_SECONDS, game.getId(), socketServer ) );
+				game.setStage( GameStage.IN_ROUND );
+				clearEventsAndRequests();
+				triggerGameUpdateEvent();
 			}
-			game.setTimer( setupTimer( TOTAL_ROUND_SECONDS, game.getId(), socketServer ) );
-			clearEventsAndRequests();
-			triggerGameUpdateEvent();
 		}
 	}
 
@@ -214,15 +228,6 @@ public class GameEngineImpl implements GameEngine {
 			sendEventToRoom( room, "HOSTAGE_UPDATE", room.getHostages() );
 		} else {
 			throw new GameException( "You are currently not the leader of the room" );
-		}
-	}
-
-	@Override
-	public void showHostages( final User host ) throws GameException {
-		if ( game.isUserHost( host ) && !game.getTimer().isTimerRunning() ) {
-			sendEventToGame( "SHOW_HOSTAGES", new ShowHostagesEvent( game.getRooms() ) );
-		} else {
-			throw new GameException("Operation is not available whilst game is running");
 		}
 	}
 
@@ -425,6 +430,11 @@ public class GameEngineImpl implements GameEngine {
 		}
 	}
 
+	public void endGameAndCalculateResults() {
+		game.setStage( GameStage.RESULTS );
+		triggerGameUpdateEvent();
+	}
+
 	// Helper Methods
 
 	private void triggerGameUpdateEvent() {
@@ -441,6 +451,17 @@ public class GameEngineImpl implements GameEngine {
 
 	private void addPlayerToGameComms( final User user ) {
 		user.getClient().joinRoom( "game/"+ game.getId() );
+		addPlayerToRoomComms( user );
+	}
+
+	private void addPlayerToRoomComms( final User user ) {
+		if ( game.getStage() != GameStage.CREATED ) {
+			Optional<Room> roomFind = game.findRoomUserIsIn( user );
+			if ( roomFind.isPresent() ) {
+				user.sendEvent( "JOIN_ROOM", new JoinRoomEvent( roomFind.get().getRoomName(), "Reconnection" ) );
+				user.getClient().joinRoom( roomFind.get().getChannelName() );
+			}
+		}
 	}
 
 	private void reloadPlayerGameData( final SocketIOClient client, final User user ) throws UserException {

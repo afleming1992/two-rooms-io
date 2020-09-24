@@ -30,7 +30,7 @@ export default function gameReducer(state: GameState = initialState, action: any
         case Actions.DISCONNECTED:
             return initialState;
         case Listeners.GAME_UPDATE:
-            return {...state, players: action.data.players, round: action.data.round, roundData: action.data.roundData, host: action.data.host, id: action.data.id, deck: action.data.deck, revealedCardAssignments: action.data.revealedCardAssignments }
+            return {...state, players: action.data.players, round: action.data.round, roundData: action.data.roundData, host: action.data.host, id: action.data.id, deck: action.data.deck, revealedCardAssignments: action.data.revealedCardAssignments, stage: action.data.stage }
         default:
             return state;
     }

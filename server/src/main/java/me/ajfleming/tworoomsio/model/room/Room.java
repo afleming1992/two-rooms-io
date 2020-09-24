@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import me.ajfleming.tworoomsio.exception.GameException;
 import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.model.UsurpAttempt;
+import me.ajfleming.tworoomsio.socket.event.JoinRoomEvent;
 
 public class Room {
 	@JsonIgnore
@@ -27,25 +28,25 @@ public class Room {
 		this.hostages = new LinkedList<>();
 	}
 
-	public void addPlayer( User user ) {
+	public void addPlayer( User user, String reasonForJoin ) {
 		if ( this.players == null ) {
 			this.players = new ArrayList<>();
 		}
 
 		user.getClient().joinRoom( channelName );
-		user.getClient().sendEvent( "JOIN_ROOM", roomName );
+		user.getClient().sendEvent( "JOIN_ROOM", new JoinRoomEvent( this.roomName, reasonForJoin ) );
 
 		this.players.add( user );
 	}
 
-	public void addPlayers( List<User> users ) {
+	public void addPlayers( List<User> users, String reasonForJoin ) {
 		if ( this.players == null ) {
 			this.players = new ArrayList<>();
 		}
 
 		for ( User user : users ) {
 			user.getClient().joinRoom( channelName );
-			user.getClient().sendEvent( "JOIN_ROOM", roomName );
+			user.getClient().sendEvent( "JOIN_ROOM", new JoinRoomEvent(this.roomName, reasonForJoin ));
 		}
 
 		this.players.addAll( users );
@@ -100,6 +101,14 @@ public class Room {
 		hostages.add( newHostage );
 		if( hostages.size() > maxHostages ) {
 			hostages.pollFirst();
+		}
+	}
+
+	public int getHostageCount() {
+		if ( hostages != null ) {
+			return hostages.size();
+		} else {
+			return 0;
 		}
 	}
 

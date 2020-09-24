@@ -244,6 +244,10 @@ public class Game {
 		}
 	}
 
+	public Optional<Room> findRoomUserIsIn( final User user ) {
+		return rooms.values().stream().filter( room -> room.isPlayerInRoom( user )).findFirst();
+	}
+
 	public static class Builder {
 		private final Game template;
 

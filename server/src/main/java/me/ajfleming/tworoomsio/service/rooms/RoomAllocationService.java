@@ -25,8 +25,8 @@ public class RoomAllocationService {
 
 		int maximumPlayers = calculateMaximumPlayersInRoom( players.size() );
 
-		alpha.addPlayers( players.subList( 0, maximumPlayers ) );
-		omega.addPlayers( players.subList( maximumPlayers, players.size() ) );
+		alpha.addPlayers( players.subList( 0, maximumPlayers ), "Initial Room" );
+		omega.addPlayers( players.subList( maximumPlayers, players.size() ), "Initial Room" );
 
 		rooms.put( RoomName.ALPHA, alpha );
 		rooms.put( RoomName.OMEGA, omega );

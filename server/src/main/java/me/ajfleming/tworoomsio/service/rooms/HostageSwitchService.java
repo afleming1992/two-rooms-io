@@ -15,8 +15,8 @@ public class HostageSwitchService {
 		List<User> alphaHostages = alpha.removeHostages();
 		List<User> omegaHostages = omega.removeHostages();
 
-		alpha.addPlayers( omegaHostages );
-		omega.addPlayers( alphaHostages );
+		alpha.addPlayers( omegaHostages, "Hostage switch from Omega" );
+		omega.addPlayers( alphaHostages, "Hostage switch from Alpha" );
 
 		game.updateRoom( alpha );
 		game.updateRoom( omega );

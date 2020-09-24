@@ -23,6 +23,8 @@ public interface GameEngine {
 
 	void startGame( User user ) throws GameException;
 
+	void endRound( User user ) throws GameException;
+
 	void nextRound( User requestor ) throws GameException;
 
 	void startTimer( User requestor );
@@ -48,8 +50,6 @@ public interface GameEngine {
 	void nominateLeader( RoomName room, User nominator, User nominee ) throws GameException;
 
 	void nominateHostage( RoomName room, User leader, User hostage ) throws GameException;
-
-	void showHostages( User host ) throws GameException;
 
 	void performHostageSwitch( User host ) throws GameException;
 
