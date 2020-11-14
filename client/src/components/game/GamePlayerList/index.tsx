@@ -23,11 +23,10 @@ import {CardState} from "../../../redux/reducers/card";
 
 interface GamePlayerListProps {
     activePlayer: User,
-    players: Array<User>,
-    playerCard: CardState
+    players: Array<User>
 }
 
-const GamePlayerList = ({activePlayer, players, playerCard} : GamePlayerListProps) => {
+const GamePlayerList = ({activePlayer, players} : GamePlayerListProps) => {
     return (
         <Grid>
             <Grid.Row columns={1}>
