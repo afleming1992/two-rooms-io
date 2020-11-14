@@ -1,10 +1,18 @@
 import React, {ReactNode} from 'react';
-import {Header, Progress, Segment} from "semantic-ui-react";
+import {Header, Progress, Segment, SegmentGroup} from "semantic-ui-react";
 import {TimerState} from "../../../redux/reducers/timer";
 import './index.css'
 import {SemanticCOLORS} from "semantic-ui-react/dist/commonjs/generic";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faClock, faExclamation, faPause, faPlay} from "@fortawesome/free-solid-svg-icons";
+import {
+    faCircle,
+    faClock,
+    faExclamation,
+    faGripLinesVertical,
+    faPause,
+    faPeopleArrows,
+    faPlay
+} from "@fortawesome/free-solid-svg-icons";
 
 interface RoundTimerProps {
     timer: TimerState
@@ -35,19 +43,31 @@ const RoundTimer = ({timer, ...props}: RoundTimerProps) => {
     }
 
     const timerContents: ReactNode = <>
-        <Header size="huge" className="no-margin-bottom"><FontAwesomeIcon icon={faClock}/>&nbsp;&nbsp;{minutes}:{seconds < 10 ? "0" + seconds : seconds}</Header>
+        <h1 className='timer-clock'>{minutes}:{seconds < 10 ? "0" + seconds : seconds}</h1>
     </>
 
+    let timerBlock;
     switch(timerMode) {
         case TimerMode.RUNNING:
-            return <Segment inverted color="green" textAlign="center">{timerContents}</Segment>
+            timerBlock = <Segment compact inverted color="green" textAlign="center">{timerContents}</Segment>
+            break;
         case TimerMode.WARNING:
-            return <Segment inverted color="red" textAlign="center">{timerContents}</Segment>
+            timerBlock = <Segment compact inverted color="red" textAlign="center">{timerContents}</Segment>
+            break;
         case TimerMode.ENDED:
-            return <Segment inverted color="black" textAlign="center"><Header size="huge">TIME UP!!!</Header></Segment>
+            timerBlock = <Segment compact inverted color="black" textAlign="center"><h1 className="timer-clock">TIME UP!!!</h1></Segment>
+            break;
         default:
-            return <Segment textAlign="center">{timerContents}</Segment>
+            timerBlock = <Segment compact textAlign="center">{timerContents}</Segment>
+            break;
     }
+
+    return <SegmentGroup>
+        <Segment compact inverted textAlign="center">
+            <h2>Round 1 <FontAwesomeIcon icon={faGripLinesVertical} /> 2 <FontAwesomeIcon icon={faPeopleArrows} /></h2>
+        </Segment>
+        { timerBlock }
+    </SegmentGroup>
 }
 
 export default RoundTimer;

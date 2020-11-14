@@ -34,8 +34,11 @@ enum PlayerActionsView {
 
 enum ActionType {
     NONE,
+    LEADER= "Nominate Leader",
     SHARE = "Share",
-    REVEAL = "Reveal"
+    REVEAL = "Reveal",
+    USURP = "Usurp Vote",
+    HOSTAGE = "Choose Hostage"
 }
 
 const PlayerActions = ({players, activePlayer, requestShare, privateReveal, gameLive, ...props}: PlayerActionsProps) => {
@@ -52,6 +55,16 @@ const PlayerActions = ({players, activePlayer, requestShare, privateReveal, game
     const onRevealAction = () => {
         setAction( ActionType.REVEAL );
         setView( PlayerActionsView.TYPE );
+    }
+
+    const onNominateLeader = () => {
+        setAction( ActionType.LEADER );
+        setView( PlayerActionsView.PLAYER_SELECT );
+    }
+
+    const onUsurpLeader = () => {
+        setAction( ActionType.USURP );
+        setView( PlayerActionsView.PLAYER_SELECT );
     }
 
     const onTypeSelect = ( type: CardShareType ) => {
@@ -77,6 +90,12 @@ const PlayerActions = ({players, activePlayer, requestShare, privateReveal, game
                 break;
             case ActionType.SHARE:
                 requestShare( type, selectedPlayer);
+                break;
+            case ActionType.LEADER:
+                break;
+            case ActionType.USURP:
+                break;
+            case ActionType.HOSTAGE:
                 break;
         }
 

@@ -30,8 +30,8 @@ interface GamePlayerListProps {
 const GamePlayerList = ({activePlayer, players, playerCard} : GamePlayerListProps) => {
     return (
         <Grid>
-            <Grid.Row columns={2}>
-                <Grid.Column width={12}>
+            <Grid.Row columns={1}>
+                <Grid.Column width={16}>
                     <Card.Group>
                         <Card fluid>
                             <Card.Content>
@@ -53,9 +53,6 @@ const GamePlayerList = ({activePlayer, players, playerCard} : GamePlayerListProp
                             </Card.Content>
                         </Card>
                     </Card.Group>
-                </Grid.Column>
-                <Grid.Column width={4}>
-                    <PlayerCard card={playerCard.card == undefined ? undefined : playerCard.card}/>
                 </Grid.Column>
             </Grid.Row>
         </Grid>

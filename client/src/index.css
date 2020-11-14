@@ -1,7 +1,12 @@
 body {
-    background-color: #7E7F83;
+    background-color: #7e7f83;
 }
 
 .padding-top {
     padding-top: 10px;
+}
+
+.timer-clock {
+    font-size: 3em;
+    text-align: center;
 }

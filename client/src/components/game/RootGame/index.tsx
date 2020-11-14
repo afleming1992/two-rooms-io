@@ -2,16 +2,14 @@ import React, {Dispatch} from "react";
 import {connect} from "react-redux";
 import {Container, Grid, Segment} from "semantic-ui-react";
 import {ViewState} from "../../../redux/reducers/view";
-import RoundTimer from "../RoundTimer";
 import {TimerState} from "../../../redux/reducers/timer";
 import {CardState} from "../../../redux/reducers/card";
-import PlayerCard from "../../common/PlayerCard";
-import MainGameOperations from "../MainGameOperations";
-import RoundTracker from "../RoundTracker";
 import {GameState} from "../../../redux/reducers/game";
-import HostageInfo from "../HostageInfo";
-import PlayerActions from "../PlayerActions";
 import RevealModal from "../RevealModal";
+import MainGameOperations from "../MainGameOperations";
+import RoundTimer from "../RoundTimer";
+import PlayerCard from "../../common/PlayerCard";
+import PlayerActions from "../PlayerActions";
 
 interface RootGameProps {
     playerCardState: CardState,
@@ -23,28 +21,15 @@ interface RootGameProps {
 const RootGame = ({playerCardState, timer, view, game, ...props}: RootGameProps) => {
     return (
         <Container className="padding-top">
-            <Grid>
-                <Grid.Row columns={3}>
-                    <Grid.Column width={6}>
-                        <RoundTracker currentRound={game.round} roundData={game.roundData} />
-                    </Grid.Column>
-                    <Grid.Column width={4}>
-                        <RoundTimer timer={timer} />
-                    </Grid.Column>
-                    <Grid.Column width={6}>
-                        <HostageInfo currentRound={game.round} roundData={game.roundData} />
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column>
-                        <PlayerActions />
-                    </Grid.Column>
-                </Grid.Row>
-                <Grid.Row>
-                    <Grid.Column>
-                        <MainGameOperations />
-                    </Grid.Column>
-                </Grid.Row>
+            <Grid columns={2}>
+                <Grid.Column width={12}>
+                    <PlayerActions />
+                    <MainGameOperations />
+                </Grid.Column>
+                <Grid.Column width={4} padded>
+                    <RoundTimer timer={timer} />
+                    <PlayerCard card={playerCardState.card} />
+                </Grid.Column>
             </Grid>
             <RevealModal />
         </Container>
