@@ -32,7 +32,7 @@ class RoundTimerTest {
 		// Then
 		sleep( 10 );
 
-		assertThat( totalTicks.get(), equalTo( 9 ) );
+		assertThat( totalTicks.get(), equalTo( 10 ) );
 		assertThat( onEndTriggered.get(), equalTo( true ) );
 	}
 
@@ -54,7 +54,7 @@ class RoundTimerTest {
 		timer.stop();
 
 		// Then
-		assertThat( totalTicks.get(), equalTo( 1 ) );
+		assertThat( totalTicks.get(), equalTo( 2 ) );
 		assertThat( timer.getUnitsLeft(), equalTo( 2L ) );
 		assertThat( onEndTriggered.get(), equalTo( false ) );
 	}
