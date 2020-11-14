@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import me.ajfleming.tworoomsio.model.Card;
 import me.ajfleming.tworoomsio.model.CardInfo;
+import me.ajfleming.tworoomsio.model.CardKey;
 
 class DeckBuilderServiceTest {
 
@@ -28,7 +30,7 @@ class DeckBuilderServiceTest {
 		List<Card> deck = service.buildDeck( 2 );
 
 		// Then
-		assertThat( deck, containsInAnyOrder( CardInfo.PRESIDENT, CardInfo.BOMBER ) );
+		assertThat( getCardKeys( deck ), containsInAnyOrder( CardKey.PRESIDENT, CardKey.BOMBER ) );
 	}
 
 	@Test
@@ -38,7 +40,7 @@ class DeckBuilderServiceTest {
 		List<Card> deck = service.buildDeck( 3 );
 
 		// Then
-		assertThat( deck, containsInAnyOrder( CardInfo.PRESIDENT, CardInfo.BOMBER, CardInfo.GAMBLER ) );
+		assertThat( getCardKeys( deck ), containsInAnyOrder( CardKey.PRESIDENT, CardKey.BOMBER, CardKey.GAMBLER ) );
 	}
 
 	@Test
@@ -49,8 +51,8 @@ class DeckBuilderServiceTest {
 		List<Card> deck = service.buildDeck( 4 );
 
 		// Then
-		assertThat( deck,
-				containsInAnyOrder( CardInfo.PRESIDENT, CardInfo.BOMBER, CardInfo.BLUE_TEAM, CardInfo.RED_TEAM ) );
+		assertThat( getCardKeys( deck ),
+				containsInAnyOrder( CardKey.PRESIDENT, CardKey.BOMBER, CardKey.BLUE_TEAM, CardKey.RED_TEAM ) );
 	}
 
 	@Test
@@ -60,9 +62,13 @@ class DeckBuilderServiceTest {
 		List<Card> deck = service.buildDeck( 10 );
 
 		// Then
-		assertThat( deck,
-				containsInAnyOrder( CardInfo.PRESIDENT, CardInfo.BOMBER, CardInfo.BLUE_TEAM, CardInfo.RED_TEAM,
-						CardInfo.BLUE_TEAM, CardInfo.RED_TEAM, CardInfo.BLUE_TEAM, CardInfo.RED_TEAM,
-						CardInfo.BLUE_TEAM, CardInfo.RED_TEAM ) );
+		assertThat( getCardKeys( deck ),
+				containsInAnyOrder( CardKey.PRESIDENT, CardKey.BOMBER, CardKey.BLUE_TEAM, CardKey.RED_TEAM,
+						CardKey.BLUE_TEAM, CardKey.RED_TEAM, CardKey.BLUE_TEAM, CardKey.RED_TEAM,
+						CardKey.BLUE_TEAM, CardKey.RED_TEAM ) );
+	}
+
+	private List<CardKey> getCardKeys( List<Card> deck ) {
+		return deck.stream().map( Card::getKey ).collect( Collectors.toList() );
 	}
 }
