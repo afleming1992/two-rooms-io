@@ -1,0 +1,13 @@
+.header {
+    margin-top: 1em;
+    text-align: center;
+}
+
+.header > h1 {
+    font-size: 4em;
+    font-family: 'Bebas Neue', cursive;
+}
+
+.joinGameButton {
+    margin-top: 1em;
+}
