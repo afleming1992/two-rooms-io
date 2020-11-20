@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import 'onsenui/css/onsenui.css';
+import 'onsenui/css/onsen-css-components.css';
 import { ViewState } from "./redux/reducers/view";
 import Home from "./pages/Home";
 import { connect } from "react-redux";
