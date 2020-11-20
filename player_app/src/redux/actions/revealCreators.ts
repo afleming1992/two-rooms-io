@@ -1,7 +1,4 @@
 import {RevealActions} from "./types";
-import GameEvent from "../../domain/GameEvent";
-import {User} from "../../domain/User";
-import {Reveal} from "semantic-ui-react";
 import {Team} from "../../domain/Team";
 import {Card} from "../../domain/Card";
 

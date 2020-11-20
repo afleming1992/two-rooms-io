@@ -1,7 +1,6 @@
 import {Actions} from "../actions/types";
 import {Listeners} from "../actions/listeners";
 import {User} from "../../domain/User";
-import {List} from "semantic-ui-react";
 import {Card} from "../../domain/Card";
 import Round from "../../domain/Round";
 

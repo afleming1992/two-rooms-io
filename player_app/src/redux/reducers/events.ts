@@ -67,7 +67,7 @@ export default function eventsReducer(state: EventsState = initialState, action:
 }
 
 const buildGameEventForShare = ( data: any ) => {
-    let gameEvent = undefined;
+    let gameEvent;
 
     if ( data.type === "ROLE" ) {
         gameEvent = GameEvent.roleRequest( data.id, data.requestor, data.recipient );
@@ -79,7 +79,7 @@ const buildGameEventForShare = ( data: any ) => {
 }
 
 const buildGameEventForReveal = ( data: any ) => {
-    let gameEvent = undefined;
+    let gameEvent;
 
     if ( data.type === "ROLE" ) {
         gameEvent = GameEvent.privateRoleReveal( data.userToken, data.role );

@@ -1,5 +1,4 @@
 import {Actions} from "../actions/types";
-import {Action} from "typesafe-actions";
 import {Listeners} from "../actions/listeners";
 
 export interface PlayerState {

@@ -1,5 +1,4 @@
 import {Listeners} from "../actions/listeners";
-import {ViewState} from "./view";
 
 export interface TimerState {
     initialTime: number,
@@ -16,7 +15,7 @@ const initialState = {
 export default function timerReducer(state = initialState, action: any) {
     switch( action.type ) {
         case Listeners.GAME_UPDATE:
-            if( action.data.timer != undefined ) {
+            if( action.data.timer !== undefined ) {
                 return Object.assign( {}, state, {
                     initialTime: action.data.timer.initialUnits,
                     timerRunning: checkTimerRunning( action.data.timerRunning, action.data.unitsLeft ),

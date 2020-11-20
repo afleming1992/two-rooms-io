@@ -1,26 +1,31 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import 'onsenui/css/onsenui.css';
+import { ViewState } from "./redux/reducers/view";
+import Home from "./pages/Home";
+import { connect } from "react-redux";
 
-function App() {
+interface AppProps {
+  view: ViewState,
+  isConnected: boolean
+}
+
+const App: React.FC<AppProps> = (props) => {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {
+         props.view === ViewState.JOIN_GAME &&
+           <Home />
+      }
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = (state: any) => {
+    return {
+      view: state.view,
+      isConnected: state.player.connected
+    }
+}
+
+export default connect(mapStateToProps)(App);

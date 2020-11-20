@@ -1,5 +1,4 @@
 import {Listeners} from "../actions/listeners";
-import {ViewState} from "./view";
 import {Card} from "../../domain/Card";
 
 export interface CardState {

@@ -138,7 +138,7 @@ const revealPlayerAssignment = ( cardKey: string ) => {
     }
 }
 
-export default {
+const creators = {
     joinGame,
     nextRound,
     startTimer,
@@ -152,4 +152,6 @@ export default {
     dismissEvent,
     revealPlayerAssignment
 }
+
+export default creators;
 
