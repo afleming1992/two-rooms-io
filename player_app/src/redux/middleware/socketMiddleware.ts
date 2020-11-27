@@ -1,6 +1,7 @@
 import { Middleware } from 'redux';
 
-const socketMiddleware = (socket: SocketIOClient.Socket, listeners: Array<string> ) : Middleware => (store : any) => {
+
+export default (socket: SocketIOClient.Socket, listeners: Array<string> ) : Middleware => (store : any) => {
     for(const listener of listeners) {
         socket.on( listener, ( data:any ) => {
             const action = {
@@ -18,5 +19,3 @@ const socketMiddleware = (socket: SocketIOClient.Socket, listeners: Array<string
         return next(action);
     }
 }
-
-export default socketMiddleware;

@@ -1,6 +1,8 @@
 import {RevealActions} from "../actions/types";
 import {Card} from "../../domain/Card";
 import {Team} from "../../domain/Team";
+import {User} from "../../domain/User";
+import GameEvent, {GameEventType} from "../../domain/GameEvent";
 
 interface RevealState {
     isOpen: boolean,
