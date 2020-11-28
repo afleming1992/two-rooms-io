@@ -4,7 +4,7 @@ import {Team} from "../../domain/Team";
 import {User} from "../../domain/User";
 import GameEvent, {GameEventType} from "../../domain/GameEvent";
 
-interface RevealState {
+export interface RevealState {
     isOpen: boolean,
     player: string | undefined,
     card: Card | undefined,

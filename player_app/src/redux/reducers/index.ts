@@ -1,13 +1,25 @@
 import { combineReducers } from "redux";
-import playerReducer from "./player";
+import playerReducer, {PlayerState} from "./player";
 import errorsReducer from "./errors";
-import viewReducer from "./view";
-import gameReducer from './game';
-import timerReducer from './timer';
-import cardReducer from "./card";
-import sessionReducer from "./session";
-import eventsReducer from "./events";
-import revealReducer from "./reveal";
+import viewReducer, {ViewState} from "./view";
+import gameReducer, {GameState} from './game';
+import timerReducer, {TimerState} from './timer';
+import cardReducer, {CardState} from "./card";
+import sessionReducer, {SessionState} from "./session";
+import eventsReducer, {EventsState} from "./events";
+import revealReducer, {RevealState} from "./reveal";
+
+export interface AppState {
+        game: GameState,
+        player: PlayerState,
+        errors: any,
+        view: ViewState,
+        timer: TimerState,
+        card: CardState,
+        session: SessionState,
+        events: EventsState,
+        reveal: RevealState
+}
 
 const rootReducer = combineReducers({
         game: gameReducer,

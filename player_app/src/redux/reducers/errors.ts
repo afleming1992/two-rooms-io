@@ -1,6 +1,11 @@
 import {Actions} from "../actions/types";
 import {Listeners} from "../actions/listeners";
 
+export interface ErrorState {
+    error: any,
+    isOpen: boolean
+}
+
 export default function errorsReducer(state = {}, action: any) {
     switch( action.type ) {
         case Listeners.JOIN_GAME_ERROR:
