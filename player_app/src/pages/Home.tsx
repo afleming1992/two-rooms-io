@@ -9,7 +9,8 @@ import actionCreators from "../redux/actions/creators";
 interface HomeProps {
   joinGame: any,
   joining: boolean,
-  errors: any
+  errors: any,
+  connected: boolean,
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -43,13 +44,17 @@ const Home: React.FC<HomeProps> = (props) => {
         <div className={classes.two_rooms_logo}>
           Two Rooms and a BOOM
         </div>
-        <JoinGameForm onJoining={onJoining} onNameChange={onNameChange} joining={props.joining} errors={props.errors} />
+        {
+           props.connected &&
+           <JoinGameForm onJoining={onJoining} onNameChange={onNameChange} joining={props.joining} errors={props.errors} />
+        }
       </Container>
   );
 }
 
 const mapStateToProps = (state: any) => {
     return {
+      connected: state.player.connected,
       joining: state.player.joining,
       errors: state.errors
     }

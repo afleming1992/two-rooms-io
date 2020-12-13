@@ -17,7 +17,7 @@ import Lobby from "./pages/Lobby";
 
 interface AppProps {
   view: ViewState,
-  connected: boolean
+  connected: boolean,
 }
 
 const theme = createMuiTheme({
@@ -37,20 +37,29 @@ const theme = createMuiTheme({
   }
 });
 
+const useStyles = makeStyles((theme) => ({
+  loadingText: {
+    marginLeft: theme.spacing(2)
+  }
+}));
+
 const App: React.FC<AppProps> = (props) => {
+    const classes = useStyles();
+
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
           <Backdrop open={!props.connected}>
             <CircularProgress color="inherit" />
+            <span className={classes.loadingText}>Loading...</span>
           </Backdrop>
           {
             props.view === ViewState.JOIN_GAME &&
-            <Home />
+              <Home />
           }
           {
             props.view === ViewState.IN_LOBBY &&
-            <Lobby />
+              <Lobby />
           }
       </ThemeProvider>
     );

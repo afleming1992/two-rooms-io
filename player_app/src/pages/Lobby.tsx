@@ -4,7 +4,7 @@ import {
   BottomNavigation,
   BottomNavigationAction,
   Box,
-  Container, makeStyles,
+  Container, CssBaseline, makeStyles,
   Toolbar,
   Typography
 } from "@material-ui/core";
@@ -14,16 +14,20 @@ import {faLayerGroup, faSlidersH, faUsers } from "@fortawesome/free-solid-svg-ic
 import PlayerLobby from "../components/PlayerLobby";
 import {AppState} from "../redux/reducers";
 import {User} from "../domain/User";
+import DeckList from "../components/DeckList";
+import {Card} from "../domain/Card";
 
 interface LobbyProps {
   players: User[] | undefined
+  deck: Card[] | undefined
+  host: User | undefined
 }
 
 const useStyles = makeStyles({
   stickToBottom: {
-    width: '100%',
-    position: 'fixed',
     bottom: 0,
+    position: "fixed",
+    width: "inherit"
   }
 });
 
@@ -38,26 +42,25 @@ const Lobby: React.FC<LobbyProps> = (props) => {
 
   const [tabView, setTabView] = useState(LobbyTabView.PLAYERS);
 
-
   return (
-    <Container disableGutters={true}>
+    <Container disableGutters={true} maxWidth={false}>
+      <CssBaseline />
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6">
             Waiting for Players to Join...
           </Typography>
+
         </Toolbar>
       </AppBar>
-      <Box>
       {
           tabView === LobbyTabView.PLAYERS && props.players !== undefined &&
-          <PlayerLobby players={props.players} />
+          <PlayerLobby players={props.players} host={props.host} />
       }
       {
-          tabView === LobbyTabView.DECK &&
-          <h1>Hello Deck Screen</h1>
+          tabView === LobbyTabView.DECK && props.deck !== undefined &&
+          <DeckList deck={props.deck}/>
       }
-      </Box>
       <BottomNavigation
         className={classes.stickToBottom}
         value={tabView}
@@ -76,7 +79,9 @@ const Lobby: React.FC<LobbyProps> = (props) => {
 
 const mapStateToProps = (state: AppState) => {
     return {
-        players: state.game.players
+        players: state.game.players,
+        deck: state.game.deck,
+        host: state.game.host
     }
 }
 
