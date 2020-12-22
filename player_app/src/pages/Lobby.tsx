@@ -28,6 +28,9 @@ const useStyles = makeStyles({
     bottom: 0,
     position: "fixed",
     width: "inherit"
+  },
+  bottomNav: {
+    marginBottom: "56px"
   }
 });
 
@@ -43,9 +46,9 @@ const Lobby: React.FC<LobbyProps> = (props) => {
   const [tabView, setTabView] = useState(LobbyTabView.PLAYERS);
 
   return (
-    <Container disableGutters={true} maxWidth={false}>
+    <Container className={classes.bottomNav} disableGutters={true} maxWidth={false}>
       <CssBaseline />
-      <AppBar position="static">
+      <AppBar position="sticky">
         <Toolbar>
           <Typography variant="h6">
             Waiting for Players to Join...
