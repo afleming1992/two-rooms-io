@@ -25,8 +25,9 @@ export default function viewReducer(state = initialState, action: any) {
                 } else {
                     return ViewState.IN_ROUND
                 }
+            } else {
+                return ViewState.IN_LOBBY
             }
-            return state;
         default:
             return state;
     }
