@@ -7,6 +7,7 @@ import PlayerAvatar from "./PlayerAvatar";
 interface PlayerListItemProps {
     player: User;
     isHost: boolean;
+    isMe?: boolean;
 }
 
 const useStyles = makeStyles( (theme) => ({
@@ -27,7 +28,7 @@ const PlayerListItem : React.FC<PlayerListItemProps> = (props) => {
         <ListItemAvatar>
             <PlayerAvatar player={ props.player } isHost={ props.isHost }/>
         </ListItemAvatar>
-        <ListItemText className={classes.itemText} primary={ props.player.name} />
+        <ListItemText className={classes.itemText} primary={ props.player.name } secondary={ props.isMe ? "(You)" : "" } />
       </ListItem>
     );
 }

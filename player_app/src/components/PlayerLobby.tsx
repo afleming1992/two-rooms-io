@@ -8,7 +8,8 @@ import PlayerListItem from "./PlayerListItem";
 
 interface PlayerLobbyProps {
   players: Array<User>,
-  host: User | undefined
+  host: User | undefined,
+  currentPlayer: string | undefined
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -26,7 +27,7 @@ const PlayerLobby: React.FC<PlayerLobbyProps> = (props) => {
       {
          props.players.map( ( player ) => {
            return (
-              <PlayerListItem player={player} isHost={ player.userToken === props.host?.userToken } />
+              <PlayerListItem player={player} isHost={ player.userToken === props.host?.userToken } isMe={ player.userToken === props.currentPlayer }/>
            );
          })
       }

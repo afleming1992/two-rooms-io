@@ -20,7 +20,8 @@ import {Card} from "../domain/Card";
 interface LobbyProps {
   players: User[] | undefined
   deck: Card[] | undefined
-  host: User | undefined
+  host: User | undefined,
+  currentPlayer: string | undefined
 }
 
 const useStyles = makeStyles({
@@ -58,7 +59,7 @@ const Lobby: React.FC<LobbyProps> = (props) => {
       </AppBar>
       {
           tabView === LobbyTabView.PLAYERS && props.players !== undefined &&
-          <PlayerLobby players={props.players} host={props.host} />
+          <PlayerLobby currentPlayer={props.currentPlayer} players={props.players} host={props.host} />
       }
       {
           tabView === LobbyTabView.DECK && props.deck !== undefined &&
@@ -82,6 +83,7 @@ const Lobby: React.FC<LobbyProps> = (props) => {
 
 const mapStateToProps = (state: AppState) => {
     return {
+        currentPlayer: state.player.userToken,
         players: state.game.players,
         deck: state.game.deck,
         host: state.game.host
