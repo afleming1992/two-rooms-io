@@ -1,16 +1,18 @@
 import React from "react";
-import {Chip, makeStyles, Toolbar, Typography} from "@material-ui/core";
+import {IconButton, makeStyles, Menu, MenuItem, Toolbar, Typography} from "@material-ui/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faLayerGroup, faUsers } from "@fortawesome/free-solid-svg-icons";
+import {faCrown, faUsers } from "@fortawesome/free-solid-svg-icons";
 import GameCheckChip from "../GameCheckChip";
 import {Action, bindActionCreators, Dispatch} from "redux";
 import {connect} from "react-redux";
 import {AppState} from "../../redux/reducers";
+import actionCreators from "../../redux/actions/creators";
 
 interface LobbyNavBar {
   isHost: boolean,
   currentPlayerNumber: number | undefined,
-  deckSize: number | undefined
+  deckSize: number | undefined,
+  startGame: any
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -31,6 +33,16 @@ const useStyles = makeStyles((theme) => ({
 
 const LobbyNavBar: React.FC<LobbyNavBar> = (props) => {
   const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleAdminMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseAdminMenu = () => {
+    setAnchorEl(null);
+  }
 
   return (
     <Toolbar>
@@ -40,6 +52,31 @@ const LobbyNavBar: React.FC<LobbyNavBar> = (props) => {
       <div className={classes.sectionDesktop}>
         <GameCheckChip label="Players" currentNumber={props.currentPlayerNumber} requiredNumber={props.deckSize} icon={<FontAwesomeIcon icon={faUsers} />}/>
       </div>
+      {
+        props.isHost && (
+          <div>
+            <IconButton onClick={handleAdminMenu}>
+              <FontAwesomeIcon icon={faCrown} />
+            </IconButton>
+            <Menu
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'right'
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right'
+            }}
+            open={open}
+            onClose={handleCloseAdminMenu}
+              id="adminmenu-appbar">
+              <MenuItem onClick={props.startGame}>Start Game</MenuItem>
+            </Menu>
+          </div>
+        )
+      }
     </Toolbar>
   );
 }
@@ -54,7 +91,7 @@ const mapStateToProps = (state: AppState) => {
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>) =>
   bindActionCreators({
-
+    startGame: actionCreators.nextRound
   }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(LobbyNavBar);

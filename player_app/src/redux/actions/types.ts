@@ -1,3 +1,5 @@
+import {Action} from "redux";
+
 export enum Actions {
     CONNECTED="CONNECTED",
     DISCONNECTED="DISCONNECTED",
@@ -23,7 +25,7 @@ export enum RevealActions {
     CLEAR_REVEAL = "CLEAR_REVEAL"
 }
 
-export interface SocketAction {
+export interface SocketAction extends Action {
     type: Actions,
     meta: {
         remote: boolean
