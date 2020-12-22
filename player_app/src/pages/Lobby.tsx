@@ -1,12 +1,8 @@
 import React, {useState} from "react";
 import {
-  AppBar,
   BottomNavigation,
   BottomNavigationAction,
-  Box,
   Container, CssBaseline, makeStyles,
-  Toolbar,
-  Typography
 } from "@material-ui/core";
 import {connect} from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,6 +12,7 @@ import {AppState} from "../redux/reducers";
 import {User} from "../domain/User";
 import DeckList from "../components/DeckList";
 import {Card} from "../domain/Card";
+import GameAppBar from "../components/GameAppBar";
 
 interface LobbyProps {
   players: User[] | undefined
@@ -49,14 +46,7 @@ const Lobby: React.FC<LobbyProps> = (props) => {
   return (
     <Container className={classes.bottomNav} disableGutters={true} maxWidth={false}>
       <CssBaseline />
-      <AppBar position="sticky">
-        <Toolbar>
-          <Typography variant="h6">
-            Waiting for Players to Join...
-          </Typography>
-
-        </Toolbar>
-      </AppBar>
+      <GameAppBar />
       {
           tabView === LobbyTabView.PLAYERS && props.players !== undefined &&
           <PlayerLobby currentPlayer={props.currentPlayer} players={props.players} host={props.host} />
