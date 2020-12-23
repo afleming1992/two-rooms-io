@@ -1,23 +1,30 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {IconButton, ListItemIcon, makeStyles, Menu, MenuItem, Typography} from "@material-ui/core";
+import {Chip, IconButton, ListItemIcon, makeStyles, Menu, MenuItem, Typography} from "@material-ui/core";
 import {AppState} from "../../redux/reducers";
 import {Action, bindActionCreators, Dispatch} from "redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCrown, faForward, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
+import {faClock, faCrown, faForward, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
 import actionCreators from "../../redux/actions/creators";
+import GameTimer from './GameTimer';
 
 interface GameNavBarProps {
   isHost: boolean,
   roundNumber: number | undefined,
   totalRounds: number | undefined,
-  nextRound: any
+  nextRound: any,
+  restartTimer: any,
+  timerRunning: boolean
 }
 
 const useStyles = makeStyles( (theme) => ({
   title: {
     flex: 1,
-    display: 'block'
+    display: 'flex'
+  },
+  timer: {
+    flex: 1,
+    display: 'flex'
   },
   sectionDesktop: {
     display: 'flex'
@@ -42,6 +49,9 @@ const GameNavBar: React.FC<GameNavBarProps> = (props) => {
       <Typography className={classes.title} variant="h6" noWrap>
         Round { props.roundNumber } / { props.totalRounds !== undefined ? props.totalRounds : ""}
       </Typography>
+      <div className={classes.timer}>
+        <GameTimer />
+      </div>
       {
         props.isHost && (
           <>
@@ -62,7 +72,7 @@ const GameNavBar: React.FC<GameNavBarProps> = (props) => {
               open={open}
               onClose={handleCloseAdminMenu}
               id="adminmenu-appbar">
-              <MenuItem><ListItemIcon><FontAwesomeIcon icon={faRedoAlt} /></ListItemIcon>Restart Timer</MenuItem>
+              <MenuItem disabled={props.timerRunning} onClick={props.restartTimer}><ListItemIcon><FontAwesomeIcon icon={faRedoAlt} /></ListItemIcon>Restart Timer</MenuItem>
               <MenuItem onClick={props.nextRound}><ListItemIcon><FontAwesomeIcon icon={faForward} /></ListItemIcon>Next Round</MenuItem>
             </Menu>
           </>
@@ -76,13 +86,15 @@ const mapStateToProps = (state: AppState) => {
     return {
         isHost: state.game.host?.userToken === state.player.userToken,
         roundNumber: state.game.round,
-        totalRounds: state.game.roundData?.length
+        totalRounds: state.game.roundData?.length,
+        timerRunning: state.timer.timerRunning
     }
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>) =>
   bindActionCreators({
-    nextRound: actionCreators.nextRound
+    nextRound: actionCreators.nextRound,
+    restartTimer: actionCreators.restartTimer
   }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameNavBar);
