@@ -45,7 +45,7 @@ const LobbyNavBar: React.FC<LobbyNavBar> = (props) => {
   }
 
   return (
-    <Toolbar>
+    <>
       <Typography className={classes.title} variant="h6" noWrap>
         Lobby
       </Typography>
@@ -77,7 +77,7 @@ const LobbyNavBar: React.FC<LobbyNavBar> = (props) => {
           </div>
         )
       }
-    </Toolbar>
+    </>
   );
 }
 

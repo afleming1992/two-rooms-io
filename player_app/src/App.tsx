@@ -1,12 +1,4 @@
-import {
-  Backdrop,
-  CircularProgress,
-  Container,
-  createMuiTheme,
-  CssBaseline,
-  makeStyles,
-  ThemeProvider
-} from '@material-ui/core';
+import {Backdrop, CircularProgress, createMuiTheme, CssBaseline, makeStyles, ThemeProvider} from '@material-ui/core';
 import React from 'react';
 import './App.css';
 import {ViewState} from "./redux/reducers/view";
@@ -14,6 +6,7 @@ import {connect} from "react-redux";
 import {AppState} from "./redux/reducers";
 import Home from "./pages/Home";
 import Lobby from "./pages/Lobby";
+import GameMain from "./pages/GameMain";
 
 interface AppProps {
   view: ViewState,
@@ -60,6 +53,10 @@ const App: React.FC<AppProps> = (props) => {
           {
             props.view === ViewState.IN_LOBBY &&
               <Lobby />
+          }
+          {
+            props.view === ViewState.IN_ROUND &&
+              <GameMain />
           }
       </ThemeProvider>
     );

@@ -1,7 +1,6 @@
 import React, {useState} from "react";
 import {connect} from "react-redux";
-import {Box, Container, makeStyles, Paper, Typography} from "@material-ui/core";
-import './home.css';
+import {Container, makeStyles} from "@material-ui/core";
 import JoinGameForm from "../components/JoinGameForm";
 import {Action, bindActionCreators, Dispatch} from "redux";
 import actionCreators from "../redux/actions/creators";

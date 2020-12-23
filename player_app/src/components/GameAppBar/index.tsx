@@ -5,6 +5,7 @@ import {Action, bindActionCreators, Dispatch} from "redux";
 import {AppBar, makeStyles, Toolbar, Typography} from "@material-ui/core";
 import {ViewState} from "../../redux/reducers/view";
 import LobbyNavBar from "./LobbyGameBar";
+import GameNavBar from "./GameNavBar";
 
 interface GameAppBarProps {
   view: ViewState
@@ -22,10 +23,16 @@ const GameAppBar:React.FC<GameAppBarProps> = (props) => {
     return (
       <div className={classes.grow}>
         <AppBar position="sticky">
+          <Toolbar>
             {
               props.view === ViewState.IN_LOBBY &&
               <LobbyNavBar />
             }
+            {
+              props.view === ViewState.IN_ROUND &&
+              <GameNavBar />
+            }
+          </Toolbar>
         </AppBar>
       </div>
     )
