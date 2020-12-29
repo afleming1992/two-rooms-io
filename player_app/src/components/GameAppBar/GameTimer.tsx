@@ -55,7 +55,7 @@ const GameTimer: React.FC<GameTimerProps> = ({timer, ...props}) => {
     timerDisplay = classes.warning;
   }
 
-  if ( timer.secondsLeft == 0 ) {
+  if ( timer.secondsLeft === 0 ) {
     timerClickAction = () => {}
     timerDisplay = classes.ended
     label = "TIMES UP!!!";
