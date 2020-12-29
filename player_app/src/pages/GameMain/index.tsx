@@ -1,12 +1,20 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {BottomNavigation, BottomNavigationAction, Container, CssBaseline, makeStyles, Paper} from "@material-ui/core";
-import GameAppBar from "../components/GameAppBar";
+import {BottomNavigation, BottomNavigationAction, Container, CssBaseline, makeStyles} from "@material-ui/core";
+import GameAppBar from "../../components/GameAppBar";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDoorOpen, faIdCardAlt, faComments } from '@fortawesome/free-solid-svg-icons';
+import RoomView from "./Room";
+import {AppState} from "../../redux/reducers";
+import {User} from "../../domain/User";
+import CardView from './CardView';
+import {Card} from "../../domain/Card";
 
 interface GameMainProps {
-
+  currentPlayer: string | undefined,
+  players: User[] | undefined,
+  host: User | undefined,
+  card: Card | undefined
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -37,7 +45,7 @@ const GameMain: React.FC<GameMainProps> = (props) => {
       <GameAppBar />
       {
         view === GameMainTabView.ROOM &&
-        <>Room</>
+        <RoomView currentPlayer={props.currentPlayer} host={props.host} players={props.players} />
       }
       {
         view === GameMainTabView.ACTIONS &&
@@ -45,7 +53,7 @@ const GameMain: React.FC<GameMainProps> = (props) => {
       }
       {
         view === GameMainTabView.CARD &&
-        <>Card</>
+        <CardView card={props.card} />
       }
       <BottomNavigation value={view} onChange={(event, newValue) => { setView( newValue ) } } showLabels className={classes.stickToBottom}>
         <BottomNavigationAction label="Room" icon={<FontAwesomeIcon size="2x" icon={faDoorOpen} />} value={GameMainTabView.ROOM} />
@@ -56,4 +64,13 @@ const GameMain: React.FC<GameMainProps> = (props) => {
   );
 }
 
-export default connect()(GameMain);
+const mapStateToProps = (state: AppState) => {
+    return {
+        players: state.game.players,
+        currentPlayer: state.player.userToken,
+        host: state.game.host,
+        card: state.card.card
+    }
+}
+
+export default connect(mapStateToProps)(GameMain);

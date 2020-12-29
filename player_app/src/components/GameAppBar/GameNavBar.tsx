@@ -1,16 +1,19 @@
 import React from 'react';
 import {connect} from "react-redux";
-import {Chip, IconButton, ListItemIcon, makeStyles, Menu, MenuItem, Typography} from "@material-ui/core";
+import {IconButton, ListItemIcon, makeStyles, Menu, MenuItem, Typography} from "@material-ui/core";
 import {AppState} from "../../redux/reducers";
 import {Action, bindActionCreators, Dispatch} from "redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faClock, faCrown, faForward, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCrown, faForward, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
 import actionCreators from "../../redux/actions/creators";
 import GameTimer from './GameTimer';
+import HostagesRequiredChip from "./HostagesRequiredChip";
+import Round from "../../domain/Round";
 
 interface GameNavBarProps {
   isHost: boolean,
   roundNumber: number | undefined,
+  roundData: Round[] | undefined,
   totalRounds: number | undefined,
   nextRound: any,
   restartTimer: any,
@@ -22,7 +25,7 @@ const useStyles = makeStyles( (theme) => ({
     flex: 1,
     display: 'flex'
   },
-  timer: {
+  chips: {
     flex: 1,
     display: 'flex'
   },
@@ -47,10 +50,11 @@ const GameNavBar: React.FC<GameNavBarProps> = (props) => {
   return (
     <>
       <Typography className={classes.title} variant="h6" noWrap>
-        Round { props.roundNumber } / { props.totalRounds !== undefined ? props.totalRounds : ""}
+        Round { props.roundNumber } / { props.totalRounds || "" }
       </Typography>
-      <div className={classes.timer}>
+      <div className={classes.chips}>
         <GameTimer />
+        <HostagesRequiredChip roundData={props.roundData} currentRound={props.roundNumber} />
       </div>
       {
         props.isHost && (
@@ -87,6 +91,7 @@ const mapStateToProps = (state: AppState) => {
         isHost: state.game.host?.userToken === state.player.userToken,
         roundNumber: state.game.round,
         totalRounds: state.game.roundData?.length,
+        roundData: state.game.roundData,
         timerRunning: state.timer.timerRunning
     }
 }
