@@ -3,6 +3,7 @@ package me.ajfleming.tworoomsio.model;
 public class Card {
 	private CardKey key;
 	private String title;
+	private String subtitle;
 	private String howToWin;
 	private String cardImage;
 	private Team team;
@@ -10,14 +11,16 @@ public class Card {
 	public Card( CardKey key, CardInfo cardInfo ) {
 		this.key = key;
 		this.title = cardInfo.getTitle();
+		this.subtitle = cardInfo.getSubtitle();
 		this.howToWin = cardInfo.getHowToWin();
 		this.cardImage = cardInfo.getCardImage();
 		this.team = cardInfo.getTeam();
 	}
 
-	public Card( CardKey key, String title, String howToWin, String cardImage, Team team ) {
+	public Card( CardKey key, String title, String subtitle, String howToWin, String cardImage, Team team ) {
 		this.key = key;
 		this.title = title;
+		this.subtitle = subtitle;
 		this.howToWin = howToWin;
 		this.cardImage = cardImage;
 		this.team = team;
@@ -61,5 +64,13 @@ public class Card {
 
 	public void setTeam( final Team team ) {
 		this.team = team;
+	}
+
+	public String getSubtitle() {
+		return subtitle;
+	}
+
+	public void setSubtitle( final String subtitle ) {
+		this.subtitle = subtitle;
 	}
 }
