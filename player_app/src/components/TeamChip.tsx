@@ -6,6 +6,7 @@ import {Team} from "../domain/Team";
 
 interface TeamChipProps {
   team: Team
+  label?: string
 }
 
 interface TeamDetails {
@@ -37,10 +38,14 @@ const useStyles = makeStyles((theme) => ({
 const TeamChip: React.FC<TeamChipProps> = (props) => {
   const classes = useStyles(props);
   const icon = getTeamDetails(props.team).icon;
-  const text = getTeamDetails(props.team).text;
+  let label = getTeamDetails(props.team).text;
+
+  if( props.label ) {
+    label = props.label
+  }
 
   return (
-    <Chip className={classes.root} icon={<FontAwesomeIcon icon={icon} size="lg" />} label={text} />
+    <Chip className={classes.root} icon={<FontAwesomeIcon icon={icon} size="lg" />} label={label} />
   );
 }
 
