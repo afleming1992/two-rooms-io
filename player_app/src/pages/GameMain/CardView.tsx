@@ -1,66 +1,38 @@
 import React from 'react';
-import { Card as RoleCard } from '../../domain/Card';
-import {Card, CardActionArea, CardContent, CardMedia, Container, makeStyles, Typography} from "@material-ui/core";
+import { Card } from '../../domain/Card';
+import { Container, makeStyles, Typography} from "@material-ui/core";
+import PlayerCard from '../../components/PlayerCard';
+import CardList from "../../components/CardList";
 
 interface CardViewProps {
-  card: RoleCard | undefined
+  card: Card | undefined,
+  deck: Card[] | undefined
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    marginTop: theme.spacing(1),
-    display: 'flex'
-  },
-  details: {
-    display: 'flexi',
-    flexDirection: 'column'
-  },
-  roleTitle: {
-    textTransform: "uppercase"
-  },
-  content: {
-    flex: "1 0 auto"
-  },
-  cardImage: {
-    width: 200
-  },
-  cover: {
-    width: 200,
-    height: 300
-  }
+
 }));
 
 const CardView: React.FC<CardViewProps> = (props) => {
   const classes = useStyles();
 
+  const excludedCards: Card[] = [];
+
+  if ( props.card ) {
+    excludedCards.push( props.card )
+  }
+
   return (
     <Container>
       {
         props.card !== undefined &&
-        <Card className={classes.root} raised>
-          <CardMedia
-            className={classes.cover}
-            image={`cards/${props.card.cardImage}.png`}
-            title={ props.card.title }
-          />
-          <div className={classes.details}>
-            <CardContent className={classes.content}>
-              <Typography>
-                You are the
-              </Typography>
-              <Typography className={classes.roleTitle} variant="h5" component="h5">
-                { props.card.title }
-              </Typography>
-              <Typography>
-                { props.card.team }
-              </Typography>
-              <Typography>
-                { props.card.howToWin }
-              </Typography>
-            </CardContent>
-          </div>
-        </Card>
+        <PlayerCard card={props.card} />
       }
+      <br />
+      <Typography variant="h5">
+        All Cards
+      </Typography>
+      <CardList deck={props.deck} excludedCards={excludedCards} />
     </Container>
   );
 }
