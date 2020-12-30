@@ -13,8 +13,8 @@ interface PlayerAvatarProps {
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: lime[600],
-    width: theme.spacing(8),
-    height: theme.spacing(8)
+    width: theme.spacing(7),
+    height: theme.spacing(7)
   }
 }));
 

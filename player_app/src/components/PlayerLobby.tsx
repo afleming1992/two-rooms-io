@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Container,
   List,
   makeStyles,
 } from "@material-ui/core";
@@ -22,15 +23,17 @@ const PlayerLobby: React.FC<PlayerLobbyProps> = (props) => {
   const classes = useStyles();
 
   return (
-    <List className={classes.root}>
-      {
-         props.players.map( ( player ) => {
-           return (
+    <Container>
+      <List className={classes.root}>
+        {
+          props.players.map( ( player ) => {
+            return (
               <PlayerListItem player={player} isHost={ player.userToken === props.host?.userToken } isMe={ player.userToken === props.currentPlayer }/>
-           );
-         })
-      }
-    </List>
+            );
+          })
+        }
+      </List>
+    </Container>
   );
 }
 
