@@ -268,15 +268,19 @@ public class GameEngineImpl implements GameEngine {
 		Optional<Card> card = game.getRoleAssignmentForUser( cardOwner.getUserToken() );
 
 		if ( card.isPresent() ) {
+			String eventName;
+			if ( request.getId() != null && !request.getId().isEmpty() ) {
+				eventName = "CARD_SHARE_ACCEPTED";
+			} else {
+				// We set a UUID here so that the frontend can reference this event properly
+				request.setId( UUID.randomUUID().toString() );
+				eventName = "PRIVATE_REVEAL_RECEIVED";
+			}
+
 			if ( request.getType() == CardShareType.ROLE) {
 				event = CardRevealResponse.roleShare( request.getId(), cardOwner.getUserToken(), card.get() );
 			} else {
 				event = CardRevealResponse.colourShare( request.getId(), cardOwner.getUserToken(), card.get() );
-			}
-
-			String eventName = "PRIVATE_REVEAL_RECEIVED";
-			if ( request.getId() != null && !request.getId().isEmpty() ) {
-				eventName = "CARD_SHARE_ACCEPTED";
 			}
 
 			try {
