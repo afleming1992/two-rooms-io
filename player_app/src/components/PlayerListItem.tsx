@@ -1,6 +1,6 @@
 import React from 'react';
 import {User} from "../domain/User";
-import {ListItem, ListItemAvatar, ListItemText, makeStyles} from "@material-ui/core";
+import {ListItem, ListItemAvatar, ListItemText, makeStyles, Paper} from "@material-ui/core";
 import {yellow} from "@material-ui/core/colors";
 import PlayerAvatar from "./PlayerAvatar";
 
@@ -17,6 +17,9 @@ const useStyles = makeStyles( (theme) => ({
   hostChip: {
     backgroundColor: yellow[500],
     color: "#000000"
+  },
+  listItem: {
+    marginBottom: theme.spacing(1)
   }
 }));
 
@@ -24,7 +27,7 @@ const PlayerListItem : React.FC<PlayerListItemProps> = (props) => {
     const classes = useStyles();
 
     return (
-      <ListItem>
+      <ListItem className={classes.listItem} component={Paper}>
         <ListItemAvatar>
             <PlayerAvatar player={ props.player } isHost={ props.isHost }/>
         </ListItemAvatar>

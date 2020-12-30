@@ -1,6 +1,7 @@
 import React from 'react';
 import PlayerLobby from "../../components/PlayerLobby";
 import {User} from "../../domain/User";
+import {Container} from "@material-ui/core";
 
 interface RoomViewProps {
   players: User[] | undefined,
@@ -10,7 +11,9 @@ interface RoomViewProps {
 
 const RoomView: React.FC<RoomViewProps> = (props) => {
   return (
-    <PlayerLobby currentPlayer={props.currentPlayer} host={props.host} players={props.players || []} />
+    <Container>
+      <PlayerLobby currentPlayer={props.currentPlayer} host={props.host} players={props.players || []} />
+    </Container>
   );
 }
 

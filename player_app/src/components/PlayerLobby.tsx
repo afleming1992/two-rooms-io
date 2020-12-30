@@ -15,7 +15,6 @@ interface PlayerLobbyProps {
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    background: theme.palette.background.paper
   }
 }));
 
