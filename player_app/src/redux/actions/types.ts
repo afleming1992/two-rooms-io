@@ -20,8 +20,7 @@ export enum Actions {
 }
 
 export enum RevealActions {
-    DO_CARD_REVEAL = "DO_CARD_REVEAL",
-    DO_COLOUR_REVEAL = "DO_COLOUR_REVEAL",
+    DO_REVEAL = "DO_REVEAL",
     CLEAR_REVEAL = "CLEAR_REVEAL"
 }
 

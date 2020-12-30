@@ -1,37 +1,24 @@
 import {RevealActions} from "./types";
-import {Team} from "../../domain/Team";
-import {Card} from "../../domain/Card";
 
-const doColourReveal = (eventId: string, shownColour: Team, playerName: String) => {
+const doReveal = (eventId: string) => {
     return {
-        type: RevealActions.DO_COLOUR_REVEAL,
+        type: RevealActions.DO_REVEAL,
         data: {
             eventId,
-            shownColour,
-            playerName,
         }
     }
 }
 
-const doCardReveal = (eventId: string, shownCard: Card, playerName: String) => {
+const clearReveal = (eventId: string) => {
     return {
-        type: RevealActions.DO_CARD_REVEAL,
+        type: RevealActions.CLEAR_REVEAL,
         data: {
-            eventId,
-            shownCard,
-            playerName
+            eventId
         }
-    }
-}
-
-const clearReveal = () => {
-    return {
-        type: RevealActions.CLEAR_REVEAL
     }
 }
 
 export default {
-    doCardReveal,
-    doColourReveal,
+    doReveal,
     clearReveal
 }

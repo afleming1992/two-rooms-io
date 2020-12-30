@@ -1,5 +1,6 @@
 export enum RequestResponse {
-    NO_ANSWER,
+    NO_RESPONSE,
     ACCEPTED,
-    DECLINED
+    DECLINED,
+    NO_ANSWER_REQUIRED
 }

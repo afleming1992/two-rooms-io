@@ -6,8 +6,8 @@ import gameReducer, {GameState} from './game';
 import timerReducer, {TimerState} from './timer';
 import cardReducer, {CardState} from "./card";
 import sessionReducer, {SessionState} from "./session";
-import eventsReducer, {EventsState} from "./events";
-import revealReducer, {RevealState} from "./reveal";
+import eventsReducer, {EventsState} from "./new_events";
+import shareReducer, {ShareState} from "./share";
 
 export interface AppState {
         game: GameState,
@@ -18,7 +18,7 @@ export interface AppState {
         card: CardState,
         session: SessionState,
         events: EventsState,
-        reveal: RevealState
+        share: ShareState,
 }
 
 const rootReducer = combineReducers({
@@ -30,7 +30,7 @@ const rootReducer = combineReducers({
         card: cardReducer,
         session: sessionReducer,
         events: eventsReducer,
-        reveal: revealReducer
+        share: shareReducer
     }
 );
 
