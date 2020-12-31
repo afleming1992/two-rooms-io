@@ -1,5 +1,11 @@
 import {Action} from "redux";
 
+export enum ActionModalActions {
+    OPEN_SHARE_MODAL,
+    CLOSE_MODAL,
+    OPEN_REVEAL_MODAL,
+}
+
 export enum Actions {
     CONNECTED="CONNECTED",
     DISCONNECTED="DISCONNECTED",

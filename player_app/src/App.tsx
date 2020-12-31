@@ -7,12 +7,11 @@ import {AppState} from "./redux/reducers";
 import Home from "./pages/Home";
 import Lobby from "./pages/Lobby";
 import GameMain from "./pages/GameMain";
-import ActionsButton from "./components/ActionsButton";
+import ActionModal from "./pages/GameMain/ActionModal";
 
 interface AppProps {
   view: ViewState,
-  connected: boolean,
-  backdrop: boolean
+  connected: boolean
 }
 
 const theme = createMuiTheme({
@@ -60,6 +59,7 @@ const App: React.FC<AppProps> = (props) => {
               props.view === ViewState.IN_ROUND &&
                 <GameMain />
             }
+            <ActionModal />
       </ThemeProvider>
     );
 }
@@ -67,8 +67,7 @@ const App: React.FC<AppProps> = (props) => {
 const mapStateToProps = (state: AppState) => {
     return {
       connected: state.player.connected,
-      view: state.view,
-      backdrop: state.toggles.backdropOpen
+      view: state.view
     }
 }
 

@@ -24,8 +24,7 @@ interface GameMainProps {
   players: User[] | undefined,
   host: User | undefined,
   card: Card | undefined,
-  deck: Card[] | undefined,
-  backdropOpen: boolean
+  deck: Card[] | undefined
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -87,8 +86,7 @@ const mapStateToProps = (state: AppState) => {
         currentPlayer: state.player.userToken,
         host: state.game.host,
         card: state.card.card,
-        deck: state.game.deck,
-        backdropOpen: state.toggles.backdropOpen
+        deck: state.game.deck
     }
 }
 

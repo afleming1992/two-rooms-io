@@ -6,9 +6,12 @@ import {faComments, faEye, faPeopleArrows, faTimes} from '@fortawesome/free-soli
 import {AppState} from "../redux/reducers";
 import {Action, bindActionCreators, Dispatch} from "redux";
 import {connect} from "react-redux";
+import actionModalCreators from "../redux/actions/actionModalCreators";
 
 interface ActionsButtonProps {
-  hidden: boolean
+  hidden: boolean,
+  openRevealModal: any,
+  openShareModal: any
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -23,9 +26,17 @@ const ActionsButton:React.FC<ActionsButtonProps> = (props) => {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
 
+  const openPrivateReveal = () => {
+    props.openRevealModal()
+  }
+
+  const openShareModal = () => {
+    props.openShareModal()
+  }
+
   const actions = [
-    { icon: <FontAwesomeIcon icon={faEye} />, name: "Private Reveal" },
-    { icon: <FontAwesomeIcon icon={faPeopleArrows} />, name: "Share" }
+    { icon: <FontAwesomeIcon icon={faEye} />, name: "Private Reveal", onClick: openPrivateReveal },
+    { icon: <FontAwesomeIcon icon={faPeopleArrows} />, name: "Share", onClick: openShareModal }
   ]
 
   return (
@@ -45,7 +56,7 @@ const ActionsButton:React.FC<ActionsButtonProps> = (props) => {
             icon={action.icon}
             tooltipTitle={action.name}
             tooltipOpen
-            onClick={() => setOpen(false)}
+            onClick={action.onClick}
           />
         ))
       }
@@ -61,7 +72,8 @@ const mapStateToProps = (state: AppState) => {
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>) =>
   bindActionCreators({
-
+    openRevealModal: actionModalCreators.openRevealModal,
+    openShareModal: actionModalCreators.openShareModal
   }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActionsButton);
