@@ -7,10 +7,12 @@ import {AppState} from "./redux/reducers";
 import Home from "./pages/Home";
 import Lobby from "./pages/Lobby";
 import GameMain from "./pages/GameMain";
+import ActionsButton from "./components/ActionsButton";
 
 interface AppProps {
   view: ViewState,
   connected: boolean,
+  backdrop: boolean
 }
 
 const theme = createMuiTheme({
@@ -46,18 +48,18 @@ const App: React.FC<AppProps> = (props) => {
             <CircularProgress color="inherit" />
             <span className={classes.loadingText}>Loading...</span>
           </Backdrop>
-          {
-            props.view === ViewState.JOIN_GAME &&
-              <Home />
-          }
-          {
-            props.view === ViewState.IN_LOBBY &&
-              <Lobby />
-          }
-          {
-            props.view === ViewState.IN_ROUND &&
-              <GameMain />
-          }
+            {
+              props.view === ViewState.JOIN_GAME &&
+                <Home />
+            }
+            {
+              props.view === ViewState.IN_LOBBY &&
+                <Lobby />
+            }
+            {
+              props.view === ViewState.IN_ROUND &&
+                <GameMain />
+            }
       </ThemeProvider>
     );
 }
@@ -65,7 +67,8 @@ const App: React.FC<AppProps> = (props) => {
 const mapStateToProps = (state: AppState) => {
     return {
       connected: state.player.connected,
-      view: state.view
+      view: state.view,
+      backdrop: state.toggles.backdropOpen
     }
 }
 
