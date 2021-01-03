@@ -1,5 +1,6 @@
 import {SocketAction, Actions} from "./types";
 import {CardShareType} from "../../domain/Sharing";
+import {User} from "../../domain/User";
 
 const joinGame = (name: string): SocketAction => {
     return {
@@ -67,7 +68,7 @@ const reloadGameSession = (gameToken: String, playerToken: String, playerSecret:
     }
 }
 
-const requestShare = ( type: CardShareType, recipient: string) => {
+const requestShare = ( type: CardShareType, recipient: User) => {
     return {
         type: Actions.REQUEST_SHARE,
         meta: {
@@ -75,7 +76,7 @@ const requestShare = ( type: CardShareType, recipient: string) => {
         },
         payload: {
             type,
-            recipient
+            recipient: recipient.userToken
         }
     }
 }
@@ -104,7 +105,7 @@ const rejectShare = ( id: string ) => {
     }
 }
 
-const privateReveal = ( type: CardShareType, recipient: string ) => {
+const privateReveal = ( type: CardShareType, recipient: User ) => {
     return {
         type: Actions.PRIVATE_REVEAL,
         meta: {
@@ -112,7 +113,7 @@ const privateReveal = ( type: CardShareType, recipient: string ) => {
         },
         payload: {
             type,
-            recipient
+            recipient: recipient.userToken
         }
     }
 }
@@ -138,7 +139,7 @@ const revealPlayerAssignment = ( cardKey: string ) => {
     }
 }
 
-const creators = {
+const gameActionCreators = {
     joinGame,
     nextRound,
     startTimer,
@@ -153,5 +154,5 @@ const creators = {
     revealPlayerAssignment
 }
 
-export default creators;
+export default gameActionCreators;
 

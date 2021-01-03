@@ -6,7 +6,7 @@ import GameCheckChip from "../GameCheckChip";
 import {Action, bindActionCreators, Dispatch} from "redux";
 import {connect} from "react-redux";
 import {AppState} from "../../redux/reducers";
-import actionCreators from "../../redux/actions/creators";
+import actionCreators from "../../redux/actions/gameActionCreators";
 
 interface LobbyNavBar {
   isHost: boolean,

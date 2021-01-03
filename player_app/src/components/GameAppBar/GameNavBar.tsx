@@ -5,7 +5,7 @@ import {AppState} from "../../redux/reducers";
 import {Action, bindActionCreators, Dispatch} from "redux";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCrown, faForward, faRedoAlt } from '@fortawesome/free-solid-svg-icons';
-import actionCreators from "../../redux/actions/creators";
+import actionCreators from "../../redux/actions/gameActionCreators";
 import GameTimer from './GameTimer';
 import HostagesRequiredChip from "./HostagesRequiredChip";
 import Round from "../../domain/Round";

@@ -3,7 +3,7 @@ import rootReducer from "./reducers";
 import io from 'socket.io-client';
 import createSocketIoMiddleware from './middleware/socketMiddleware';
 import {actionListeners} from "./actions/listeners";
-import actionCreators from './actions/creators';
+import actionCreators from './actions/gameActionCreators';
 import {SessionState} from "./reducers/session";
 
 declare global {

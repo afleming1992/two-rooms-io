@@ -9,9 +9,9 @@ import {connect} from "react-redux";
 import actionModalCreators from "../redux/actions/actionModalCreators";
 
 interface ActionsButtonProps {
-  hidden: boolean,
   openRevealModal: any,
-  openShareModal: any
+  openShareModal: any,
+  isTimerRunning: boolean
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -43,7 +43,7 @@ const ActionsButton:React.FC<ActionsButtonProps> = (props) => {
     <SpeedDial
       className={classes.speedDial}
       ariaLabel="Actions SpeedDial"
-      hidden={props.hidden}
+      hidden={!props.isTimerRunning}
       icon={<FontAwesomeIcon icon={faComments} />}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
@@ -66,7 +66,7 @@ const ActionsButton:React.FC<ActionsButtonProps> = (props) => {
 
 const mapStateToProps = (state: AppState) => {
   return {
-
+    isTimerRunning: state.timer.timerRunning
   }
 }
 

@@ -7,7 +7,7 @@ import {AppState} from "../../redux/reducers";
 import {Action, bindActionCreators, Dispatch} from "redux";
 import {connect} from "react-redux";
 import {green, red} from "@material-ui/core/colors";
-import actionCreators from "../../redux/actions/creators"
+import actionCreators from "../../redux/actions/gameActionCreators"
 
 interface GameTimerProps {
   timer: TimerState,

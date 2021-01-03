@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import {Container, makeStyles} from "@material-ui/core";
 import JoinGameForm from "../components/JoinGameForm";
 import {Action, bindActionCreators, Dispatch} from "redux";
-import actionCreators from "../redux/actions/creators";
+import actionCreators from "../redux/actions/gameActionCreators";
 
 interface HomeProps {
   joinGame: any,

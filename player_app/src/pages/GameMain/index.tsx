@@ -70,7 +70,7 @@ const GameMain: React.FC<GameMainProps> = (props) => {
           view === GameMainTabView.CARD &&
           <CardView card={props.card} deck={props.deck} />
         }
-        <ActionsButton hidden={ view !== GameMainTabView.ACTIONS } />
+        <ActionsButton />
         <BottomNavigation value={view} onChange={(event, newValue) => { setView( newValue ) } } showLabels className={classes.stickToBottom}>
           <BottomNavigationAction label="Room" icon={<FontAwesomeIcon size="2x" icon={faDoorOpen} />} value={GameMainTabView.ROOM} />
           <BottomNavigationAction label="Actions" icon={<FontAwesomeIcon size="2x" icon={faComments} />} value={GameMainTabView.ACTIONS} />

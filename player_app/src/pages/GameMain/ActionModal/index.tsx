@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {connect} from "react-redux";
 import {
-  AppBar,
+  AppBar, Avatar,
   Button,
   Dialog, Divider,
   IconButton,
@@ -24,11 +24,14 @@ import actionModalCreators from "../../../redux/actions/actionModalCreators";
 import PlayerAvatar from "../../../components/PlayerAvatar";
 import {User} from "../../../domain/User";
 import {CardShareType} from "../../../domain/Sharing";
+import gameActionCreators from "../../../redux/actions/gameActionCreators";
+import { Card as RoleCard } from '../../../domain/Card';
 
 interface ActionModalProps {
   isActionModalOpen: boolean,
   actionType: ActionMode,
-  closeModal: any
+  closeModal: any,
+  card: RoleCard | undefined
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -58,8 +61,30 @@ const ActionModal:React.FC<ActionModalProps> = (props) => {
     props.closeModal()
   }
 
-  const onSend = () => {
+  const canSend = ( type: ActionMode ) => {
+    switch( type ) {
+      case ActionMode.REVEAL:
+        return player !== undefined && type !== undefined;
+      case ActionMode.SHARE:
+        return player !== undefined && type !== undefined;
+      default:
+        return false;
+    }
+  }
 
+  const onSend = () => {
+    switch (props.actionType) {
+      case ActionMode.REVEAL:
+        if( player !== undefined && type !== undefined ) {
+          gameActionCreators.privateReveal(type, player);
+        }
+        break;
+      case ActionMode.SHARE:
+        if( player !== undefined && type !== undefined ) {
+          gameActionCreators.requestShare(type, player);
+        }
+        break;
+    }
   }
 
   return (
@@ -72,13 +97,16 @@ const ActionModal:React.FC<ActionModalProps> = (props) => {
           <Typography variant="h6" className={classes.title}>
             Share
           </Typography>
-          <Button disabled={true} autoFocus color="inherit" onClick={handleClose}>
+          <Button disabled={!canSend(props.actionType)} autoFocus color="inherit" onClick={onSend}>
             Send
           </Button>
         </Toolbar>
       </AppBar>
       <List>
         <ListItem button>
+          <ListItemAvatar>
+            <Avatar src={`role/${ props.card?.cardImage }.png`} />
+          </ListItemAvatar>
           <ListItemText primary="Type" secondary="Colour" />
         </ListItem>
         <Divider />
@@ -96,7 +124,8 @@ const ActionModal:React.FC<ActionModalProps> = (props) => {
 const mapStateToProps = (state: AppState) => {
   return {
     isActionModalOpen: state.actionModal.isActionModalOpen,
-    actionType: state.actionModal.actionType
+    actionType: state.actionModal.actionType,
+    card: state.card.card
   }
 }
 
