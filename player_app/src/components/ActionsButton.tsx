@@ -43,7 +43,7 @@ const ActionsButton:React.FC<ActionsButtonProps> = (props) => {
     <SpeedDial
       className={classes.speedDial}
       ariaLabel="Actions SpeedDial"
-      hidden={!props.isTimerRunning}
+      hidden={false} // Need to change this back to isTimerRunning once development is completed
       icon={<FontAwesomeIcon icon={faComments} />}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
