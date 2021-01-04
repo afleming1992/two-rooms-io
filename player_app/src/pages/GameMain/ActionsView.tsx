@@ -7,7 +7,7 @@ interface ActionsViewProps {
 
 const ActionsView: React.FC<ActionsViewProps> = (props) => {
   return (
-    <Container>
+    <Container disableGutters>
       <EventTimeline />
     </Container>
   );
