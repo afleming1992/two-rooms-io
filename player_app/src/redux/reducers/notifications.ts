@@ -10,14 +10,6 @@ const initialState: NotificationsState = {
   notifications: new Array<AppNotification>()
 }
 
-const removeNotification = (notifications: Array<AppNotification>, idToBeRemoved: string ) => {
-  let updatedEvents = [...notifications];
-
-  updatedEvents = updatedEvents.filter( notification => notification.id !== idToBeRemoved)
-
-  return updatedEvents;
-}
-
 const addNotification = (state: NotificationsState, notification: AppNotification) => {
   return {
     ...state,
@@ -55,10 +47,6 @@ const notificationsReducer = (state: NotificationsState = initialState, action: 
       return addNotification(state, new AppNotification("Joined Game Successfully", {
         variant: "success"
       }));
-    case Listeners.CARD_UPDATE:
-      return addNotification(state, new AppNotification(`Your card has changed!`, {
-        variant: "warning"
-      }))
     case Listeners.REQUEST_SHARE_SUCCESS:
       return addNotification(state, new AppNotification(`Share Request Sent!`, {
         variant: "success"
