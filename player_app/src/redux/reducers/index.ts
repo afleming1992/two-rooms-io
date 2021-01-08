@@ -9,6 +9,7 @@ import sessionReducer, {SessionState} from "./session";
 import eventsReducer, {EventsState} from "./new_events";
 import shareReducer, {ShareState} from "./share";
 import actionModalReducer, {ActionModalState} from "./actionModal";
+import notificationsReducer, {NotificationsState} from "./notifications";
 
 export interface AppState {
         game: GameState,
@@ -20,6 +21,7 @@ export interface AppState {
         session: SessionState,
         events: EventsState,
         share: ShareState,
+        notifications: NotificationsState,
         actionModal: ActionModalState
 }
 
@@ -33,6 +35,7 @@ const rootReducer = combineReducers({
         session: sessionReducer,
         events: eventsReducer,
         share: shareReducer,
+        notifications: notificationsReducer,
         actionModal: actionModalReducer,
     }
 );

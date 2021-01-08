@@ -30,6 +30,11 @@ export enum RevealActions {
     CLEAR_REVEAL = "CLEAR_REVEAL"
 }
 
+export enum NotificationActions {
+    CLOSE_SNACKBAR = "CLOSE_SNACKBAR",
+    REMOVE_SNACKBAR = "REMOVE_SNACKBAR"
+}
+
 export interface SocketAction extends Action {
     type: Actions,
     meta: {

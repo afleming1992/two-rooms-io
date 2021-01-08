@@ -1,4 +1,12 @@
-import {Backdrop, CircularProgress, createMuiTheme, CssBaseline, makeStyles, ThemeProvider} from '@material-ui/core';
+import {
+  Backdrop,
+  CircularProgress,
+  Container,
+  createMuiTheme,
+  CssBaseline,
+  makeStyles,
+  ThemeProvider
+} from '@material-ui/core';
 import React from 'react';
 import './App.css';
 import {ViewState} from "./redux/reducers/view";
@@ -8,6 +16,8 @@ import Home from "./pages/Home";
 import Lobby from "./pages/Lobby";
 import GameMain from "./pages/GameMain";
 import ActionModal from "./pages/GameMain/ActionModal";
+import { SnackbarProvider } from 'notistack';
+import Notifications from "./components/Notifications";
 
 interface AppProps {
   view: ViewState,
@@ -42,11 +52,13 @@ const App: React.FC<AppProps> = (props) => {
 
     return (
       <ThemeProvider theme={theme}>
-        <CssBaseline />
+        <SnackbarProvider>
+          <CssBaseline />
           <Backdrop open={!props.connected}>
             <CircularProgress color="inherit" />
             <span className={classes.loadingText}>Loading...</span>
           </Backdrop>
+          <Notifications />
             {
               props.view === ViewState.JOIN_GAME &&
                 <Home />
@@ -59,7 +71,8 @@ const App: React.FC<AppProps> = (props) => {
               props.view === ViewState.IN_ROUND &&
                 <GameMain />
             }
-            <ActionModal />
+              <ActionModal />
+        </SnackbarProvider>
       </ThemeProvider>
     );
 }

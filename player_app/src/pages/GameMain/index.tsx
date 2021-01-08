@@ -18,6 +18,7 @@ import CardView from './CardView';
 import {Card} from "../../domain/Card";
 import ActionsView from "./ActionsView";
 import ActionsButton from "../../components/ActionsButton";
+import Notifications from "../../components/Notifications";
 
 interface GameMainProps {
   currentPlayer: string | undefined,

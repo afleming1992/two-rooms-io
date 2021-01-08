@@ -1,7 +1,4 @@
 import {RequestResponse} from "./RequestResponse";
-import {Card} from "./Card";
-import * as uuid from "uuid";
-import {Team} from "./Team";
 
 export enum EventType {
   COLOUR_SHARE = "COLOUR_SHARE",
