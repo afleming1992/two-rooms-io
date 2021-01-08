@@ -105,7 +105,7 @@ public class UserActionController {
 			try {
 				gameEngine.revealCardAssignment( user.get(), card );
 			} catch ( GameException e ) {
-				client.sendEvent("REVEAL_CARD_ASSIGNMENT_ERROR", e.getMessage());
+				client.sendEvent("REVEAL_CARD_ASSIGNMENT_ERROR", Response.error( e.getMessage() ) );
 			}
 		}
 	}
@@ -118,7 +118,7 @@ public class UserActionController {
 				CardShareRequest approvedRequest = gameEngine.requestShare( requestor.get(), request );
 				client.sendEvent("REQUEST_SHARE_SUCCESS", approvedRequest );
 			} catch ( GameException e ) {
-				client.sendEvent( "REQUEST_SHARE_ERROR", e.getMessage() );
+				client.sendEvent( "REQUEST_SHARE_ERROR", Response.error(e.getMessage()) );
 			}
 		}
 	}
@@ -129,7 +129,7 @@ public class UserActionController {
 			try {
 				gameEngine.acceptShare( requestor.get(), requestId );
 			} catch ( GameException e ) {
-				client.sendEvent( "ANSWER_SHARE_ERROR", e.getMessage() );
+				client.sendEvent( "ANSWER_SHARE_ERROR", Response.error(e.getMessage()) );
 			}
 		}
 	}
@@ -141,7 +141,7 @@ public class UserActionController {
 				gameEngine.rejectShare( requestor.get(), requestId );
 				client.sendEvent("REJECT_SHARE_SUCCESS", new RequestShareResponse( requestId ) );
 			} catch ( GameException e ) {
-				client.sendEvent( "ANSWER_SHARE_ERROR", e.getMessage() );
+				client.sendEvent( "ANSWER_SHARE_ERROR", Response.error(e.getMessage()) );
 			}
 		}
 	}
@@ -152,7 +152,7 @@ public class UserActionController {
 			try {
 				gameEngine.privateReveal( requestor.get(), request );
 			} catch ( GameException e ) {
-				client.sendEvent("REQUEST_SHARE_ERROR", e.getMessage() );
+				client.sendEvent("REQUEST_SHARE_ERROR", Response.error(e.getMessage()) );
 			}
 		}
 	}
