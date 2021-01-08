@@ -53,9 +53,9 @@ const buildEventForShare = ( data: any ) => {
 
 const buildEventForReveal = ( data: any ) => {
   if ( data.type === "ROLE" ) {
-    return GameEvent.privateRoleReveal( data.id, data.requestor )
+    return GameEvent.privateRoleReveal( data.id, data.userToken )
   } else {
-    return GameEvent.privateColourReveal( data.id, data.requestor )
+    return GameEvent.privateColourReveal( data.id, data.userToken )
   }
 }
 

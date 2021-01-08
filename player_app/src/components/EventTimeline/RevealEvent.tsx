@@ -9,7 +9,7 @@ import TimelineEvent from "./ TimelineEvent";
 interface RevealEventProps {
   id: string | undefined
   lastUpdate?: Date | undefined,
-  type: EventType
+  type: EventType,
   requestor: User | undefined
 }
 
