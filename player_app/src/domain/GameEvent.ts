@@ -15,6 +15,7 @@ export enum EventType {
 
 export default class GameEvent {
   public id: string | undefined;
+  public lastUpdated: Date;
   public systemEvent: boolean;
   public type: EventType;
   public requestor: string | undefined;
@@ -27,6 +28,7 @@ export default class GameEvent {
     this.type = type;
     this.systemEvent = systemEvent;
     this.requestor = requestor;
+    this.lastUpdated = new Date();
   }
 
   static roleRequest( id: string, requestor: string, recipient: string ) {
