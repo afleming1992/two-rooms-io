@@ -54,7 +54,7 @@ const RevealEvent: React.FC<RevealEventProps> = ({id, lastUpdate, type, requesto
     case EventType.COLOUR_REVEAL:
       title = `${requestor?.name} has revealed their colour to you`;
       break;
-    case EventType.ROLE_SHARE:
+    case EventType.ROLE_REVEAL:
       title = `${requestor?.name} has revealed their role to you`;
   }
 

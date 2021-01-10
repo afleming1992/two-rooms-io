@@ -1,14 +1,16 @@
 import React from 'react';
 import {Card as RoleCard} from "../domain/Card";
-import {Card, CardContent, CardMedia, makeStyles, Typography} from "@material-ui/core";
+import {Avatar, Card, CardContent, CardMedia, makeStyles, Typography} from "@material-ui/core";
 import TeamChip from "./TeamChip";
 
 interface PlayerCardProps {
-  card: RoleCard
+  card: RoleCard,
+  introText: string
 }
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    textAlign: "left",
     marginTop: theme.spacing(1),
     display: 'flex',
     marginBottom: theme.spacing(2)
@@ -21,11 +23,21 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: 'Lato, san-serif',
     textTransform: "uppercase",
   },
-  roleTitle: {
+  avatar: {
+    height: theme.spacing(7),
+    width: theme.spacing(7),
+    margin: theme.spacing(2)
+  },
+  role: {
     fontFamily: 'Bebas Neue',
     textTransform: "uppercase",
     fontSize: "4em",
-    fontWeight: "bolder"
+    fontWeight: "bolder",
+    display: "flex",
+  },
+  roleTitle: {
+    marginTop: theme.spacing(1.5),
+    height: "fill"
   },
   subtitle: {
     fontFamily: 'Lato, san-serif',
@@ -54,18 +66,14 @@ const PlayerCard: React.FC<PlayerCardProps> = (props) => {
   }
   return (
     <Card className={classes.root} raised>
-      <CardMedia
-        className={classes.cover}
-        image={`role/${props.card.cardImage}.png`}
-        title={ props.card.title }
-      />
       <div className={classes.details}>
         <CardContent className={classes.content}>
           <Typography className={classes.youAreThe}>
-            You are the
+            { props.introText }
           </Typography>
-          <Typography className={classes.roleTitle} variant="h3">
-            { props.card.title }
+          <Typography className={classes.role} variant="h3">
+            <Avatar className={classes.avatar} src={`role/${ props.card.cardImage }.png`} />
+            <span className={classes.roleTitle}>{ props.card.title }</span>
           </Typography>
           <TeamChip team={props.card.team} />
           <Typography className={classes.subtitle} variant="subtitle1">

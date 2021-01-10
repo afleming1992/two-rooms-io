@@ -20,7 +20,7 @@ const CardView: React.FC<CardViewProps> = (props) => {
     <Container>
       {
         props.card !== undefined &&
-        <PlayerCard card={props.card} />
+        <PlayerCard card={props.card} introText={"You are the"}/>
       }
       <br />
       <Typography variant="h5">
