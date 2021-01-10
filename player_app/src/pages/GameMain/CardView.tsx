@@ -9,13 +9,7 @@ interface CardViewProps {
   deck: Card[] | undefined
 }
 
-const useStyles = makeStyles((theme) => ({
-
-}));
-
 const CardView: React.FC<CardViewProps> = (props) => {
-  const classes = useStyles();
-
   const excludedCards: Card[] = [];
 
   if ( props.card ) {

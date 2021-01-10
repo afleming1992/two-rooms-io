@@ -1,7 +1,6 @@
 import {
   Backdrop,
   CircularProgress,
-  Container,
   createMuiTheme,
   CssBaseline,
   makeStyles,
@@ -18,6 +17,7 @@ import GameMain from "./pages/GameMain";
 import ActionModal from "./pages/GameMain/ActionModal";
 import { SnackbarProvider } from 'notistack';
 import Notifications from "./components/Notifications";
+import RevealModal from "./components/RevealModal";
 
 interface AppProps {
   view: ViewState,
@@ -71,7 +71,8 @@ const App: React.FC<AppProps> = (props) => {
               props.view === ViewState.IN_ROUND &&
                 <GameMain />
             }
-              <ActionModal />
+            <ActionModal />
+            <RevealModal />
         </SnackbarProvider>
       </ThemeProvider>
     );

@@ -63,6 +63,7 @@ const EventTimeline: React.FC<EventTimelineProps> = (props) => {
             lastUpdate={event.lastUpdated}
             type={event.type}
             requestor={getPlayerByToken( event.requestor )}
+            viewed={event.responded}
           />
         )
     }
@@ -74,9 +75,6 @@ const EventTimeline: React.FC<EventTimelineProps> = (props) => {
 
   return (
     <>
-      <Box className={classes.headingContainer}>
-        <Typography variant="h6">Important Events</Typography>
-      </Box>
       <Box className={classes.headingContainer}>
         <Typography variant="h6">Events</Typography>
       </Box>

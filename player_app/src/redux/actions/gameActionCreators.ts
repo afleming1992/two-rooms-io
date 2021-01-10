@@ -2,7 +2,7 @@ import {SocketAction, Actions} from "./types";
 import {CardShareType} from "../../domain/Sharing";
 import {User} from "../../domain/User";
 
-const joinGame = (name: string): SocketAction => {
+export const joinGame = (name: string): SocketAction => {
     return {
         type: Actions.JOIN_GAME,
         meta: {
@@ -14,7 +14,7 @@ const joinGame = (name: string): SocketAction => {
     }
 }
 
-const nextRound = (): SocketAction => {
+export const nextRound = (): SocketAction => {
     return {
         type: Actions.NEXT_ROUND,
         meta: {
@@ -24,7 +24,7 @@ const nextRound = (): SocketAction => {
     }
 }
 
-const startTimer = (): SocketAction => {
+export const startTimer = (): SocketAction => {
     return {
         type: Actions.START_TIMER,
         meta: {
@@ -34,7 +34,7 @@ const startTimer = (): SocketAction => {
     }
 }
 
-const pauseTimer = (): SocketAction => {
+export const pauseTimer = (): SocketAction => {
     return {
         type: Actions.PAUSE_TIMER,
         meta: {
@@ -44,7 +44,7 @@ const pauseTimer = (): SocketAction => {
     }
 }
 
-const restartTimer = (): SocketAction => {
+export const restartTimer = (): SocketAction => {
     return {
         type: Actions.RESTART_TIMER,
         meta: {
@@ -54,7 +54,7 @@ const restartTimer = (): SocketAction => {
     }
 }
 
-const reloadGameSession = (gameToken: String, playerToken: String, playerSecret: String): SocketAction => {
+export const reloadGameSession = (gameToken: String, playerToken: String, playerSecret: String): SocketAction => {
     return {
         type: Actions.RELOAD_GAME_SESSION,
         meta: {
@@ -68,7 +68,7 @@ const reloadGameSession = (gameToken: String, playerToken: String, playerSecret:
     }
 }
 
-const requestShare = ( type: CardShareType, recipient: User) => {
+export const requestShare = ( type: CardShareType, recipient: User) => {
     return {
         type: Actions.REQUEST_SHARE,
         meta: {
@@ -81,7 +81,7 @@ const requestShare = ( type: CardShareType, recipient: User) => {
     }
 }
 
-const acceptShare = ( id: string ) => {
+export const acceptShare = ( id: string ) => {
     return {
         type: Actions.ACCEPT_SHARE,
         meta: {
@@ -93,7 +93,7 @@ const acceptShare = ( id: string ) => {
     }
 }
 
-const rejectShare = ( id: string ) => {
+export const rejectShare = ( id: string ) => {
     return {
         type: Actions.REJECT_SHARE,
         meta: {
@@ -105,7 +105,7 @@ const rejectShare = ( id: string ) => {
     }
 }
 
-const privateReveal = ( type: CardShareType, recipient: User ) => {
+export const privateReveal = ( type: CardShareType, recipient: User ) => {
     return {
         type: Actions.PRIVATE_REVEAL,
         meta: {
@@ -118,7 +118,16 @@ const privateReveal = ( type: CardShareType, recipient: User ) => {
     }
 }
 
-const dismissEvent = ( id: string ) => {
+export const respondToEvent = ( id: string ) => {
+    return {
+        type: Actions.RESPOND_TO_EVENT,
+        payload: {
+            id
+        }
+    }
+}
+
+export const dismissEvent = ( id: string ) => {
     return {
         type: Actions.DISMISS_EVENT,
         payload: {
@@ -127,7 +136,7 @@ const dismissEvent = ( id: string ) => {
     }
 }
 
-const revealPlayerAssignment = ( cardKey: string ) => {
+export const revealPlayerAssignment = ( cardKey: string ) => {
     return {
         type: Actions.REVEAL_CARD_ASSIGNMENT,
         meta: {

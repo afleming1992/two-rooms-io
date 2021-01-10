@@ -8,6 +8,7 @@ interface TimelineEventProps {
   text: string
   timelineIcon: IconDefinition
   lastUpdate?: Date | undefined
+  actionButtons?: React.ReactNode
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -70,10 +71,12 @@ const TimelineEvent: React.FC<TimelineEventProps> = (props) => {
         <Paper elevation={3} className={classes.paper}>
           <Typography className={classes.mainText} variant="subtitle1">{ props.text }</Typography>
           <Typography className={classes.minutesAgo} variant="subtitle2">{ lastUpdate }</Typography>
-          <div className={classes.actionButtons}>
-            <Button startIcon={<FontAwesomeIcon icon={faCheck} size="xs" />}>Accept</Button>
-            <Button startIcon={<FontAwesomeIcon icon={faTimes} size="xs" />}>Decline</Button>
-          </div>
+          {
+            props.actionButtons &&
+            <div className={classes.actionButtons}>
+              { props.actionButtons }
+            </div>
+          }
         </Paper>
       </TimelineContent>
     </LeftTimelineItem>
