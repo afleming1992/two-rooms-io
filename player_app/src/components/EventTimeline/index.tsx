@@ -4,13 +4,14 @@ import {Box, Button, makeStyles, Paper, Typography} from "@material-ui/core";
 import GameEvent, {EventType} from "../../domain/GameEvent";
 import {AppState} from "../../redux/reducers";
 import {Action, bindActionCreators, Dispatch} from "redux";
-import ShareEvent from "./ShareEvent";
 import {User} from "../../domain/User";
 import {
   Alert,
   Timeline,
 } from "@material-ui/lab";
-import RevealEvent from "./RevealEvent";
+import RevealEvent from "./events/RevealEvent";
+import RequestedShareEvent from "./events/RequestedShareEvent";
+import ReceivedShareEvent from "./events/ReceivedShareEvent";
 
 interface EventTimelineProps {
   timeline: Array<GameEvent>,
@@ -45,16 +46,28 @@ const EventTimeline: React.FC<EventTimelineProps> = (props) => {
     switch(event.type) {
       case EventType.COLOUR_SHARE:
       case EventType.ROLE_SHARE:
-        return (
-          <ShareEvent
+        if ( event.requestor === props.currentPlayerToken ) {
+          return (
+            <RequestedShareEvent
             id={event.id}
             lastUpdate={event.lastUpdated}
             type={event.type}
-            isCurrentPlayerRequestor={ event.requestor === props.currentPlayerToken }
             recipient={getPlayerByToken( event.recipient )}
-            requestor={getPlayerByToken( event.requestor )}
-          />
-        );
+            responded={event.responded}
+            recipientResponse={event.recipientResponse}
+            revealViewed={event.revealViewed} />);
+        } else {
+          return (
+            <ReceivedShareEvent
+            id={event.id}
+            lastUpdate={event.lastUpdated}
+            type={event.type}
+            requestor={getPlayerByToken(event.requestor)}
+            responded={event.responded}
+            recipientResponse={event.recipientResponse}
+            revealViewed={event.revealViewed} />
+          );
+        }
       case EventType.ROLE_REVEAL:
       case EventType.COLOUR_REVEAL:
         return (
@@ -63,7 +76,7 @@ const EventTimeline: React.FC<EventTimelineProps> = (props) => {
             lastUpdate={event.lastUpdated}
             type={event.type}
             requestor={getPlayerByToken( event.requestor )}
-            viewed={event.responded}
+            viewed={event.revealViewed}
           />
         )
     }

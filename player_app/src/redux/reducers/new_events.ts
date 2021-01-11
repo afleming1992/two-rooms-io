@@ -92,7 +92,7 @@ const respondToEvent = (events: Array<GameEvent>, idToBeActioned: string) => {
 
   updatedEvents.forEach((event) => {
     if( event.id === idToBeActioned ) {
-      event.responded = true;
+      event.revealViewed = true;
     }
   });
 

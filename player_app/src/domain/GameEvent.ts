@@ -19,6 +19,7 @@ export default class GameEvent {
   public recipient: string | undefined;
   public responded: boolean = false;
   public accepted: boolean | undefined;
+  public revealViewed: boolean;
   public recipientResponse: RequestResponse = RequestResponse.NO_RESPONSE;
 
   constructor( type: EventType, systemEvent: boolean, requestor: string ) {
@@ -26,6 +27,7 @@ export default class GameEvent {
     this.systemEvent = systemEvent;
     this.requestor = requestor;
     this.lastUpdated = new Date();
+    this.revealViewed = false;
   }
 
   static roleRequest( id: string, requestor: string, recipient: string ) {

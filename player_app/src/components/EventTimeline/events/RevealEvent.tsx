@@ -1,13 +1,13 @@
 import React from 'react';
-import {EventType} from "../../domain/GameEvent";
-import {User} from "../../domain/User";
+import {EventType} from "../../../domain/GameEvent";
+import {User} from "../../../domain/User";
 import {faCheck, faEye } from '@fortawesome/free-solid-svg-icons';
-import TimelineEvent from "./ TimelineEvent";
+import TimelineEvent from "../ TimelineEvent";
 import {useDispatch} from "react-redux";
-import {doReveal} from "../../redux/actions/revealCreators";
+import {doReveal} from "../../../redux/actions/revealCreators";
 import {Button, makeStyles} from "@material-ui/core";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {dismissEvent} from "../../redux/actions/gameActionCreators";
+import {dismissEvent} from "../../../redux/actions/gameActionCreators";
 
 interface RevealEventProps {
   id: string | undefined
