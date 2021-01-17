@@ -20,15 +20,15 @@ export default function eventsReducer(state: EventsState = initialState, action:
       timeline.push( buildEventForShare( action.data ) )
       return {...state, timeline}
     case Actions.ACCEPT_SHARE:
+      return {...state, timeline: updateEventToResponded( timeline, action.payload.requestId, RequestResponse.ACCEPTED )}
     case Actions.REJECT_SHARE:
-      return {...state, pending: updateEventToResponded( timeline, action.payload.requestId, action.type === Actions.ACCEPT_SHARE )}
+      return {...state, timeline: updateEventToResponded( timeline, action.payload.requestId, RequestResponse.DECLINED )}
     case Listeners.CARD_SHARE_ACCEPTED:
-      updateShareEventOnResponse( timeline, action.data.requestId, RequestResponse.ACCEPTED );
-      return {...state, timeline}
+      return {...state, timeline: updateEventToResponded( timeline, action.data.requestId, RequestResponse.ACCEPTED )}
     case Listeners.SHARE_REQUEST_REJECTED:
+      return {...state, timeline: updateEventToResponded( timeline, action.data.requestId, RequestResponse.DECLINED )}
     case Listeners.REJECT_SHARE_SUCCESS:
-      updateShareEventOnResponse( timeline, action.data.requestId, RequestResponse.DECLINED );
-      return {...state, timeline}
+      return {...state, timeline: updateEventToResponded( timeline, action.data.requestId, RequestResponse.DECLINED )}
     case Listeners.PRIVATE_REVEAL_RECEIVED:
       timeline.push( buildEventForReveal( action.data ) )
       return {...state, timeline}
@@ -62,29 +62,19 @@ const buildEventForReveal = ( data: any ) => {
   }
 }
 
-const updateEventToResponded = ( timeline: Array<GameEvent>, eventId: string, accepted: boolean ) => {
+const updateEventToResponded = ( timeline: Array<GameEvent>, eventId: string, recipientResponse?: RequestResponse ) => {
   const updatedEvents = [...timeline]
 
   updatedEvents.forEach( (event) => {
     if ( event.id === eventId ) {
       event.responded = true;
-      event.accepted = accepted;
+      if ( recipientResponse ) {
+        event.recipientResponse = recipientResponse;
+      }
     }
   });
 
   return updatedEvents
-}
-
-const updateShareEventOnResponse = ( timeline: Array<GameEvent>, eventId : string, result: RequestResponse) => {
-  const updatedEvents = [...timeline]
-
-  updatedEvents.forEach( (event) => {
-    if ( event.id === eventId ) {
-      event.recipientResponse = result;
-    }
-  })
-
-  return updatedEvents;
 }
 
 const respondToEvent = (events: Array<GameEvent>, idToBeActioned: string) => {

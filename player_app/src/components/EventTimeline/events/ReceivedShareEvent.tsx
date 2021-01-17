@@ -19,77 +19,86 @@ interface ReceivedShareEvent {
   revealViewed: boolean
 }
 
+interface EventProps {
+  title: string,
+  actionButtons: ReactNode
+}
+
 const ReceivedShareEvent: React.FC<ReceivedShareEvent> = (props) => {
-  let title: string = "";
-  let actionButtons: ReactNode;
   const dispatch = useDispatch();
+  const {id, responded, requestor, recipientResponse, revealViewed, lastUpdate} = props;
 
-  const requestResponseButtons = () => {
-    return (
-      <>
-        <Button onClick={() => dispatch(acceptShare(props.id || "" ))}>Accept</Button>
-        <Button onClick={() => dispatch(rejectShare( props.id || "" ))}>Reject</Button>
-      </>
-    );
+  const emptyActions = (
+    <></>
+  );
+
+  const requestResponseButtons = (
+    <>
+      <Button onClick={() => dispatch(acceptShare(id || "" ))}>Accept</Button>
+      <Button onClick={() => dispatch(rejectShare( id || "" ))}>Reject</Button>
+    </>
+  );
+
+  const revealButton = (
+    <>
+      <Button onClick={() => dispatch(doReveal(id || ""))}>Reveal</Button>
+    </>
+  );
+
+  const dismissButton = (
+    <>
+      <Button onClick={() => dispatch(dismissEvent(id || ""))}>Dismiss</Button>
+    </>
+  );
+
+  let eventProps: EventProps = {
+    title: "",
+    actionButtons: emptyActions
   }
 
-  const revealButton = () => {
-    return (
-      <>
-        <Button onClick={() => dispatch(doReveal(props.id || ""))}>Reveal</Button>
-      </>
-    )
-  }
-
-  const dismissButtons = () => {
-    return (
-      <>
-        <Button onClick={() => dispatch(dismissEvent(props.id || ""))}>Dismiss</Button>
-      </>
-    );
+  const renderedResponded = (type: string) => {
+    if (recipientResponse === RequestResponse.ACCEPTED) {
+      const title = `You accepted ${requestor?.name}'s ${type}`
+      if( !revealViewed ) {
+        return {
+          title,
+          actionButtons: revealButton
+        }
+      } else {
+        return {
+          title,
+          actionButtons: dismissButton
+        }
+      }
+    } else {
+      return {
+        title: `You declined ${requestor?.name}'s ${type}`,
+        actionButtons: dismissButton
+      }
+    }
   }
 
   switch(props.type) {
     case EventType.COLOUR_SHARE:
-      if ( props.responded ) {
-        if ( props.recipientResponse === RequestResponse.ACCEPTED ) {
-          title = `You accepted ${props.requestor?.name}'s Colour Share request`
-          if( !props.revealViewed ) {
-            actionButtons = revealButton();
-          } else {
-            actionButtons = dismissButtons();
-          }
-        } else if (props.recipientResponse === RequestResponse.DECLINED ) {
-          title = `You declined ${props.requestor?.name}'s Colour Share request`
-          actionButtons = dismissButtons();
-        }
+      if ( responded ) {
+        eventProps = renderedResponded("Colour Share Request");
       } else {
-        title = `${props.requestor?.name} would like to share colours`;
-        actionButtons = requestResponseButtons();
+        eventProps.title = `${props.requestor?.name} would like to share colours`;
+        eventProps.actionButtons = requestResponseButtons;
       }
       break;
     case EventType.ROLE_SHARE:
-      if ( props.responded ) {
-        if ( props.recipientResponse === RequestResponse.ACCEPTED ) {
-          title = `You accepted ${props.requestor?.name}'s Role Share request`
-          if( !props.revealViewed ) {
-            actionButtons = revealButton();
-          } else {
-            actionButtons = dismissButtons();
-          }
-        } else if (props.recipientResponse === RequestResponse.DECLINED ) {
-          title = `You declined ${props.requestor?.name}'s Role Share request`
-          actionButtons = dismissButtons();
-        }
+      if ( responded ) {
+        eventProps = renderedResponded("Role Share Request");
       } else {
-        title = `${props.requestor?.name} would like to share roles`;
-        actionButtons = requestResponseButtons();
+        eventProps.title = `${props.requestor?.name} would like to share roles`;
+        eventProps.actionButtons = requestResponseButtons;
       }
       break;
   }
 
   return (
-    <TimelineEvent text={title} timelineIcon={faExchangeAlt} lastUpdate={props.lastUpdate} actionButtons={actionButtons}/>
+    <TimelineEvent text={eventProps.title} timelineIcon={faExchangeAlt} lastUpdate={lastUpdate} actionButtons={eventProps.actionButtons}/>
   );
 };
 
