@@ -10,8 +10,13 @@ interface HostagesRequiredChipProps {
 }
 
 const HostagesRequiredChip: React.FC<HostagesRequiredChipProps> = ({roundData, currentRound}) => {
+  let roundKey =  0;
+  if(currentRound) {
+    roundKey = currentRound - 1;
+  }
+
   if ( roundData && currentRound ) {
-    return <Chip icon={<FontAwesomeIcon icon={faExchangeAlt} size="2x"/>} label={`${roundData[currentRound].hostagesRequired} Hostages`} />
+    return <Chip icon={<FontAwesomeIcon icon={faExchangeAlt} size="2x"/>} label={`${roundData[roundKey].hostagesRequired} Hostages`} />
   } else {
     return <></>
   }

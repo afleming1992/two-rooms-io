@@ -7,3 +7,7 @@ export const getPlayerByToken = ( userToken: string | undefined, players: User[]
     return undefined;
   }
 }
+
+export const getPlayerNameInitials = ( name: string ) => {
+  return name.split(/\s/).reduce((response,word)=> response+=word.slice(0,1),'');
+}

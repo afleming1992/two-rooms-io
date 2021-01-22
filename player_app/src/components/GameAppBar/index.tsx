@@ -6,6 +6,7 @@ import {AppBar, makeStyles, Toolbar, Typography} from "@material-ui/core";
 import {ViewState} from "../../redux/reducers/view";
 import LobbyNavBar from "./LobbyGameBar";
 import GameNavBar from "./GameNavBar";
+import EndGameNavBar from "./EndGameNavBar";
 
 interface GameAppBarProps {
   view: ViewState
@@ -31,6 +32,10 @@ const GameAppBar:React.FC<GameAppBarProps> = (props) => {
             {
               props.view === ViewState.IN_ROUND &&
               <GameNavBar />
+            }
+            {
+              props.view === ViewState.END_GAME &&
+              <EndGameNavBar />
             }
           </Toolbar>
         </AppBar>

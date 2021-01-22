@@ -24,7 +24,7 @@ public class Game {
 	private List<Card> deck;
 	@JsonIgnore
 	private Map<String, Card> cardAssignments;
-	private Map<String, Card> revealedCardAssignments;
+	private List<CardAssignment> revealedCardAssignments;
 	@JsonIgnore
 	private Map<String, CardShareRequest> cardShareRequests;
 	private RoundTimer timer;
@@ -117,7 +117,7 @@ public class Game {
 
 	public void permanentRevealUserCard( final User player ) {
 		Card card = cardAssignments.get( player.getUserToken() );
-		revealedCardAssignments.put( player.getUserToken(), card );
+		revealedCardAssignments.add( new CardAssignment( player.getUserToken(), card ) );
 	}
 
 	public boolean isUserHost( final User user ) {
@@ -156,8 +156,12 @@ public class Game {
 		this.cardAssignments = cardAssignments;
 	}
 
-	public Map<String, Card> getRevealedCardAssignments() {
+	public List<CardAssignment> getRevealedCardAssignments() {
 		return revealedCardAssignments;
+	}
+
+	public void setRevealedCardAssignments( final List<CardAssignment> revealedCardAssignments ) {
+		this.revealedCardAssignments = revealedCardAssignments;
 	}
 
 	public int getTotalPlayerCount() {
@@ -210,7 +214,7 @@ public class Game {
 			template.players = new ArrayList<>();
 			template.deck = new ArrayList<>();
 			template.cardShareRequests = new HashMap<>();
-			template.revealedCardAssignments = new HashMap<>();
+			template.revealedCardAssignments = new ArrayList<>();
 			template.numberOfRounds = 3;
 			return this;
 		}

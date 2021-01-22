@@ -18,6 +18,7 @@ import ActionModal from "./pages/GameMain/ActionModal";
 import { SnackbarProvider } from 'notistack';
 import Notifications from "./components/Notifications";
 import RevealModal from "./components/RevealModal";
+import EndGame from "./pages/EndGame";
 
 interface AppProps {
   view: ViewState,
@@ -70,6 +71,10 @@ const App: React.FC<AppProps> = (props) => {
             {
               props.view === ViewState.IN_ROUND &&
                 <GameMain />
+            }
+            {
+              props.view === ViewState.END_GAME &&
+                <EndGame />
             }
             <ActionModal />
             <RevealModal />

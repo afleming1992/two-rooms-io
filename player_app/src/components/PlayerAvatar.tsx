@@ -1,13 +1,16 @@
 import React from "react";
 import {User} from "../domain/User";
-import {Avatar, Badge, makeStyles, Theme} from "@material-ui/core";
+import {Avatar, Badge, createStyles, makeStyles, Theme, withStyles} from "@material-ui/core";
 import {lime, yellow} from "@material-ui/core/colors";
 import { faCrown, faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import classNames from "classnames";
+import {getPlayerNameInitials} from "../utils/player";
 
 interface PlayerAvatarProps {
   player: User | undefined,
-  isHost: boolean
+  isHost?: boolean,
+  size?: "small" | "normal"
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -15,23 +18,27 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: lime[600],
     width: theme.spacing(7),
     height: theme.spacing(7)
+  },
+  small: {
+    width: 30,
+    height: 30
   }
 }));
 
-const PlayerAvatar: React.FC<PlayerAvatarProps> = (props) => {
+const PlayerAvatar: React.FC<PlayerAvatarProps> = ({player, isHost = false, size = "normal"}) => {
   const classes = useStyles();
 
-  let avatar = <Avatar className={classes.root}><FontAwesomeIcon icon={faQuestion} /></Avatar>
-  if( props.player ) {
-    avatar = <Avatar className={classes.root} src="/broken-image.png" alt={props.player.name} />
+  let avatarClasses = classes.root;
+  if ( size === "small" ) {
+    avatarClasses = classNames(classes.root, classes.small)
   }
 
-  return (
-    <Badge color="primary" overlap="circle" invisible={!props.isHost} badgeContent={<FontAwesomeIcon icon={faCrown} />}>
-      { avatar }
-    </Badge>
-  );
-
+  if( player ) {
+    return <Avatar className={avatarClasses}>{ player.name ? getPlayerNameInitials(player.name) : "?" }</Avatar>
+  } else {
+    return <Avatar className={avatarClasses}><FontAwesomeIcon icon={faQuestion} /></Avatar>
+  }
 }
+
 
 export default PlayerAvatar;

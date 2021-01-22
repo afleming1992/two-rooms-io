@@ -3,6 +3,7 @@ import {Listeners} from "../actions/listeners";
 import {User} from "../../domain/User";
 import {Card} from "../../domain/Card";
 import Round from "../../domain/Round";
+import {CardReveal} from "../../domain/CardReveal";
 
 export interface GameState {
     id: string | undefined,
@@ -11,7 +12,7 @@ export interface GameState {
     players: Array<User> | undefined
     deck: Array<Card> | undefined,
     roundData: Array<Round> | undefined,
-    revealedCardAssignments: any
+    revealedCardAssignments: CardReveal[]
 }
 
 const initialState: GameState = {
@@ -21,7 +22,7 @@ const initialState: GameState = {
     players: new Array<User>(),
     deck: new Array<Card>(),
     roundData: new Array<Round>(),
-    revealedCardAssignments: {}
+    revealedCardAssignments: []
 }
 
 export default function gameReducer(state: GameState = initialState, action: any) {
