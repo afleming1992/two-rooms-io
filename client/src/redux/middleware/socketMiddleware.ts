@@ -1,9 +1,6 @@
 import { Middleware } from 'redux';
-import {MiddlewareOptions} from "redux-socket.io";
-import {Action} from "typesafe-actions/dist/type-helpers";
 
-
-export default (socket: SocketIOClient.Socket, listeners: Array<string> ) : Middleware => (store : any) => {
+const socketMiddleware = (socket: SocketIOClient.Socket, listeners: Array<string> ) : Middleware => (store : any) => {
     for(const listener of listeners) {
         socket.on( listener, ( data:any ) => {
             const action = {
@@ -21,3 +18,5 @@ export default (socket: SocketIOClient.Socket, listeners: Array<string> ) : Midd
         return next(action);
     }
 }
+
+export default socketMiddleware;
