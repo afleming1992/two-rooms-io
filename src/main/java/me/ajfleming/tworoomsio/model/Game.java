@@ -116,8 +116,14 @@ public class Game {
 	}
 
 	public void permanentRevealUserCard( final User player ) {
-		Card card = cardAssignments.get( player.getUserToken() );
-		revealedCardAssignments.add( new CardAssignment( player.getUserToken(), card ) );
+		if ( !isUserAlreadyRevealed( player ) ) {
+			Card card = cardAssignments.get( player.getUserToken() );
+			revealedCardAssignments.add( new CardAssignment( player.getUserToken(), card ) );
+		}
+	}
+
+	public boolean isUserAlreadyRevealed( final User player ) {
+		return revealedCardAssignments.stream().anyMatch( cardAssignment -> cardAssignment.getPlayer().equals( player.getUserToken() ) );
 	}
 
 	public boolean isUserHost( final User user ) {

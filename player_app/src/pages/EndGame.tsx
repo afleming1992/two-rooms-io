@@ -7,10 +7,12 @@ import {AppState} from "../redux/reducers";
 import {User} from "../domain/User";
 import PlayerAvatarGroup from "../components/PlayerAvatarGroup";
 import PlayerReveals from "../components/PlayerReveals";
+import {filterPlayers} from "../utils/player";
+import {CardReveal} from "../domain/CardReveal";
 
 interface EndGameProps {
   revealedCardAssignments: any,
-  players: User[] | undefined
+  players: User[]
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -31,16 +33,23 @@ const useStyles = makeStyles((theme) => ({
 const EndGame: React.FC<EndGameProps> = (props) => {
   const classes = useStyles();
 
+  const playersToBeRevealed = filterPlayers( props.players, props.revealedCardAssignments.map((cardReveal: CardReveal) => cardReveal.player));
+
   return (
     <Container disableGutters={true} maxWidth={false}>
       <CssBaseline />
       <GameAppBar />
       <Container maxWidth={"md"}>
-        <Paper className={classes.playerAvatars}>
-          <Typography className={classes.headingText}>To be revealed:</Typography>
-          <PlayerAvatarGroup players={props.players} />
-        </Paper>
-        <br />
+        {
+          playersToBeRevealed.length > 0 &&
+          <>
+            <Paper className={classes.playerAvatars}>
+              <Typography className={classes.headingText}>To be revealed:</Typography>
+              <PlayerAvatarGroup players={playersToBeRevealed} />
+            </Paper>
+            <br />
+          </>
+        }
         <Box className={classes.reveals}>
           <Typography className={classes.headingText}>
             Revealed
@@ -58,7 +67,7 @@ const EndGame: React.FC<EndGameProps> = (props) => {
 const mapStateToProps = (state: AppState) => {
   return {
     revealedCardAssignments: state.game.revealedCardAssignments,
-    players: state.game.players
+    players: state.game.players || []
   }
 }
 

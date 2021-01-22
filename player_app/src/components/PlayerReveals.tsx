@@ -5,6 +5,7 @@ import {getPlayerByToken} from "../utils/player";
 import CardShareTypeAvatar from "./CardShareTypeAvatar";
 import {CardReveal} from "../domain/CardReveal";
 import {CardShareType} from "../domain/Sharing";
+import TeamChip from "./TeamChip";
 
 interface PlayerRevealsProps {
   players: User[],
@@ -52,7 +53,7 @@ const PlayerReveals: React.FC<PlayerRevealsProps> = (props) => {
               </div>
               <div className={classes.text}>
                 <Typography>{player?.name}</Typography>
-                <Typography className={classes.roleName}>{reveal.card.title}</Typography>
+                <TeamChip team={reveal.card.team} label={reveal.card.title}/>
               </div>
               <div className={classes.room}>
 
