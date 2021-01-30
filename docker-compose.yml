@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  server:
+    build:
+      context: two-rooms-io-server
+      dockerfile: Dockerfile
+    expose:
+      - 3001
+    ports:
+      - "3001:3001"
+    restart: always
+    networks:
+      - frontend
+
+  client:
+    build:
+      context: two-rooms-io-player-app
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    restart: always
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    driver: bridge

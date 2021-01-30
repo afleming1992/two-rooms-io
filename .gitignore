@@ -1,6 +1,6 @@
-HELP.md
+two-rooms-io-server/HELP.md
 target/
-!.mvn/wrapper/maven-wrapper.jar
+!two-rooms-io-server/.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
 
