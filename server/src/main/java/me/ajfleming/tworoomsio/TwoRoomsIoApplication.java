@@ -23,7 +23,6 @@ public class TwoRoomsIoApplication {
 
 	public static void main( String[] args ) {
 		Configuration config = new Configuration();
-		config.setHostname( "localhost" );
 		config.setPort( 3001 );
 
 		SocketConfig socketConfig = new SocketConfig();
