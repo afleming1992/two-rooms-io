@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class GameIdentityPayload {
-  public String gameId;
+  private String gameId;
 }

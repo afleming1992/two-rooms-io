@@ -6,18 +6,28 @@ import com.corundumstudio.socketio.SocketIOServer;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import me.ajfleming.tworoomsio.actions.PostRoomVoteAction;
 import me.ajfleming.tworoomsio.exception.GameException;
 import me.ajfleming.tworoomsio.exception.UserException;
 import me.ajfleming.tworoomsio.model.Card;
 import me.ajfleming.tworoomsio.model.CardKey;
 import me.ajfleming.tworoomsio.model.Game;
+import me.ajfleming.tworoomsio.model.GameStage;
 import me.ajfleming.tworoomsio.model.RoundMap;
 import me.ajfleming.tworoomsio.model.User;
+import me.ajfleming.tworoomsio.model.UsurpAttempt;
+import me.ajfleming.tworoomsio.model.room.LeadershipVote;
+import me.ajfleming.tworoomsio.model.room.Room;
+import me.ajfleming.tworoomsio.model.room.RoomName;
 import me.ajfleming.tworoomsio.service.deck.DeckBuilderService;
 import me.ajfleming.tworoomsio.service.deck.DeckDealerService;
 import me.ajfleming.tworoomsio.service.lobby.JoinCodeGenerator;
+import me.ajfleming.tworoomsio.service.rooms.HostageSwitchService;
+import me.ajfleming.tworoomsio.service.rooms.RoomAllocationService;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.service.sharing.CardShareType;
+import me.ajfleming.tworoomsio.socket.event.JoinRoomEvent;
+import me.ajfleming.tworoomsio.socket.event.ShowHostagesEvent;
 import me.ajfleming.tworoomsio.socket.response.CardRevealResponse;
 import me.ajfleming.tworoomsio.storage.GameCache;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +37,7 @@ import org.springframework.stereotype.Component;
 public class GameEngineImpl implements GameEngine {
 
   private static final int TOTAL_ROUND_SECONDS = 180;
+  private static final int MAX_ROUNDS = 3;
   private final SocketIOServer socketServer;
   private final DeckBuilderService deckBuilder;
   private final UserManager userManager;
@@ -44,23 +55,17 @@ public class GameEngineImpl implements GameEngine {
 
   @Override
   public Game createNewGame(final User hostUser) {
-      Game game = Game.builder()
-          .newGame(hostUser, joinCodeGenerator.generateJoinCode())
-          .build();
-      return game;
+    Game game = Game.builder()
+        .newGame(hostUser, joinCodeGenerator.generateJoinCode())
+        .build();
+    return game;
   }
 
   @Override
   public void joinGame(final Game game, final User player) throws GameException {
-    if (game.getRound() > 0) {
-      throw new GameException("Game has already started");
-    }
-
-    if (game.findPlayer(player.getName()).isPresent()) {
-      throw new GameException(
-          "Someone has already used that name! Maybe you have a popular name like Andrew? 🤔");
-    }
-
+    enforceGameCheck(game.getRound() == 0, "Game has already started");
+    enforceGameCheck(game.findPlayer(player.getName()).isEmpty(),
+        "Someone has already used that name! Maybe you have a popular name like Andrew? 🤔");
     game.addPlayer(player);
     addPlayerToGameComms(player, game);
     game.setDeck(deckBuilder.buildDeck(game.getTotalPlayerCount()));
@@ -70,9 +75,7 @@ public class GameEngineImpl implements GameEngine {
   @Override
   public void reloadPlayerIntoGame(Game game, User player)
       throws GameException {
-    if (!game.reconnectPlayer(player)) {
-      throw new GameException("Failed to reconnect to game");
-    }
+    enforceGameCheck(game.reconnectPlayer(player), "Failed to reconnect to game");
     addPlayerToGameComms(player, game);
     try {
       reloadPlayerGameData(game, player);
@@ -97,15 +100,13 @@ public class GameEngineImpl implements GameEngine {
   }
 
   // Game Management Operations
-
-  private void startGame(final Game game, final User requestor) throws GameException {
-    if (isGameReadyToStart(game) && game.isUserHost(requestor)) {
-      game.nextRound();
-      game.setRoundData(RoundMap.getRoundData(game.getTotalPlayerCount()));
-      game.setCardAssignments(DeckDealerService.dealDeck(game.getDeck(), game.getPlayers()));
-      game.setTimer(setupTimer(TOTAL_ROUND_SECONDS, game.getId(), socketServer));
-      triggerGameUpdateEvent(game);
-    }
+  public void startGame(final Game game, final User requestor) throws GameException {
+    enforceGameCheck(isGameReadyToStart(game), "Game cannot be currently started");
+    enforceGameCheck(game.isUserHost(requestor), "User is not host");
+    game.setRooms(RoomAllocationService.generateAndAllocateToRooms(game));
+    game.setRoundData(RoundMap.getRoundData(game.getTotalPlayerCount()));
+    game.setStage(GameStage.FIRST_ROOM_ALLOCATION);
+    triggerGameUpdateEvent(game);
   }
 
   private boolean isGameReadyToStart(Game game) {
@@ -113,14 +114,37 @@ public class GameEngineImpl implements GameEngine {
   }
 
   @Override
+  public void endRound(final Game game, final User requestor) throws GameException {
+    enforceGameCheck(game.isUserHost(requestor), "User is not host");
+    enforceGameCheck(!game.getTimer().isTimerRunning(),
+        "Timer must not be running in order to proceed");
+    enforceGameCheck(checkHostageCounts(game), "Not enough hostages");
+    game.setStage(GameStage.END_OF_ROUND);
+    triggerGameUpdateEvent(game);
+    sendEventToGame(game,"REVEAL_HOSTAGES", new ShowHostagesEvent(game.getRooms()));
+  }
+
+  public boolean checkHostageCounts(Game game) {
+    for (Room room : game.getRooms().values()) {
+      if (room.getHostageCount() != game.getMaxHostages()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @Override
   public void nextRound(Game game, User requestor) throws GameException {
     if (game.isUserHost(requestor)) {
-      if (game.getRound() == 0) {
-        startGame(game, requestor);
-      } else {
-        game.nextRound();
-        game.setTimer(setupTimer(TOTAL_ROUND_SECONDS, game.getId(), socketServer));
+      if (game.getRound() >= MAX_ROUNDS) {
+        endGameAndCalculateResults(game);
+      } else if (game.getRound() == 0) {
+        // Deal Cards for First Round
+        game.setCardAssignments(DeckDealerService.dealDeck(game.getDeck(), game.getPlayers()));
       }
+      game.nextRound();
+      game.setTimer(setupTimer(TOTAL_ROUND_SECONDS, game.getId(), socketServer));
+      game.setStage(GameStage.IN_ROUND);
       clearEventsAndRequests(game);
       triggerGameUpdateEvent(game);
     }
@@ -174,10 +198,124 @@ public class GameEngineImpl implements GameEngine {
     triggerGameUpdateEvent(game);
   }
 
+  @Override
+  public void nominateLeader(final Game game, final RoomName roomName, final User nominator,
+      final User nominee)
+      throws GameException {
+    Room room = game.getRoom(roomName);
+    if (room.isPlayerInRoom(nominator) && room.getLeader() == null) {
+      room.setFirstLeader(nominee);
+      sendEventToRoom(room, "NEW_LEADER", nominee.getUserToken());
+    } else {
+      throw new GameException("Invalid operation");
+    }
+  }
+
+  @Override
+  public void nominateHostage(final Game game, final RoomName roomName, final User leader, final User hostage)
+      throws GameException {
+    Room room = game.getRoom(roomName);
+    if (room.isPlayerLeader(leader) && !room.isPlayerLeader(hostage)) {
+      room.nominateHostage(hostage, game.getMaxHostages());
+      sendEventToRoom(room, "HOSTAGE_UPDATE", room.getHostages());
+    } else {
+      throw new GameException("You are currently not the leader of the room");
+    }
+  }
+
+  @Override
+  public void performHostageSwitch(final Game game, final User host) throws GameException {
+    if (game.isUserHost(host)) {
+      HostageSwitchService.performHostageSwitch(game);
+    }
+  }
+
+  @Override
+  public void abdicateAsLeader(final Game game, final RoomName roomName, final User leader, final User replacement)
+      throws GameException {
+    Room room = game.getRoom(roomName);
+    if (room.isPlayerLeader(leader)) {
+      room.setReplacementLeader(replacement);
+      replacement.sendEvent("ROOM_LEADER_OFFER", roomName);
+    } else {
+      throw new GameException("You are currently not the room leader!");
+    }
+  }
+
+  @Override
+  public void acceptLeadership(final Game game, final RoomName roomName, final User newLeader)
+      throws GameException {
+    Room room = game.getRoom(roomName);
+    if (room.getReplacementLeader().is(newLeader) && game.getTimer().isTimerRunning()) {
+      room.setReplacementLeader(null);
+      room.setLeader(newLeader);
+      sendEventToRoom(room, "LEADER_UPDATE", newLeader.getUserToken());
+    } else {
+      throw new GameException("You aren't currently the leaders nominee");
+    }
+  }
+
+  @Override
+  public void declineLeadership(final Game game, final RoomName roomName, final User decliner)
+      throws GameException {
+    Room room = game.getRoom(roomName);
+    if (room.getReplacementLeader().is(decliner)) {
+      room.setReplacementLeader(null);
+      room.getReplacementLeader()
+          .sendEvent("ABDICATE_DECLINED", decliner.getName() + " did not accept room leadership");
+    }
+  }
+
+  @Override
+  public void beginUsurp(final Game game, final RoomName roomName, final User usurper, final User leadershipNominee)
+      throws GameException {
+    Room room = game.getRoom(roomName);
+    if (room.isPlayerInRoom(usurper) && room.isPlayerInRoom(leadershipNominee) && !room
+        .isPlayerLeader(leadershipNominee)) {
+      if (room.getUsurpAttempt() == null) {
+        UsurpAttempt usurpAttempt = new UsurpAttempt(roomName, usurper, leadershipNominee,
+            room.getPlayers(), getLeadershipVoteResolutionAction(game,this));
+        room.setUsurpAttempt(usurpAttempt);
+        sendEventToRoom(room, "USURP_ATTEMPT", usurpAttempt.getEvent());
+        usurpAttempt.initiateUsurpVote();
+      } else {
+        throw new GameException("A usurp attempt is already in progress");
+      }
+    } else {
+      throw new GameException("You can only usurp in your own room");
+    }
+  }
+
+  @Override
+  public void leadershipVote(final Game game, final RoomName roomName, final User voter, final LeadershipVote vote)
+      throws GameException {
+    Room room = game.getRoom(roomName);
+    UsurpAttempt attempt = room.getUsurpAttempt();
+    if (attempt != null) {
+      attempt.registerVote(voter, vote);
+    }
+  }
+
+  @Override
+  public void resolveLeadershipVote(final Game game, final RoomName roomName, final LeadershipVote result) {
+    Room room = game.getRoom(roomName);
+    UsurpAttempt attempt = room.getUsurpAttempt();
+    if (attempt != null) {
+      if (result == LeadershipVote.YES) {
+        room.setLeader(attempt.getNominee());
+        sendEventToRoom(room, "USURP_ATTEMPT_SUCCESSFUL", attempt.getEvent());
+      } else {
+        sendEventToRoom(room, "USURP_ATTEMPT_FAILED", attempt.getEvent());
+      }
+      room.setUsurpAttempt(null);
+    }
+  }
+
   // Sharing Operations
 
   @Override
-  public CardShareRequest requestShare(final Game game, final User requestor, final CardShareRequest request)
+  public CardShareRequest requestShare(final Game game, final User requestor,
+      final CardShareRequest request)
       throws GameException {
     if (game.getTimer().isTimerRunning()) {
       Optional<User> recipient = game.findPlayerByUserToken(request.getRecipient());
@@ -294,18 +432,39 @@ public class GameEngineImpl implements GameEngine {
     }
   }
 
+  public void endGameAndCalculateResults(Game game) {
+    game.setStage(GameStage.RESULTS);
+    triggerGameUpdateEvent(game);
+  }
+
   // Helper Methods
 
   private void triggerGameUpdateEvent(Game game) {
-    sendEventToGame(game,"GAME_UPDATE", game);
+    sendEventToGame(game, "GAME_UPDATE", game);
   }
 
   private void sendEventToGame(Game game, String name, Object data) {
     socketServer.getRoomOperations("game/" + game.getId()).sendEvent(name, data);
   }
 
+  private void sendEventToRoom(Room room, String name, Object data) {
+    socketServer.getRoomOperations(room.getChannelName()).sendEvent(name, data);
+  }
+
   private void addPlayerToGameComms(final User user, final Game game) {
     user.getClient().joinRoom("game/" + game.getId());
+    addPlayerToRoomComms(game, user);
+  }
+
+  private void addPlayerToRoomComms(final Game game, final User user) {
+    if (game.getStage() != GameStage.CREATED) {
+      Optional<Room> roomFind = game.findRoomUserIsIn(user);
+      if (roomFind.isPresent()) {
+        user.sendEvent("JOIN_ROOM",
+            new JoinRoomEvent(roomFind.get().getRoomName(), "Reconnection"));
+        user.getClient().joinRoom(roomFind.get().getChannelName());
+      }
+    }
   }
 
   private void reloadPlayerGameData(final Game game, final User user)
@@ -314,5 +473,26 @@ public class GameEngineImpl implements GameEngine {
       userManager.sendEvent(user.getUserToken(), "CARD_UPDATE",
           game.getRoleAssignmentForUser(user.getUserToken()).get());
     }
+  }
+
+  private void enforceGameCheck(final boolean conditionMet, final String exceptionMessage)
+      throws GameException {
+    if (!conditionMet) {
+      throw new GameException(exceptionMessage);
+    }
+  }
+
+  public PostRoomVoteAction getLeadershipVoteResolutionAction(Game game, GameEngine gameEngine) {
+    return new PostRoomVoteAction() {
+      @Override
+      public void success(RoomName roomName) {
+        gameEngine.resolveLeadershipVote(game, roomName, LeadershipVote.YES);
+      }
+
+      @Override
+      public void failure(RoomName roomName) {
+        gameEngine.resolveLeadershipVote(game, roomName, LeadershipVote.NO);
+      }
+    };
   }
 }

@@ -13,6 +13,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import me.ajfleming.tworoomsio.exception.GameException;
+import me.ajfleming.tworoomsio.model.room.Room;
+import me.ajfleming.tworoomsio.model.room.RoomName;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.timer.RoundTimer;
 
@@ -21,10 +24,10 @@ import me.ajfleming.tworoomsio.timer.RoundTimer;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Game {
-
   private String id;
   private String joinCode;
   private User host;
+  private GameStage stage;
   private int round;
   private int numberOfRounds;
   private List<User> players;
@@ -36,6 +39,7 @@ public class Game {
   private Map<String, CardShareRequest> cardShareRequests;
   private RoundTimer timer;
   private List<Round> roundData;
+  private Map<RoomName, Room> rooms;
 
   public void addPlayer(User user) {
     if( players == null ) {
@@ -143,6 +147,7 @@ public class Game {
 
   public void nextRound() {
     round++;
+    stage = GameStage.IN_ROUND;
   }
 
   public void resetCardShares() {
@@ -151,6 +156,23 @@ public class Game {
 
   public int getTotalPlayerCount() {
     return this.players.size();
+  }
+
+  public Room getRoom(RoomName roomName) {
+    return rooms.get(roomName);
+  }
+
+  @JsonIgnore
+  public int getMaxHostages() {
+    if ( roundData != null ) {
+      return getRoundData().get( round - 1 ).getHostagesRequired();
+    } else {
+      return 0;
+    }
+  }
+
+  public Optional<Room> findRoomUserIsIn( final User user ) {
+    return rooms.values().stream().filter( room -> room.isPlayerInRoom( user )).findFirst();
   }
 
   public static class GameBuilder {
@@ -164,6 +186,7 @@ public class Game {
       this.revealedCardAssignments = new ArrayList<>();
       this.numberOfRounds = 3;
       this.joinCode = joinCode;
+      this.stage = GameStage.CREATED;
       return this;
     }
   }
