@@ -1,27 +1,28 @@
 package me.ajfleming.tworoomsio.model;
 
 public class CardAssignment {
-	private String player;
-	private Card card;
 
-	public CardAssignment( String playerToken, Card card ) {
-		this.player = playerToken;
-		this.card = card;
-	}
+  private String player;
+  private Card card;
 
-	public String getPlayer() {
-		return player;
-	}
+  public CardAssignment(String playerToken, Card card) {
+    this.player = playerToken;
+    this.card = card;
+  }
 
-	public void setPlayer( final String player ) {
-		this.player = player;
-	}
+  public String getPlayer() {
+    return player;
+  }
 
-	public Card getCard() {
-		return card;
-	}
+  public void setPlayer(final String player) {
+    this.player = player;
+  }
 
-	public void setCard( final Card card ) {
-		this.card = card;
-	}
+  public Card getCard() {
+    return card;
+  }
+
+  public void setCard(final Card card) {
+    this.card = card;
+  }
 }

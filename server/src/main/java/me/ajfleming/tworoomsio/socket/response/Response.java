@@ -1,36 +1,37 @@
 package me.ajfleming.tworoomsio.socket.response;
 
 public class Response {
-	boolean success;
-	String message;
 
-	public boolean isSuccess() {
-		return success;
-	}
+  boolean success;
+  String message;
 
-	public void setSuccess( final boolean success ) {
-		this.success = success;
-	}
+  public static Response success(final String message) {
+    Response response = new Response();
+    response.setSuccess(true);
+    response.setMessage(message);
+    return response;
+  }
 
-	public String getMessage() {
-		return message;
-	}
+  public static Response error(final String message) {
+    Response response = new Response();
+    response.setSuccess(false);
+    response.setMessage(message);
+    return response;
+  }
 
-	public void setMessage( final String message ) {
-		this.message = message;
-	}
+  public boolean isSuccess() {
+    return success;
+  }
 
-	public static Response success( final String message ) {
-		Response response = new Response();
-		response.setSuccess( true );
-		response.setMessage( message );
-		return response;
-	}
+  public void setSuccess(final boolean success) {
+    this.success = success;
+  }
 
-	public static Response error( final String message ) {
-		Response response = new Response();
-		response.setSuccess( false );
-		response.setMessage( message );
-		return response;
-	}
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(final String message) {
+    this.message = message;
+  }
 }
