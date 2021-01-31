@@ -1,6 +1,6 @@
 package me.ajfleming.tworoomsio.model.room;
 
 public enum RoomName {
-	DELTA,
-	TANGO;
+	EAST_WING,
+	WEST_WING
 }
