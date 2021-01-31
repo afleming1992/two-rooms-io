@@ -13,6 +13,11 @@ public class HostEventListeners {
     this.userActionController = userActionController;
   }
 
+  @OnEvent("END_ROUND")
+  public void onEndRound(SocketIOClient client) {
+    userActionController.endRound(client);
+  }
+
   @OnEvent("NEXT_ROUND")
   public void onNextRound(SocketIOClient client) {
     userActionController.startNextRound(client);
