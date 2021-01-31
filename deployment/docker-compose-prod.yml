@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  server:
+    image: ghcr.io/afleming1992/two-rooms-io-server
+    expose:
+      - 3001
+    ports:
+      - "3001:3001"
+    restart: always
+    networks:
+      - frontend
+
+  client:
+    image: ghcr.io/afleming1992/two-rooms-io-player-app
+    ports:
+      - "80:80"
+    restart: always
+    networks:
+      - frontend
+
+networks:
+  frontend:
+    driver: bridge
