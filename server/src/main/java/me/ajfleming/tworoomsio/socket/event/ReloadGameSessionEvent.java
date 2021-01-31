@@ -1,31 +1,32 @@
 package me.ajfleming.tworoomsio.socket.event;
 
 public class ReloadGameSessionEvent {
-	String gameToken;
-	String playerToken;
-	String playerSecret;
 
-	public String getGameToken() {
-		return gameToken;
-	}
+  String gameToken;
+  String playerToken;
+  String playerSecret;
 
-	public void setGameToken( final String gameToken ) {
-		this.gameToken = gameToken;
-	}
+  public String getGameToken() {
+    return gameToken;
+  }
 
-	public String getPlayerToken() {
-		return playerToken;
-	}
+  public void setGameToken(final String gameToken) {
+    this.gameToken = gameToken;
+  }
 
-	public void setPlayerToken( final String playerToken ) {
-		this.playerToken = playerToken;
-	}
+  public String getPlayerToken() {
+    return playerToken;
+  }
 
-	public String getPlayerSecret() {
-		return playerSecret;
-	}
+  public void setPlayerToken(final String playerToken) {
+    this.playerToken = playerToken;
+  }
 
-	public void setPlayerSecret( final String playerSecret ) {
-		this.playerSecret = playerSecret;
-	}
+  public String getPlayerSecret() {
+    return playerSecret;
+  }
+
+  public void setPlayerSecret(final String playerSecret) {
+    this.playerSecret = playerSecret;
+  }
 }

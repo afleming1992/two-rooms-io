@@ -3,45 +3,45 @@ package me.ajfleming.tworoomsio.service.deck;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import me.ajfleming.tworoomsio.model.Card;
-import me.ajfleming.tworoomsio.model.CardInfo;
 import me.ajfleming.tworoomsio.model.CardSet;
 
 public class DeckBuilderService {
-	private Map<CardSet, List<Card>> possibleCardSets = CardSetMapProvider.cardMap();
 
-	public List<Card> buildDeck( int numberOfPlayers ) {
-		List<Card> deck = new ArrayList<>();
+  private Map<CardSet, List<Card>> possibleCardSets = CardSetMapProvider.cardMap();
 
-		// Add President and Bomber
-		deck.addAll( possibleCardSets.get( CardSet.CORE ) );
+  public List<Card> buildDeck(int numberOfPlayers) {
+    List<Card> deck = new ArrayList<>();
 
-		// If Odd number of players, add Gambler
-		deck = addGamblerIfOddNumberOfPlayers( deck, numberOfPlayers );
+    // Add President and Bomber
+    deck.addAll(possibleCardSets.get(CardSet.CORE));
 
-		// Fill in remaining players with normal cards
-		deck = fillDeckWithMemberCards( deck, numberOfPlayers );
+    // If Odd number of players, add Gambler
+    deck = addGamblerIfOddNumberOfPlayers(deck, numberOfPlayers);
 
-		return deck;
-	}
+    // Fill in remaining players with normal cards
+    deck = fillDeckWithMemberCards(deck, numberOfPlayers);
 
-	private List<Card> addGamblerIfOddNumberOfPlayers( final List<Card> deck, final int numberOfPlayers ) {
-		if ( numberOfPlayers % 2 != 0 ) {
-			deck.addAll( possibleCardSets.get(CardSet.GAMBLER) );
-		}
+    return deck;
+  }
 
-		return deck;
-	}
+  private List<Card> addGamblerIfOddNumberOfPlayers(final List<Card> deck,
+      final int numberOfPlayers) {
+    if (numberOfPlayers % 2 != 0) {
+      deck.addAll(possibleCardSets.get(CardSet.GAMBLER));
+    }
 
-	private List<Card> fillDeckWithMemberCards( final List<Card> deck, final int numberOfPlayers ) {
-		var cardsRequired = numberOfPlayers - deck.size();
+    return deck;
+  }
 
-		while ( cardsRequired > 1 ) {
-			deck.addAll( possibleCardSets.get( CardSet.FILLER ) );
-			cardsRequired = cardsRequired - 2;
-		}
+  private List<Card> fillDeckWithMemberCards(final List<Card> deck, final int numberOfPlayers) {
+    var cardsRequired = numberOfPlayers - deck.size();
 
-		return deck;
-	}
+    while (cardsRequired > 1) {
+      deck.addAll(possibleCardSets.get(CardSet.FILLER));
+      cardsRequired = cardsRequired - 2;
+    }
+
+    return deck;
+  }
 }
