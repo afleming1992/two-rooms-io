@@ -77,7 +77,7 @@ public class UserManager {
 		}
 	}
 
-	private Optional<User> findConnectedUserByPlayerId( String playerToken ) {
+	public Optional<User> findConnectedUserByPlayerId( String playerToken ) {
 		return connectedUsers.values().stream().filter( user -> user.getUserToken().equals( playerToken ) ).findFirst();
 	}
 

@@ -12,10 +12,7 @@ const PlayerCard = ({ card }: PlayerCardProps) => {
 
     return (
         <SegmentGroup>
-            <Segment>
-                Your Card
-            </Segment>
-            <Segment textAlign={"center"}>
+            <Segment compact textAlign={"center"}>
                 { cardNode }
             </Segment>
         </SegmentGroup>

@@ -13,6 +13,16 @@ const joinGame = (name: string): SocketAction => {
     }
 }
 
+const startGame = (): SocketAction => {
+    return {
+        type: Actions.START_GAME,
+        meta: {
+            remote: true
+        },
+        payload: {}
+    }
+}
+
 const nextRound = (): SocketAction => {
     return {
         type: Actions.NEXT_ROUND,
@@ -140,6 +150,7 @@ const revealPlayerAssignment = ( cardKey: string ) => {
 
 export default {
     joinGame,
+    startGame,
     nextRound,
     startTimer,
     pauseTimer,

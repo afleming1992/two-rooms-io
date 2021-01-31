@@ -12,12 +12,15 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import me.ajfleming.tworoomsio.exception.GameException;
+import me.ajfleming.tworoomsio.model.room.Room;
+import me.ajfleming.tworoomsio.model.room.RoomName;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.timer.RoundTimer;
 
 public class Game {
 	private String id;
 	private User host;
+	private GameStage stage;
 	private int round;
 	private int numberOfRounds;
 	private List<User> players;
@@ -29,6 +32,7 @@ public class Game {
 	private Map<String, CardShareRequest> cardShareRequests;
 	private RoundTimer timer;
 	private List<Round> roundData;
+	private Map<RoomName, Room> rooms;
 
 	public boolean addPlayer( User user ) {
 		return this.players.add( user );
@@ -176,6 +180,7 @@ public class Game {
 
 	public void nextRound() {
 		round++;
+		stage = GameStage.IN_ROUND;
 	}
 
 	public RoundTimer getTimer() {
@@ -206,6 +211,43 @@ public class Game {
 		this.cardShareRequests = new HashMap<>();
 	}
 
+	public Room getRoom( RoomName roomName ) {
+		return rooms.get( roomName );
+	}
+
+	public void updateRoom( Room updatedRoom ) {
+		rooms.put( updatedRoom.getRoomName(), updatedRoom );
+	}
+
+	public Map<RoomName, Room> getRooms() {
+		return rooms;
+	}
+
+	public void setRooms( final Map<RoomName, Room> rooms ) {
+		this.rooms = rooms;
+	}
+
+	public GameStage getStage() {
+		return stage;
+	}
+
+	public void setStage( final GameStage stage ) {
+		this.stage = stage;
+	}
+
+	@JsonIgnore
+	public int getMaxHostages() {
+		if ( roundData != null ) {
+			return getRoundData().get( round - 1 ).getHostagesRequired();
+		} else {
+			return 0;
+		}
+	}
+
+	public Optional<Room> findRoomUserIsIn( final User user ) {
+		return rooms.values().stream().filter( room -> room.isPlayerInRoom( user )).findFirst();
+	}
+
 	public static class Builder {
 		private final Game template;
 
@@ -222,6 +264,7 @@ public class Game {
 			template.cardShareRequests = new HashMap<>();
 			template.revealedCardAssignments = new ArrayList<>();
 			template.numberOfRounds = 3;
+			template.stage = GameStage.CREATED;
 			return this;
 		}
 
@@ -234,6 +277,7 @@ public class Game {
 			game.deck = template.deck;
 			game.cardShareRequests = template.cardShareRequests;
 			game.revealedCardAssignments = template.revealedCardAssignments;
+			game.stage = template.stage;
 			return game;
 		}
 	}

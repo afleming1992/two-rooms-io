@@ -1,7 +1,5 @@
 import React from 'react';
 import {Button, Dropdown, Icon, Menu} from "semantic-ui-react";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faClock, faPause, faPlay, faRedo, faStar} from "@fortawesome/free-solid-svg-icons";
 import {isHost} from "../../../utils/isHost";
 import {GameState} from "../../../redux/reducers/game";
 import {ViewState} from "../../../redux/reducers/view";
@@ -11,13 +9,13 @@ import actionCreators from "../../../redux/actions/creators";
 import {Action} from "typesafe-actions";
 import {PlayerState} from "../../../redux/reducers/player";
 import {Card} from "../../../domain/Card";
-import reveal from "../../../redux/reducers/reveal";
 
 interface HostControlProps {
     game: GameState,
     player: PlayerState,
     view: ViewState,
     isHost: boolean,
+    startGame: any,
     nextRound: any,
     startTimer: any,
     pauseTimer: any,
@@ -32,7 +30,7 @@ const canGameStart = (game: GameState): boolean => {
     return false;
 }
 
-const HostControl = ({game, player, view, isHost, nextRound, startTimer, pauseTimer, restartTimer, revealPlayerAssignment, ...props}: HostControlProps) => {
+const HostControl = ({game, player, view, isHost, startGame, nextRound, startTimer, pauseTimer, restartTimer, revealPlayerAssignment, ...props}: HostControlProps) => {
     const onStartTimer = () => {
         startTimer();
     }
@@ -73,6 +71,18 @@ const HostControl = ({game, player, view, isHost, nextRound, startTimer, pauseTi
         <Menu inverted size="huge" attached='top'>
             <Menu.Item header><Icon name="star" /> Host Menu</Menu.Item>
             {
+                view == ViewState.INITIAL_ROOM_ALLOCATION &&
+                <>
+                    <Menu.Menu position="right">
+                      <Menu.Item>
+                        <Button colour="green" onClick={nextRound}>
+                          Deal Cards and Start
+                        </Button>
+                      </Menu.Item>
+                    </Menu.Menu>
+                </>
+            }
+            {
                 view == ViewState.IN_ROUND &&
                 <>
                   <Dropdown item icon="clock">
@@ -101,7 +111,7 @@ const HostControl = ({game, player, view, isHost, nextRound, startTimer, pauseTi
                 view == ViewState.IN_LOBBY &&
                 <Menu.Menu position="right">
                   <Menu.Item>
-                    <Button disabled={!canGameStart(game)} color="green" onClick={nextRound}>
+                    <Button disabled={!canGameStart(game)} color="green" onClick={startGame}>
                       Start Game
                     </Button>
                   </Menu.Item>
@@ -129,6 +139,7 @@ const mapStateToProps = (state: any) => {
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>) =>
     bindActionCreators({
+        startGame: actionCreators.startGame,
         nextRound: actionCreators.nextRound,
         startTimer: actionCreators.startTimer,
         pauseTimer: actionCreators.pauseTimer,
