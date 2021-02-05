@@ -2,6 +2,7 @@ package me.ajfleming.tworoomsio.listeners;
 
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.annotation.OnEvent;
+import java.net.Socket;
 import me.ajfleming.tworoomsio.controller.UserActionController;
 import me.ajfleming.tworoomsio.socket.event.RevealPlayerAssignmentEvent;
 
@@ -11,6 +12,11 @@ public class HostEventListeners {
 
   public HostEventListeners(UserActionController userActionController) {
     this.userActionController = userActionController;
+  }
+
+  @OnEvent("START_GAME")
+  public void onStartGame(SocketIOClient client) {
+    userActionController.startGame(client);
   }
 
   @OnEvent("END_ROUND")

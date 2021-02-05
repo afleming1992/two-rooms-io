@@ -91,7 +91,7 @@ const mapStateToProps = (state: AppState) => {
 
 const mapDispatchToProps = (dispatch: Dispatch<Action>) =>
   bindActionCreators({
-    startGame: actionCreators.nextRound
+    startGame: actionCreators.startGame
   }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(LobbyNavBar);

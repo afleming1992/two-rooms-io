@@ -7,6 +7,7 @@ import {ViewState} from "../../redux/reducers/view";
 import LobbyNavBar from "./LobbyGameBar";
 import GameNavBar from "./GameNavBar";
 import EndGameNavBar from "./EndGameNavBar";
+import BeginGameNavBar from "./BeginGameNavBar";
 
 interface GameAppBarProps {
   view: ViewState
@@ -28,6 +29,10 @@ const GameAppBar:React.FC<GameAppBarProps> = (props) => {
             {
               props.view === ViewState.IN_LOBBY &&
               <LobbyNavBar />
+            }
+            {
+              props.view === ViewState.BEGIN_GAME &&
+              <BeginGameNavBar />
             }
             {
               props.view === ViewState.IN_ROUND &&

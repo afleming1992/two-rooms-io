@@ -19,6 +19,7 @@ import { SnackbarProvider } from 'notistack';
 import Notifications from "./components/Notifications";
 import RevealModal from "./components/RevealModal";
 import EndGame from "./pages/EndGame";
+import BeginGame from "./pages/BeginGame";
 
 interface AppProps {
   view: ViewState,
@@ -67,6 +68,10 @@ const App: React.FC<AppProps> = (props) => {
             {
               props.view === ViewState.IN_LOBBY &&
                 <Lobby />
+            }
+            {
+              props.view === ViewState.BEGIN_GAME &&
+                <BeginGame />
             }
             {
               props.view === ViewState.IN_ROUND &&
