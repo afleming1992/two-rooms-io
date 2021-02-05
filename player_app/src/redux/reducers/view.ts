@@ -4,11 +4,11 @@ import {Listeners} from "../actions/listeners";
 export enum ViewState {
     JOIN_GAME,
     IN_LOBBY,
+    BEGIN_GAME,
     IN_ROUND,
-    BETWEEN_ROUND,
+    END_ROUND,
     END_GAME
 }
-
 
 const initialState = ViewState.JOIN_GAME;
 
@@ -19,15 +19,19 @@ export default function viewReducer(state = initialState, action: any) {
         case Listeners.JOIN_GAME_SUCCESS:
             return ViewState.IN_LOBBY;
         case Listeners.GAME_UPDATE:
-            if( action.data.round > 0) {
-                if( action.data.round > action.data.roundData.length ) {
-                    return ViewState.END_GAME;
-                } else {
+            switch( action.data.stage ) {
+                case "CREATED":
+                    return ViewState.IN_LOBBY
+                case "FIRST_ROOM_ALLOCATION":
+                    return ViewState.BEGIN_GAME
+                case "IN_ROUND":
                     return ViewState.IN_ROUND
-                }
-            } else {
-                return ViewState.IN_LOBBY
+                case "END_OF_ROUND":
+                    return ViewState.END_ROUND
+                case "RESULTS":
+                    return ViewState.END_GAME
             }
+            return state;
         default:
             return state;
     }

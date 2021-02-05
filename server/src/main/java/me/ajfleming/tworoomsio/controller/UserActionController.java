@@ -63,6 +63,12 @@ public class UserActionController {
     }
   }
 
+  public void startGame(SocketIOClient client, String gameId) {
+    userManager.getUser(client).ifPresent(requestor -> {
+
+    });
+  }
+
   public void endRound(SocketIOClient client, String gameId) {
     userManager.getUser(client).ifPresent(requestor -> {
       try {

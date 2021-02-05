@@ -27,6 +27,16 @@ export const joinGame = (name: string, joinGameCode: string): SocketAction => {
     }
 }
 
+export const startGame = (): SocketAction => {
+    return {
+        type: Actions.START_GAME,
+        meta: {
+            remote: true
+        },
+        payload: {}
+    }
+}
+
 export const nextRound = (): SocketAction => {
     return {
         type: Actions.NEXT_ROUND,
@@ -173,6 +183,7 @@ export const revealPlayerAssignment = ( cardKey: string ) => {
 const gameActionCreators = {
     joinGame,
     nextRound,
+    startGame,
     startTimer,
     pauseTimer,
     restartTimer,
