@@ -6,6 +6,8 @@ public class JoinGameResponse {
   private String userToken;
   private String userSecret;
 
+  public JoinGameResponse() {}
+
   public JoinGameResponse(String gameToken, String userToken, String userSecret) {
     this.gameToken = gameToken;
     this.userToken = userToken;
