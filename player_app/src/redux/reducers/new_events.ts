@@ -26,7 +26,7 @@ export default function eventsReducer(state: EventsState = initialState, action:
     case Listeners.CARD_SHARE_ACCEPTED:
       return {...state, timeline: updateEventToResponded( timeline, action.data.requestId, RequestResponse.ACCEPTED )}
     case Listeners.SHARE_REQUEST_REJECTED:
-      return {...state, timeline: updateEventToResponded( timeline, action.data.requestId, RequestResponse.DECLINED )}
+      return {...state, timeline: updateEventToResponded( timeline, action.data.id, RequestResponse.DECLINED )}
     case Listeners.REJECT_SHARE_SUCCESS:
       return {...state, timeline: updateEventToResponded( timeline, action.data.requestId, RequestResponse.DECLINED )}
     case Listeners.PRIVATE_REVEAL_RECEIVED:
