@@ -4,12 +4,6 @@ public class JoinGameEvent {
 
   String name;
 
-  public JoinGameEvent() {}
-
-  public JoinGameEvent( String name ) {
-    this.name = name;
-  }
-
   public String getName() {
     return name;
   }

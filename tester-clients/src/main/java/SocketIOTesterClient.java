@@ -6,6 +6,8 @@ import java.util.Locale;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
+import players.AlwaysAcceptsSharesPlayer;
+import players.AlwaysRejectsSharesPlayer;
 import players.Player;
 
 public class SocketIOTesterClient {
@@ -25,10 +27,10 @@ public class SocketIOTesterClient {
     players.add( new Player() );
     players.add( new Player() );
     players.add( new Player() );
-    players.add( new Player() );
-    players.add( new Player() );
-    players.add( new Player() );
-    players.add( new Player() );
+    players.add( new AlwaysAcceptsSharesPlayer() );
+    players.add( new AlwaysAcceptsSharesPlayer() );
+    players.add( new AlwaysRejectsSharesPlayer() );
+    players.add( new AlwaysRejectsSharesPlayer() );
 
     SocketTesterPlayerManager manager = new SocketTesterPlayerManager(uri, options, players);
     manager.init();

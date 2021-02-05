@@ -1,3 +1,5 @@
+import static players.JsonUtils.convertToJsonObject;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.socket.client.IO;
@@ -6,6 +8,7 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter.Listener;
 import java.net.URI;
 import java.util.List;
+import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.socket.event.JoinGameEvent;
 import me.ajfleming.tworoomsio.socket.response.JoinGameResponse;
 import org.json.JSONObject;
@@ -37,11 +40,9 @@ public class SocketTesterPlayerManager {
   }
 
   private void joinGame(Socket socket, Player player) {
-    try {
-      socket.emit("JOIN_GAME", objectMapper.writeValueAsString(new JoinGameEvent(player.getName())));
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-    }
+    JoinGameEvent event = new JoinGameEvent();
+    event.setName(player.getName());
+    socket.emit("JOIN_GAME", convertToJsonObject(event));
   }
 
   public void shutdown() {
@@ -54,16 +55,21 @@ public class SocketTesterPlayerManager {
   }
 
   private void setupListeners(Socket socket, Player player) {
-    socket.on("JOIN_GAME_SUCCESS", new Listener() {
-      @Override
-      public void call(Object... objects) {
-        JoinGameResponse response = null;
-        try {
-          response = objectMapper.readValue(objects[0].toString(), JoinGameResponse.class);
-        } catch (JsonProcessingException e) {
-          e.printStackTrace();
-        }
+    socket.on("JOIN_GAME_SUCCESS", objects -> {
+      try {
+        JoinGameResponse response = objectMapper.readValue(objects[0].toString(), JoinGameResponse.class);
         player.setJoinGameResponse(response);
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      }
+    });
+
+    socket.on("SHARE_REQUEST_RECEIVED", objects -> {
+      try {
+        CardShareRequest cardShareRequest = objectMapper.readValue(objects[0].toString(), CardShareRequest.class);
+        player.onCardShareRequest(cardShareRequest);
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
       }
     });
   }

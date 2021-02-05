@@ -2,6 +2,7 @@ package players;
 
 import io.socket.client.Socket;
 import java.util.UUID;
+import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.socket.response.JoinGameResponse;
 
 /**
@@ -15,6 +16,10 @@ public class Player {
   private JoinGameResponse joinGameResponse;
 
   public Player() {
+    this.name = prefix + UUID.randomUUID().toString();
+  }
+
+  public Player(String prefix) {
     this.name = prefix + UUID.randomUUID().toString();
   }
 
@@ -37,5 +42,9 @@ public class Player {
 
   public void setSocket(Socket socket) {
     this.socket = socket;
+  }
+
+  public void onCardShareRequest(CardShareRequest cardShareRequest) {
+    // Do Nothing
   }
 }
