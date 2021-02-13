@@ -1,6 +1,6 @@
 import React from 'react';
 import {User} from "../domain/User";
-import {ListItem, ListItemAvatar, ListItemText, makeStyles, Paper} from "@material-ui/core";
+import {ListItem, ListItemAvatar, ListItemText, makeStyles, Paper, styled} from "@material-ui/core";
 import {yellow} from "@material-ui/core/colors";
 import PlayerAvatar from "./PlayerAvatar";
 
@@ -8,6 +8,7 @@ interface PlayerListItemProps {
     player: User;
     isHost: boolean;
     isMe?: boolean;
+    inverse: boolean;
 }
 
 const useStyles = makeStyles( (theme) => ({
@@ -23,11 +24,17 @@ const useStyles = makeStyles( (theme) => ({
   }
 }));
 
+const InversePaper = styled(Paper)({
+  backgroundColor: "#303030"
+})
+
+
+
 const PlayerListItem : React.FC<PlayerListItemProps> = (props) => {
     const classes = useStyles();
 
     return (
-      <ListItem className={classes.listItem} component={Paper}>
+      <ListItem className={classes.listItem} component={props.inverse ? InversePaper : Paper}>
         <ListItemAvatar>
             <PlayerAvatar player={ props.player } isHost={ props.isHost }/>
         </ListItemAvatar>
