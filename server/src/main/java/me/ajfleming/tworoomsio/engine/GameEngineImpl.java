@@ -452,7 +452,7 @@ public class GameEngineImpl implements GameEngine {
   }
 
   private void addPlayerToGameComms(final User user, final Game game) {
-    user.getClient().joinRoom("game/" + game.getId());
+    user.joinSocketRoom("game/" + game.getId());
     addPlayerToRoomComms(game, user);
   }
 
@@ -462,7 +462,7 @@ public class GameEngineImpl implements GameEngine {
       if (roomFind.isPresent()) {
         user.sendEvent("JOIN_ROOM",
             new JoinRoomEvent(roomFind.get().getRoomName(), "Reconnection"));
-        user.getClient().joinRoom(roomFind.get().getChannelName());
+        user.joinSocketRoom(roomFind.get().getChannelName());
       }
     }
   }

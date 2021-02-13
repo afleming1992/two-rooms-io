@@ -33,6 +33,14 @@ public class User {
     client.sendEvent(eventName, payload);
   }
 
+  public void joinSocketRoom(String roomName) {
+    client.joinRoom(roomName);
+  }
+
+  public void leaveSocketRoom(String roomName) {
+    client.leaveRoom(roomName);
+  }
+
   public void disconnectPlayer() {
     this.connected = false;
   }

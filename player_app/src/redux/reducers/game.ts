@@ -4,6 +4,7 @@ import {User} from "../../domain/User";
 import {Card} from "../../domain/Card";
 import Round from "../../domain/Round";
 import {CardReveal} from "../../domain/CardReveal";
+import Room, {RoomName} from "../../domain/Room";
 
 export interface GameState {
     id: string | undefined,
@@ -13,7 +14,8 @@ export interface GameState {
     players: Array<User> | undefined
     deck: Array<Card> | undefined,
     roundData: Array<Round> | undefined,
-    revealedCardAssignments: CardReveal[]
+    revealedCardAssignments: CardReveal[],
+    rooms: Map<RoomName, Room>
 }
 
 const initialState: GameState = {
@@ -24,7 +26,8 @@ const initialState: GameState = {
     players: new Array<User>(),
     deck: new Array<Card>(),
     roundData: new Array<Round>(),
-    revealedCardAssignments: []
+    revealedCardAssignments: [],
+    rooms: new Map<RoomName, Room>()
 }
 
 export default function gameReducer(state: GameState = initialState, action: any) {
@@ -41,7 +44,9 @@ export default function gameReducer(state: GameState = initialState, action: any
                 id: action.data.id,
                 joinCode: action.data.joinCode,
                 deck: action.data.deck,
-                revealedCardAssignments: action.data.revealedCardAssignments }
+                revealedCardAssignments: action.data.revealedCardAssignments,
+                rooms: action.data.rooms
+            }
         default:
             return state;
     }

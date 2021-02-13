@@ -33,8 +33,8 @@ public class Room {
       this.players = new ArrayList<>();
     }
 
-    user.getClient().joinRoom(channelName);
-    user.getClient().sendEvent("JOIN_ROOM", new JoinRoomEvent(this.roomName, reasonForJoin));
+    user.joinSocketRoom(channelName);
+    user.sendEvent("JOIN_ROOM", new JoinRoomEvent(this.roomName, reasonForJoin));
 
     this.players.add(user);
   }
@@ -45,11 +45,10 @@ public class Room {
     }
 
     for (User user : users) {
-      user.getClient().joinRoom(channelName);
-      user.getClient().sendEvent("JOIN_ROOM", new JoinRoomEvent(this.roomName, reasonForJoin));
+      user.joinSocketRoom(channelName);
+      user.sendEvent("JOIN_ROOM", new JoinRoomEvent(this.roomName, reasonForJoin));
+      this.players.add(user);
     }
-
-    this.players.addAll(users);
   }
 
   public void removePlayer(String token) {
@@ -61,7 +60,7 @@ public class Room {
       this.players = this.players.stream()
           .filter(user -> !user.getUserToken().equals(token))
           .collect(Collectors.toList());
-      player.get().getClient().leaveRoom(channelName);
+      player.get().leaveSocketRoom(channelName);
     }
   }
 

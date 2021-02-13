@@ -10,6 +10,7 @@ import eventsReducer, {EventsState} from "./new_events";
 import shareReducer, {ShareState} from "./share";
 import actionModalReducer, {ActionModalState} from "./actionModal";
 import notificationsReducer, {NotificationsState} from "./notifications";
+import roomReducer, {RoomState} from "./room";
 
 export interface AppState {
         game: GameState,
@@ -22,7 +23,8 @@ export interface AppState {
         events: EventsState,
         share: ShareState,
         notifications: NotificationsState,
-        actionModal: ActionModalState
+        actionModal: ActionModalState,
+        room: RoomState,
 }
 
 const rootReducer = combineReducers({
@@ -37,6 +39,7 @@ const rootReducer = combineReducers({
         share: shareReducer,
         notifications: notificationsReducer,
         actionModal: actionModalReducer,
+        room: roomReducer
     }
 );
 
