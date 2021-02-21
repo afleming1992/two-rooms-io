@@ -2,11 +2,12 @@ import {Action} from "redux";
 
 export enum ActionModalActions {
     OPEN_SHARE_MODAL="OPEN_SHARE_MODAL",
-    CLOSE_MODAL="CLOSE_MODAL",
     OPEN_REVEAL_MODAL="OPEN_REVEAL_MODAL",
+    OPEN_NOMINATE_LEADER_MODAL="OPEN_NOMINATE_LEADER_MODAL",
+    CLOSE_MODAL="CLOSE_MODAL",
 }
 
-export enum Actions {
+export enum GameAction {
     CONNECTED="CONNECTED",
     DISCONNECTED="DISCONNECTED",
     CREATE_GAME="CREATE_GAME",
@@ -25,6 +26,12 @@ export enum Actions {
     RESPOND_TO_EVENT = "RESPOND_TO_EVENT",
     DISMISS_EVENT = "DISMISS_EVENT",
     REVEAL_CARD_ASSIGNMENT = "REVEAL_CARD_ASSIGNMENT",
+    NOMINATE_LEADER = "NOMINATE_LEADER",
+    NOMINATE_HOSTAGE = "NOMINATE_HOSTAGE",
+    ABDICATE_AS_LEADER = "ABDICATE_AS_LEADER",
+    ANSWER_LEADERSHIP_OFFER = "ANSWER_LEADERSHIP_OFFER",
+    USURP_LEADER = "USURP_LEADER",
+    USURP_VOTE = "USURP_VOTE",
     OTHER_ACTION = "__any_other_action_type__",
 }
 
@@ -39,7 +46,7 @@ export enum NotificationActions {
 }
 
 export interface SocketAction extends Action {
-    type: Actions,
+    type: GameAction,
     meta: {
         remote: boolean,
         isGameRequest?: boolean

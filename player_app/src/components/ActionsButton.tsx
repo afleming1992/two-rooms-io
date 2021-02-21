@@ -2,16 +2,19 @@ import React, {useState} from 'react';
 import {makeStyles} from "@material-ui/core";
 import {SpeedDial, SpeedDialAction, SpeedDialIcon} from '@material-ui/lab';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faComments, faEye, faPeopleArrows, faTimes} from '@fortawesome/free-solid-svg-icons';
+import {faComments, faEye, faPeopleArrows, faPersonBooth, faTimes} from '@fortawesome/free-solid-svg-icons';
 import {AppState} from "../redux/reducers";
 import {Action, bindActionCreators, Dispatch} from "redux";
-import {connect} from "react-redux";
-import actionModalCreators from "../redux/actions/actionModalCreators";
+import {connect, useDispatch} from "react-redux";
+import actionModalCreators, {
+  openNominateLeaderModal,
+  openRevealModal,
+  openShareModal
+} from "../redux/actions/actionModalCreators";
 
 interface ActionsButtonProps {
-  openRevealModal: any,
-  openShareModal: any,
-  isTimerRunning: boolean
+  isTimerRunning: boolean,
+  noLeader: boolean
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -19,24 +22,38 @@ const useStyles = makeStyles((theme) => ({
     position: 'fixed',
     bottom: theme.spacing(10),
     right: theme.spacing(3)
+  },
+  tooltip: {
+    maxWidth: "200px",
+    wordWrap: "normal"
   }
 }));
 
+const tooltipStyle = makeStyles((theme) => ({
+  tooltip: {
+    maxWidth: "200px",
+    wordWrap: "normal"
+  }
+}))
+
 const ActionsButton:React.FC<ActionsButtonProps> = (props) => {
   const classes = useStyles();
+  const tooltipClasses = tooltipStyle();
   const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
 
-  const openPrivateReveal = () => {
-    props.openRevealModal()
+  const ifNoLeader = () => {
+    return props.noLeader;
   }
 
-  const openShareModal = () => {
-    props.openShareModal()
+  const mustBeALeader = () => {
+    return !props.noLeader;
   }
 
   const actions = [
-    { icon: <FontAwesomeIcon icon={faEye} />, name: "Private Reveal", onClick: openPrivateReveal },
-    { icon: <FontAwesomeIcon icon={faPeopleArrows} />, name: "Share", onClick: openShareModal }
+    { icon: <FontAwesomeIcon icon={faPersonBooth} />, name: "Choose Leader", onClick: () => dispatch(openNominateLeaderModal()), show: ifNoLeader },
+    { icon: <FontAwesomeIcon icon={faEye} />, name: "Private Reveal", onClick: () => dispatch(openRevealModal()), show: mustBeALeader },
+    { icon: <FontAwesomeIcon icon={faPeopleArrows} />, name: "Share", onClick: () => dispatch(openShareModal()), show: mustBeALeader }
   ]
 
   return (
@@ -50,15 +67,20 @@ const ActionsButton:React.FC<ActionsButtonProps> = (props) => {
       open={open}
       FabProps={{size: "large"}}>
       {
-        actions.map((action) => (
-          <SpeedDialAction
-            key={action.name}
-            icon={action.icon}
-            tooltipTitle={action.name}
-            tooltipOpen
-            onClick={action.onClick}
-          />
-        ))
+        actions.map((action) => {
+          if(action.show()) {
+            return (<SpeedDialAction
+              title={""}
+              key={action.name}
+              icon={action.icon}
+              tooltipTitle={action.name}
+              tooltipOpen
+              TooltipClasses={tooltipClasses}
+              onClick={action.onClick}
+            />);
+          }
+          return <></>
+        })
       }
     </SpeedDial>
   )
@@ -66,14 +88,9 @@ const ActionsButton:React.FC<ActionsButtonProps> = (props) => {
 
 const mapStateToProps = (state: AppState) => {
   return {
-    isTimerRunning: state.timer.timerRunning
+    isTimerRunning: state.timer.timerRunning,
+    noLeader: state.room.currentLeader === undefined
   }
 }
 
-const mapDispatchToProps = (dispatch: Dispatch<Action>) =>
-  bindActionCreators({
-    openRevealModal: actionModalCreators.openRevealModal,
-    openShareModal: actionModalCreators.openShareModal
-  }, dispatch);
-
-export default connect(mapStateToProps, mapDispatchToProps)(ActionsButton);
+export default connect(mapStateToProps)(ActionsButton);

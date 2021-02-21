@@ -1,6 +1,6 @@
 import GameEvent from "../../domain/GameEvent";
 import {Listeners} from "../actions/listeners";
-import {Actions} from "../actions/types";
+import {GameAction} from "../actions/types";
 import {RequestResponse} from "../../domain/RequestResponse";
 
 export interface EventsState {
@@ -19,9 +19,9 @@ export default function eventsReducer(state: EventsState = initialState, action:
     case Listeners.SHARE_REQUEST_RECEIVED:
       timeline.push( buildEventForShare( action.data ) )
       return {...state, timeline}
-    case Actions.ACCEPT_SHARE:
+    case GameAction.ACCEPT_SHARE:
       return {...state, timeline: updateEventToResponded( timeline, action.payload.requestId, RequestResponse.ACCEPTED )}
-    case Actions.REJECT_SHARE:
+    case GameAction.REJECT_SHARE:
       return {...state, timeline: updateEventToResponded( timeline, action.payload.requestId, RequestResponse.DECLINED )}
     case Listeners.CARD_SHARE_ACCEPTED:
       return {...state, timeline: updateEventToResponded( timeline, action.data.requestId, RequestResponse.ACCEPTED )}
@@ -32,10 +32,10 @@ export default function eventsReducer(state: EventsState = initialState, action:
     case Listeners.PRIVATE_REVEAL_RECEIVED:
       timeline.push( buildEventForReveal( action.data ) )
       return {...state, timeline}
-    case Actions.RESPOND_TO_EVENT:
+    case GameAction.RESPOND_TO_EVENT:
       respondToEvent( timeline, action.payload.id )
       return {...state, timeline}
-    case Actions.DISMISS_EVENT:
+    case GameAction.DISMISS_EVENT:
       timeline = removeEvent( timeline, action.payload.id)
       return {...state, timeline}
     case Listeners.CLEAR_EVENTS:

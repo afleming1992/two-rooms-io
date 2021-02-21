@@ -1,10 +1,12 @@
-import {SocketAction, Actions} from "./types";
+import {SocketAction, GameAction} from "./types";
 import {CardShareType} from "../../domain/Sharing";
 import {User} from "../../domain/User";
+import {RoomName} from "../../domain/Room";
+import {Vote} from "../../domain/Vote";
 
 export const createGame = (name: string): SocketAction => {
     return {
-        type: Actions.CREATE_GAME,
+        type: GameAction.CREATE_GAME,
         meta: {
             remote: true
         },
@@ -16,7 +18,7 @@ export const createGame = (name: string): SocketAction => {
 
 export const joinGame = (name: string, joinGameCode: string): SocketAction => {
     return {
-        type: Actions.JOIN_GAME,
+        type: GameAction.JOIN_GAME,
         meta: {
             remote: true
         },
@@ -29,7 +31,7 @@ export const joinGame = (name: string, joinGameCode: string): SocketAction => {
 
 export const startGame = (): SocketAction => {
     return {
-        type: Actions.START_GAME,
+        type: GameAction.START_GAME,
         meta: {
             remote: true
         },
@@ -39,7 +41,7 @@ export const startGame = (): SocketAction => {
 
 export const nextRound = (): SocketAction => {
     return {
-        type: Actions.NEXT_ROUND,
+        type: GameAction.NEXT_ROUND,
         meta: {
             remote: true,
             isGameRequest: true
@@ -50,7 +52,7 @@ export const nextRound = (): SocketAction => {
 
 export const startTimer = (): SocketAction => {
     return {
-        type: Actions.START_TIMER,
+        type: GameAction.START_TIMER,
         meta: {
             remote: true,
             isGameRequest: true
@@ -61,7 +63,7 @@ export const startTimer = (): SocketAction => {
 
 export const pauseTimer = (): SocketAction => {
     return {
-        type: Actions.PAUSE_TIMER,
+        type: GameAction.PAUSE_TIMER,
         meta: {
             remote: true,
             isGameRequest: true
@@ -72,7 +74,7 @@ export const pauseTimer = (): SocketAction => {
 
 export const restartTimer = (): SocketAction => {
     return {
-        type: Actions.RESTART_TIMER,
+        type: GameAction.RESTART_TIMER,
         meta: {
             remote: true,
             isGameRequest: true
@@ -83,7 +85,7 @@ export const restartTimer = (): SocketAction => {
 
 export const reloadGameSession = (gameId: String, playerToken: String, playerSecret: String): SocketAction => {
     return {
-        type: Actions.RELOAD_GAME_SESSION,
+        type: GameAction.RELOAD_GAME_SESSION,
         meta: {
             remote: true,
         },
@@ -97,7 +99,7 @@ export const reloadGameSession = (gameId: String, playerToken: String, playerSec
 
 export const requestShare = ( type: CardShareType, recipient: User) => {
     return {
-        type: Actions.REQUEST_SHARE,
+        type: GameAction.REQUEST_SHARE,
         meta: {
             remote: true,
             isGameRequest: true
@@ -111,7 +113,7 @@ export const requestShare = ( type: CardShareType, recipient: User) => {
 
 export const acceptShare = ( id: string ) => {
     return {
-        type: Actions.ACCEPT_SHARE,
+        type: GameAction.ACCEPT_SHARE,
         meta: {
             remote: true,
             isGameRequest: true
@@ -124,7 +126,7 @@ export const acceptShare = ( id: string ) => {
 
 export const rejectShare = ( id: string ) => {
     return {
-        type: Actions.REJECT_SHARE,
+        type: GameAction.REJECT_SHARE,
         meta: {
             remote: true,
             isGameRequest: true
@@ -137,7 +139,7 @@ export const rejectShare = ( id: string ) => {
 
 export const privateReveal = ( type: CardShareType, recipient: User ) => {
     return {
-        type: Actions.PRIVATE_REVEAL,
+        type: GameAction.PRIVATE_REVEAL,
         meta: {
             remote: true,
             isGameRequest: true
@@ -151,7 +153,7 @@ export const privateReveal = ( type: CardShareType, recipient: User ) => {
 
 export const respondToEvent = ( id: string ) => {
     return {
-        type: Actions.RESPOND_TO_EVENT,
+        type: GameAction.RESPOND_TO_EVENT,
         payload: {
             id
         }
@@ -160,7 +162,7 @@ export const respondToEvent = ( id: string ) => {
 
 export const dismissEvent = ( id: string ) => {
     return {
-        type: Actions.DISMISS_EVENT,
+        type: GameAction.DISMISS_EVENT,
         payload: {
             id
         }
@@ -169,13 +171,63 @@ export const dismissEvent = ( id: string ) => {
 
 export const revealPlayerAssignment = ( cardKey: string ) => {
     return {
-        type: Actions.REVEAL_CARD_ASSIGNMENT,
+        type: GameAction.REVEAL_CARD_ASSIGNMENT,
         meta: {
             remote: true,
             isGameRequest: true
         },
         payload: {
             card: cardKey
+        }
+    }
+}
+
+export const nominateLeader = (roomName: RoomName, player: User) => {
+    return nominateAction(GameAction.NOMINATE_LEADER, roomName, player);
+}
+
+export const nominateHostage = (roomName: RoomName, player: User) => {
+    return nominateAction(GameAction.NOMINATE_HOSTAGE, roomName, player);
+}
+
+export const abdicateAsLeader = (roomName: RoomName, player: User) => {
+    return nominateAction(GameAction.ABDICATE_AS_LEADER, roomName, player);
+}
+
+export const usurpLeader = (roomName: RoomName, player: User) => {
+    return nominateAction(GameAction.USURP_LEADER, roomName, player);
+}
+
+export const answerLeadershipOffer = (roomName: RoomName, vote: Vote) => {
+    return voteAction(GameAction.ANSWER_LEADERSHIP_OFFER, roomName, vote);
+}
+
+export const usurpVote = (roomName: RoomName, vote: Vote) => {
+    return voteAction(GameAction.USURP_VOTE, roomName, vote);
+}
+
+const voteAction = (actionType: GameAction, roomName: RoomName, vote: Vote) => {
+    return {
+        type: actionType,
+        meta: {
+            remote: true
+        },
+        payload: {
+            room: roomName,
+            vote: vote
+        }
+    }
+}
+
+const nominateAction = (actionType: GameAction, roomName: RoomName, player: User) => {
+    return {
+        type: actionType,
+        meta: {
+            remote: true
+        },
+        payload: {
+            room: roomName,
+            nominee: player.userToken
         }
     }
 }

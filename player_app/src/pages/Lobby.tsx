@@ -14,6 +14,7 @@ import DeckList from "../components/DeckList";
 import {Card} from "../domain/Card";
 import GameAppBar from "../components/GameAppBar";
 import JoinCodeBox from "../components/JoinCodeBox";
+import clsx from "clsx";
 
 interface LobbyProps {
   players: User[] | undefined
@@ -23,16 +24,19 @@ interface LobbyProps {
   joinCode: string | undefined
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   stickToBottom: {
     bottom: 0,
     position: "fixed",
     width: "inherit"
   },
-  bottomNav: {
+  root: {
     marginBottom: "56px"
+  },
+  content: {
+    padding: theme.spacing(2)
   }
-});
+}));
 
 enum LobbyTabView {
   PLAYERS = "players",
@@ -46,20 +50,22 @@ const Lobby: React.FC<LobbyProps> = (props) => {
   const [tabView, setTabView] = useState(LobbyTabView.PLAYERS);
 
   return (
-    <Container className={classes.bottomNav} disableGutters={true} maxWidth={false}>
+    <Container className={classes.root} disableGutters={true} maxWidth={false}>
       <CssBaseline />
       <GameAppBar />
-      <div>
-        <JoinCodeBox joinCode={props.joinCode} />
-      </div>
-      {
+      <div className={classes.content}>
+        <div>
+          <JoinCodeBox joinCode={props.joinCode} />
+        </div>
+        {
           tabView === LobbyTabView.PLAYERS && props.players !== undefined &&
           <PlayerList currentPlayer={props.currentPlayer} players={props.players} host={props.host} />
-      }
-      {
+        }
+        {
           tabView === LobbyTabView.DECK && props.deck !== undefined &&
           <DeckList deck={props.deck}/>
-      }
+        }
+      </div>
       <BottomNavigation
         className={classes.stickToBottom}
         value={tabView}

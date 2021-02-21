@@ -1,18 +1,24 @@
 import {ActionModalActions} from "./types";
 
-const openRevealModal = () => {
+export const openRevealModal = () => {
   return {
     type: ActionModalActions.OPEN_REVEAL_MODAL
   }
 }
 
-const openShareModal = () => {
+export const openShareModal = () => {
   return {
     type: ActionModalActions.OPEN_SHARE_MODAL
   }
 }
 
-const closeModal = () => {
+export const openNominateLeaderModal = () => {
+  return {
+    type: ActionModalActions.OPEN_NOMINATE_LEADER_MODAL
+  }
+}
+
+export const closeModal = () => {
   return {
     type: ActionModalActions.CLOSE_MODAL
   }

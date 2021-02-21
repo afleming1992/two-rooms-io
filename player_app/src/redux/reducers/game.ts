@@ -1,4 +1,4 @@
-import {Actions} from "../actions/types";
+import {GameAction} from "../actions/types";
 import {Listeners} from "../actions/listeners";
 import {User} from "../../domain/User";
 import {Card} from "../../domain/Card";
@@ -32,7 +32,7 @@ const initialState: GameState = {
 
 export default function gameReducer(state: GameState = initialState, action: any) {
     switch( action.type ) {
-        case Actions.DISCONNECTED:
+        case GameAction.DISCONNECTED:
             return initialState;
         case Listeners.GAME_UPDATE:
             return {

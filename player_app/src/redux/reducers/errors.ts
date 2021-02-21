@@ -1,4 +1,4 @@
-import {Actions} from "../actions/types";
+import {GameAction} from "../actions/types";
 import {Listeners} from "../actions/listeners";
 
 export interface ErrorState {
@@ -14,7 +14,7 @@ export default function errorsReducer(state = {}, action: any) {
                 error: data.message,
                 isOpen: true
             }
-        case Actions.HIDE_ERROR:
+        case GameAction.HIDE_ERROR:
             return {
                 error: null,
                 isOpen: false

@@ -1,4 +1,4 @@
-import {Actions} from "../actions/types";
+import {GameAction} from "../actions/types";
 import {Listeners} from "../actions/listeners";
 
 export interface PlayerState {
@@ -17,11 +17,11 @@ const initialState: PlayerState = {
 
 export default function player(state = initialState, action: any) {
     switch(action.type) {
-        case Actions.CONNECTED:
+        case GameAction.CONNECTED:
             return Object.assign( {}, state, { connected: true } );
-        case Actions.DISCONNECTED:
+        case GameAction.DISCONNECTED:
             return Object.assign( {}, state, { connected: false } );
-        case Actions.JOIN_GAME:
+        case GameAction.JOIN_GAME:
             return Object.assign({}, state, { joining: true, name: action.name });
         case Listeners.JOIN_GAME_SUCCESS:
         case Listeners.RELOAD_GAME_SESSION_SUCCESS:

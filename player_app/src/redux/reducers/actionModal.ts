@@ -3,7 +3,8 @@ import {ActionModalActions} from "../actions/types";
 export enum ActionMode {
   NOT_SELECTED,
   SHARE,
-  REVEAL
+  REVEAL,
+  NOMINATE_LEADER
 }
 
 export interface ActionModalState {
@@ -22,6 +23,8 @@ const actionModalReducer = (state: ActionModalState = initialState, action: any)
       return {...state, actionType: ActionMode.SHARE, isActionModalOpen: true}
     case ActionModalActions.OPEN_REVEAL_MODAL:
       return {...state, actionType: ActionMode.REVEAL, isActionModalOpen: true}
+    case ActionModalActions.OPEN_NOMINATE_LEADER_MODAL:
+      return {...state, actionType: ActionMode.NOMINATE_LEADER, isActionModalOpen: true}
     case ActionModalActions.CLOSE_MODAL:
       return {...state, actionType: ActionMode.NOT_SELECTED, isActionModalOpen: false}
     default:

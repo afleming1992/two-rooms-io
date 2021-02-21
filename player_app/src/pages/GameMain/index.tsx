@@ -1,6 +1,7 @@
 import React from 'react';
 import {connect} from "react-redux";
 import {
+  Badge,
   BottomNavigation,
   BottomNavigationAction,
   Container,
@@ -9,13 +10,13 @@ import {
 } from "@material-ui/core";
 import GameAppBar from "../../components/GameAppBar";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDoorOpen, faIdCardAlt, faComments } from '@fortawesome/free-solid-svg-icons';
+import {faDoorOpen, faIdCardAlt, faBell} from '@fortawesome/free-solid-svg-icons';
 import RoomView from "./Room";
 import {AppState} from "../../redux/reducers";
 import {User} from "../../domain/User";
 import CardView from './CardView';
 import {Card} from "../../domain/Card";
-import ActionsView from "./ActionsView";
+import EventsView from "./EventsView";
 import ActionsButton from "../../components/ActionsButton";
 
 interface GameMainProps {
@@ -24,7 +25,8 @@ interface GameMainProps {
   host: User | undefined,
   card: Card | undefined,
   deck: Card[] | undefined,
-  rooms: any
+  rooms: any,
+  eventsCount: number
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -45,14 +47,12 @@ const useStyles = makeStyles((theme) => ({
 
 enum GameMainTabView {
   ROOM,
-  ACTIONS,
+  EVENTS,
   CARD
 }
 
-
-
 const GameMain: React.FC<GameMainProps> = (props) => {
-  const [view, setView] = React.useState(GameMainTabView.ACTIONS);
+  const [view, setView] = React.useState(GameMainTabView.ROOM);
 
   const classes = useStyles();
 
@@ -66,8 +66,8 @@ const GameMain: React.FC<GameMainProps> = (props) => {
             <RoomView rooms={props.rooms} currentPlayer={props.currentPlayer} host={props.host} players={props.players} />
           }
           {
-            view === GameMainTabView.ACTIONS &&
-            <ActionsView />
+            view === GameMainTabView.EVENTS &&
+            <EventsView />
           }
           {
             view === GameMainTabView.CARD &&
@@ -76,8 +76,10 @@ const GameMain: React.FC<GameMainProps> = (props) => {
           <ActionsButton />
         </div>
         <BottomNavigation value={view} onChange={(event, newValue) => { setView( newValue ) } } showLabels className={classes.stickToBottom}>
+          <BottomNavigationAction label="Events" icon={
+            <Badge badgeContent={props.eventsCount} overlap="circle" color="error"><FontAwesomeIcon size="2x" icon={faBell} /></Badge>
+          } value={GameMainTabView.EVENTS} />
           <BottomNavigationAction label="Room" icon={<FontAwesomeIcon size="2x" icon={faDoorOpen} />} value={GameMainTabView.ROOM} />
-          <BottomNavigationAction label="Actions" icon={<FontAwesomeIcon size="2x" icon={faComments} />} value={GameMainTabView.ACTIONS} />
           <BottomNavigationAction label="Card" icon={<FontAwesomeIcon size="2x" icon={faIdCardAlt} />} value={GameMainTabView.CARD} />
         </BottomNavigation>
       </Container>
@@ -91,7 +93,8 @@ const mapStateToProps = (state: AppState) => {
         host: state.game.host,
         card: state.card.card,
         deck: state.game.deck,
-        rooms: state.game.rooms
+        rooms: state.game.rooms,
+        eventsCount: state.events.timeline.length
     }
 }
 

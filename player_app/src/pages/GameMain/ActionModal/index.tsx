@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {connect} from "react-redux";
+import {connect, useDispatch} from "react-redux";
 import {
   AppBar,
   Button,
@@ -23,12 +23,13 @@ import actionModalCreators from "../../../redux/actions/actionModalCreators";
 import PlayerAvatar from "../../../components/PlayerAvatar";
 import {User} from "../../../domain/User";
 import {CardShareType} from "../../../domain/Sharing";
-import gameActionCreators from "../../../redux/actions/gameActionCreators";
+import gameActionCreators, {nominateLeader} from "../../../redux/actions/gameActionCreators";
 import { Card as RoleCard } from '../../../domain/Card';
 import PlayerDialog from "./PlayerDialog";
 import CardShareTypeAvatar from "../../../components/CardShareTypeAvatar";
 import ShareTypeDialog from './ShareTypeDialog';
 import {AppState} from "../../../redux/reducers";
+import {RoomName} from "../../../domain/Room";
 
 interface ActionModalProps {
   isActionModalOpen: boolean,
@@ -38,7 +39,8 @@ interface ActionModalProps {
   players: User[] | undefined,
   currentPlayer: User,
   privateReveal: any,
-  requestShare: any
+  requestShare: any,
+  currentRoom: RoomName | undefined
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -75,6 +77,7 @@ interface ModalSetting {
 
 const ActionModal:React.FC<ActionModalProps> = (props) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const [player, setPlayer] = useState<User | undefined>(undefined);
   const [type, setType] = useState<CardShareType | undefined>( undefined);
@@ -136,8 +139,19 @@ const ActionModal:React.FC<ActionModalProps> = (props) => {
           handleClose();
         }
       }
-    }
-    ]
+    }],
+    [
+      ActionMode.NOMINATE_LEADER, {
+      title: "Nominate Room Leader",
+      fields: [ActionModalField.PLAYER_CHOICE],
+      canSend: () => player !== undefined,
+      onSend: () => {
+        if (player !== undefined && props.currentRoom) {
+          dispatch(nominateLeader(props.currentRoom, player));
+          handleClose();
+        }
+      }
+    }]
   ]);
 
   const modeSettings = getModalSettings(props.actionType);
@@ -204,7 +218,8 @@ const mapStateToProps = (state: AppState) => {
     actionType: state.actionModal.actionType,
     card: state.card.card,
     players: state.game.players,
-    currentPlayer: state.player
+    currentPlayer: state.player,
+    currentRoom: state.room.currentRoom
   }
 }
 
