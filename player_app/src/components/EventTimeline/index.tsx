@@ -6,7 +6,7 @@ import {AppState} from "../../redux/reducers";
 import {Action, bindActionCreators, Dispatch} from "redux";
 import {User} from "../../domain/User";
 import {
-  Alert,
+  Alert, AlertTitle,
   Timeline,
 } from "@material-ui/lab";
 import RevealEvent from "./events/RevealEvent";
@@ -94,8 +94,9 @@ const EventTimeline: React.FC<EventTimelineProps> = (props) => {
       <Timeline align="left">
         {
           props.timeline.length === 0 &&
-          <Alert severity="info">
-            No Events in Timeline
+          <Alert variant="filled" severity="info">
+            <AlertTitle>No Events in Timeline</AlertTitle>
+            Go and speak to folk and start sending some share requests!
           </Alert>
         }
         {
