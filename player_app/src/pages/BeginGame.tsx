@@ -5,7 +5,7 @@ import {AppState} from "../redux/reducers";
 import {connect} from "react-redux";
 import RoomChip from "../components/RoomChip";
 import Room, {RoomName} from "../domain/Room";
-import PlayerLobby from "../components/PlayerLobby";
+import PlayerList from "../components/PlayerList/PlayerList";
 
 interface BeginGameProps {
   currentRoom: RoomName | undefined,
@@ -45,13 +45,13 @@ const BeginGame: React.FC<BeginGameProps> = (props) => {
             <Grid item xs={12} md={6}>
               <Paper className={classes.paper}>
                 <RoomChip room={RoomName.EAST_WING} />
-                <PlayerLobby inverse={true} players={props.rooms[RoomName.EAST_WING]?.players || []} currentPlayer={props.currentPlayer} />
+                <PlayerList inverse={true} players={props.rooms[RoomName.EAST_WING]?.players || []} currentPlayer={props.currentPlayer} />
               </Paper>
             </Grid>
             <Grid item xs={12} md={6}>
               <Paper className={classes.paper}>
                 <RoomChip room={RoomName.WEST_WING} />
-                <PlayerLobby inverse={true} players={props.rooms[RoomName.WEST_WING]?.players || []}  currentPlayer={props.currentPlayer} />
+                <PlayerList inverse={true} players={props.rooms[RoomName.WEST_WING]?.players || []} currentPlayer={props.currentPlayer} />
               </Paper>
             </Grid>
           </Grid>

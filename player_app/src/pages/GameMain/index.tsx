@@ -1,7 +1,6 @@
 import React from 'react';
 import {connect} from "react-redux";
 import {
-  Backdrop,
   BottomNavigation,
   BottomNavigationAction,
   Container,
@@ -18,14 +17,14 @@ import CardView from './CardView';
 import {Card} from "../../domain/Card";
 import ActionsView from "./ActionsView";
 import ActionsButton from "../../components/ActionsButton";
-import Notifications from "../../components/Notifications";
 
 interface GameMainProps {
   currentPlayer: string | undefined,
   players: User[] | undefined,
   host: User | undefined,
   card: Card | undefined,
-  deck: Card[] | undefined
+  deck: Card[] | undefined,
+  rooms: any
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -61,7 +60,7 @@ const GameMain: React.FC<GameMainProps> = (props) => {
         <GameAppBar />
         {
           view === GameMainTabView.ROOM &&
-          <RoomView currentPlayer={props.currentPlayer} host={props.host} players={props.players} />
+          <RoomView rooms={props.rooms} currentPlayer={props.currentPlayer} host={props.host} players={props.players} />
         }
         {
           view === GameMainTabView.ACTIONS &&
@@ -87,7 +86,8 @@ const mapStateToProps = (state: AppState) => {
         currentPlayer: state.player.userToken,
         host: state.game.host,
         card: state.card.card,
-        deck: state.game.deck
+        deck: state.game.deck,
+        rooms: state.game.rooms
     }
 }
 

@@ -7,7 +7,7 @@ import {
 import {connect} from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {faLayerGroup, faSlidersH, faUsers } from "@fortawesome/free-solid-svg-icons";
-import PlayerLobby from "../components/PlayerLobby";
+import PlayerList from "../components/PlayerList/PlayerList";
 import {AppState} from "../redux/reducers";
 import {User} from "../domain/User";
 import DeckList from "../components/DeckList";
@@ -54,7 +54,7 @@ const Lobby: React.FC<LobbyProps> = (props) => {
       </div>
       {
           tabView === LobbyTabView.PLAYERS && props.players !== undefined &&
-          <PlayerLobby currentPlayer={props.currentPlayer} players={props.players} host={props.host} />
+          <PlayerList currentPlayer={props.currentPlayer} players={props.players} host={props.host} />
       }
       {
           tabView === LobbyTabView.DECK && props.deck !== undefined &&
