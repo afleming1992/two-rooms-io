@@ -27,6 +27,7 @@ import me.ajfleming.tworoomsio.service.rooms.RoomAllocationService;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.service.sharing.CardShareType;
 import me.ajfleming.tworoomsio.socket.event.JoinRoomEvent;
+import me.ajfleming.tworoomsio.socket.event.LeaderChangeEvent;
 import me.ajfleming.tworoomsio.socket.event.ShowHostagesEvent;
 import me.ajfleming.tworoomsio.socket.response.CardRevealResponse;
 import me.ajfleming.tworoomsio.storage.GameCache;
@@ -203,24 +204,23 @@ public class GameEngineImpl implements GameEngine {
       final User nominee)
       throws GameException {
     Room room = game.getRoom(roomName);
-    if (room.isPlayerInRoom(nominator) && room.getLeader() == null) {
-      room.setFirstLeader(nominee);
-      sendEventToRoom(room, "NEW_LEADER", nominee.getUserToken());
-    } else {
-      throw new GameException("Invalid operation");
-    }
+    enforceGameCheck(room.isPlayerInRoom(nominator), "You are not in the correct room");
+    enforceGameCheck(room.getLeader() != null, "Too late! A leader has already been nominated");
+
+    room.setFirstLeader(nominee);
+    game.updateRoom(room);
+    sendEventToRoom(room, "NEW_LEADER", new LeaderChangeEvent(nominee, nominator, "First Leader Nomination"));
   }
 
   @Override
   public void nominateHostage(final Game game, final RoomName roomName, final User leader, final User hostage)
       throws GameException {
     Room room = game.getRoom(roomName);
-    if (room.isPlayerLeader(leader) && !room.isPlayerLeader(hostage)) {
-      room.nominateHostage(hostage, game.getMaxHostages());
-      sendEventToRoom(room, "HOSTAGE_UPDATE", room.getHostages());
-    } else {
-      throw new GameException("You are currently not the leader of the room");
-    }
+    enforceGameCheck(room.isPlayerLeader(leader), "You are not the current leader");
+    enforceGameCheck(!room.isPlayerLeader(hostage), "You can't nominate yourself to be a Hostage!");
+    room.nominateHostage(hostage, game.getMaxHostages());
+    game.updateRoom(room);
+    sendEventToRoom(room, "HOSTAGE_UPDATE", room.getHostages());
   }
 
   @Override
