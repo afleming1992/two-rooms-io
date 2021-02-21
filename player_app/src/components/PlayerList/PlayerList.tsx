@@ -1,12 +1,10 @@
 import React from "react";
 import {
-  Container,
-  List, ListItem,
+  Grid,
   makeStyles,
 } from "@material-ui/core";
 import { User } from "../../domain/User";
 import PlayerListItem from "./PlayerListItem";
-import {Alert, AlertTitle} from "@material-ui/lab";
 
 interface PlayerListProps {
   players: Array<User> ,
@@ -25,19 +23,21 @@ const PlayerList: React.FC<PlayerListProps> = (props) => {
   const classes = useStyles();
 
   return (
-    <List className={classes.root}>
+    <Grid container className={classes.root} spacing={1}>
       {
         props.players.map( ( player ) => {
           return (
-            <PlayerListItem
-              inverse={props.inverse || false}
-              player={player}
-              isHost={ player.userToken === props.host?.userToken }
-              isMe={ player.userToken === props.currentPlayer }/>
+            <Grid item xs={12} sm={6} md={4}>
+              <PlayerListItem
+                inverse={props.inverse || false}
+                player={player}
+                isHost={ player.userToken === props.host?.userToken }
+                isMe={ player.userToken === props.currentPlayer }/>
+            </Grid>
           );
         })
       }
-    </List>
+    </Grid>
   );
 }
 
