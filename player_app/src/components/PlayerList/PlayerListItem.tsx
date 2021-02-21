@@ -20,7 +20,8 @@ const useStyles = makeStyles( (theme) => ({
     color: "#000000"
   },
   listItem: {
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
+    height: "100%"
   }
 }));
 
