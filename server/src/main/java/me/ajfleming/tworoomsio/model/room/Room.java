@@ -72,6 +72,10 @@ public class Room {
     return hostages;
   }
 
+  public void deselectHostage(User deselectedHostage) {
+    this.hostages = this.hostages.stream().filter(hostage -> !hostage.is(deselectedHostage)).collect(Collectors.toCollection(LinkedList::new));
+  }
+
   public boolean isPlayerInRoom(User player) {
     return players.stream().anyMatch(user -> player.getUserToken().equals(user.getUserToken()));
   }
@@ -90,9 +94,7 @@ public class Room {
   }
 
   public void nominateHostage(User newHostage, int maxHostages) throws GameException {
-    boolean currentHostage = hostages.stream()
-        .anyMatch(hostage -> newHostage.getUserToken().equals(hostage.getUserToken()));
-    if (currentHostage) {
+    if (isPlayerACurrentHostage(newHostage)) {
       throw new GameException(newHostage.getName() + "is already a hostage");
     }
 
@@ -108,6 +110,11 @@ public class Room {
     } else {
       return 0;
     }
+  }
+
+  private boolean isPlayerACurrentHostage(User player) {
+    return hostages.stream()
+        .anyMatch(hostage -> player.getUserToken().equals(hostage.getUserToken()));
   }
 
   public UsurpAttempt getUsurpAttempt() {
@@ -148,6 +155,9 @@ public class Room {
 
   public void setLeader(final User leader) {
     this.leader = leader;
+    if(isPlayerACurrentHostage(leader)){
+      deselectHostage(leader);
+    }
   }
 
   public boolean isPlayerLeader(final User leader) {

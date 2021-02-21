@@ -1,6 +1,5 @@
 package me.ajfleming.tworoomsio.socket.action;
 
-import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.model.room.RoomName;
 
 public class NominateAction {

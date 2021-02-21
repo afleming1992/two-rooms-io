@@ -10,6 +10,7 @@ import me.ajfleming.tworoomsio.engine.UserManager;
 import me.ajfleming.tworoomsio.listeners.CardRequestListeners;
 import me.ajfleming.tworoomsio.listeners.HostEventListeners;
 import me.ajfleming.tworoomsio.listeners.PlayerEventListeners;
+import me.ajfleming.tworoomsio.listeners.RoomEventListeners;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -39,10 +40,12 @@ public class TwoRoomsIoApplication {
     final HostEventListeners hostEventListeners = new HostEventListeners(userActionController);
     final CardRequestListeners cardRequestListeners = new CardRequestListeners(
         userActionController);
+    final RoomEventListeners roomEventListeners = new RoomEventListeners(userActionController);
 
     server.addListeners(playerEventListeners);
     server.addListeners(hostEventListeners);
     server.addListeners(cardRequestListeners);
+    server.addListeners(roomEventListeners);
 
     server.start();
   }
