@@ -1,4 +1,4 @@
-import {Actions} from "../actions/types";
+import {GameAction} from "../actions/types";
 import {Listeners} from "../actions/listeners";
 
 export enum ViewState {
@@ -14,7 +14,7 @@ const initialState = ViewState.JOIN_GAME;
 
 export default function viewReducer(state = initialState, action: any) {
     switch( action.type ) {
-        case Actions.DISCONNECTED:
+        case GameAction.DISCONNECTED:
             return ViewState.JOIN_GAME
         case Listeners.JOIN_GAME_SUCCESS:
             return ViewState.IN_LOBBY;

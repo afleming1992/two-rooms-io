@@ -2,16 +2,13 @@ import React from 'react';
 import {Container, makeStyles} from "@material-ui/core";
 import EventTimeline from "../../components/EventTimeline";
 
-interface ActionsViewProps {
-}
-
 const useStyles = makeStyles((theme) => ({
   root: {
     marginBottom: "60px"
   }
 }));
 
-const ActionsView: React.FC<ActionsViewProps> = (props) => {
+const EventsView: React.FC = (props) => {
   const classes = useStyles();
 
   return (
@@ -22,4 +19,4 @@ const ActionsView: React.FC<ActionsViewProps> = (props) => {
 }
 
 
-export default ActionsView;
+export default EventsView;

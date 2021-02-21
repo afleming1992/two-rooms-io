@@ -21,7 +21,7 @@ const addNotification = (state: NotificationsState, notification: AppNotificatio
 };
 
 const notificationsReducer = (state: NotificationsState = initialState, action: any) => {
-  // Notification Actions
+  // Notification GameAction
   switch( action.type ) {
     case NotificationActions.CLOSE_SNACKBAR:
       return {
@@ -41,7 +41,7 @@ const notificationsReducer = (state: NotificationsState = initialState, action: 
       };
   }
 
-  // Notification Creation Actions
+  // Notification Creation GameAction
   switch( action.type ) {
     case Listeners.JOIN_GAME_SUCCESS:
       return addNotification(state, new AppNotification("Joined Game Successfully", {
