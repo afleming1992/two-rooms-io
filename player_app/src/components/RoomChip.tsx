@@ -13,6 +13,7 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: 'Bebas Neue',
     textTransform: "uppercase",
     fontWeight: "bolder",
+    textAlign: "center"
   }
 }));
 
