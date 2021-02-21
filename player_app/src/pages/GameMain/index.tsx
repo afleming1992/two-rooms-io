@@ -49,6 +49,8 @@ enum GameMainTabView {
   CARD
 }
 
+
+
 const GameMain: React.FC<GameMainProps> = (props) => {
   const [view, setView] = React.useState(GameMainTabView.ACTIONS);
 
@@ -58,19 +60,21 @@ const GameMain: React.FC<GameMainProps> = (props) => {
       <Container disableGutters={true} maxWidth={false}>
         <CssBaseline />
         <GameAppBar />
-        {
-          view === GameMainTabView.ROOM &&
-          <RoomView rooms={props.rooms} currentPlayer={props.currentPlayer} host={props.host} players={props.players} />
-        }
-        {
-          view === GameMainTabView.ACTIONS &&
-          <ActionsView />
-        }
-        {
-          view === GameMainTabView.CARD &&
-          <CardView card={props.card} deck={props.deck} />
-        }
-        <ActionsButton />
+        <div className={classes.bottomNav}>
+          {
+            view === GameMainTabView.ROOM &&
+            <RoomView rooms={props.rooms} currentPlayer={props.currentPlayer} host={props.host} players={props.players} />
+          }
+          {
+            view === GameMainTabView.ACTIONS &&
+            <ActionsView />
+          }
+          {
+            view === GameMainTabView.CARD &&
+            <CardView card={props.card} deck={props.deck} />
+          }
+          <ActionsButton />
+        </div>
         <BottomNavigation value={view} onChange={(event, newValue) => { setView( newValue ) } } showLabels className={classes.stickToBottom}>
           <BottomNavigationAction label="Room" icon={<FontAwesomeIcon size="2x" icon={faDoorOpen} />} value={GameMainTabView.ROOM} />
           <BottomNavigationAction label="Actions" icon={<FontAwesomeIcon size="2x" icon={faComments} />} value={GameMainTabView.ACTIONS} />
