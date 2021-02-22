@@ -34,7 +34,7 @@ public class Room {
     }
 
     user.joinSocketRoom(channelName);
-    user.sendEvent("JOIN_ROOM", new JoinRoomEvent(this.roomName, reasonForJoin));
+    user.sendEvent("JOIN_ROOM", new JoinRoomEvent(this, reasonForJoin));
 
     this.players.add(user);
   }
@@ -46,7 +46,7 @@ public class Room {
 
     for (User user : users) {
       user.joinSocketRoom(channelName);
-      user.sendEvent("JOIN_ROOM", new JoinRoomEvent(this.roomName, reasonForJoin));
+      user.sendEvent("JOIN_ROOM", new JoinRoomEvent(this, reasonForJoin));
       this.players.add(user);
     }
   }

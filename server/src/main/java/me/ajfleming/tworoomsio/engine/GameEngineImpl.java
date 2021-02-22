@@ -205,7 +205,7 @@ public class GameEngineImpl implements GameEngine {
       throws GameException {
     Room room = game.getRoom(roomName);
     enforceGameCheck(room.isPlayerInRoom(nominator), "You are not in the correct room");
-    enforceGameCheck(room.getLeader() != null, "Too late! A leader has already been nominated");
+    enforceGameCheck(room.getLeader() == null, "Too late! A leader has already been nominated");
 
     room.setFirstLeader(nominee);
     game.updateRoom(room);
@@ -461,7 +461,7 @@ public class GameEngineImpl implements GameEngine {
       Optional<Room> roomFind = game.findRoomUserIsIn(user);
       if (roomFind.isPresent()) {
         user.sendEvent("JOIN_ROOM",
-            new JoinRoomEvent(roomFind.get().getRoomName(), "Reconnection"));
+            new JoinRoomEvent(roomFind.get(), "Reconnection"));
         user.joinSocketRoom(roomFind.get().getChannelName());
       }
     }
