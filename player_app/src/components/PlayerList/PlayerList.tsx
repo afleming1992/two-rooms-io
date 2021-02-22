@@ -27,7 +27,7 @@ const PlayerList: React.FC<PlayerListProps> = (props) => {
       {
         props.players.map( ( player ) => {
           return (
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} sm={6}>
               <PlayerListItem
                 inverse={props.inverse || false}
                 player={player}
