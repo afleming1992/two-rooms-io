@@ -63,7 +63,7 @@ const GameMain: React.FC<GameMainProps> = (props) => {
         <div className={classes.bottomNav}>
           {
             view === GameMainTabView.ROOM &&
-            <RoomView rooms={props.rooms} currentPlayer={props.currentPlayer} host={props.host} players={props.players} />
+            <RoomView />
           }
           {
             view === GameMainTabView.EVENTS &&

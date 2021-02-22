@@ -30,13 +30,14 @@ import CardShareTypeAvatar from "../../../components/CardShareTypeAvatar";
 import ShareTypeDialog from './ShareTypeDialog';
 import {AppState} from "../../../redux/reducers";
 import {RoomName} from "../../../domain/Room";
+import {RoomState} from "../../../redux/reducers/room";
 
 interface ActionModalProps {
   isActionModalOpen: boolean,
   actionType: ActionMode,
   closeModal: any,
   card: RoleCard | undefined,
-  players: User[] | undefined,
+  room: RoomState,
   currentPlayer: User,
   privateReveal: any,
   requestShare: any,
@@ -190,6 +191,7 @@ const ActionModal:React.FC<ActionModalProps> = (props) => {
                 <ListItemText className={classes.itemText} primary="Type" secondary={ type } />
               </ListItem>
               <Divider />
+              <ShareTypeDialog card={props.card} selectedValue={type} open={shareTypeDialogOpen} onClose={onShareTypeDialogClose} />
             </>
           }
           {
@@ -202,12 +204,11 @@ const ActionModal:React.FC<ActionModalProps> = (props) => {
                 <ListItemText className={classes.itemText} primary={"Selected Player"} secondary={ player?.name || "-" } />
               </ListItem>
               <Divider />
+              <PlayerDialog players={props.room.playersInRoom} excludePlayers={[ props.currentPlayer ]} selectedValue={player} open={playerDialogOpen} onClose={onPlayerDialogClose} />
             </>
           }
         </List>
       </Dialog>
-      <PlayerDialog players={props.players} excludePlayers={[ props.currentPlayer ]} selectedValue={player} open={playerDialogOpen} onClose={onPlayerDialogClose} />
-      <ShareTypeDialog card={props.card} selectedValue={type} open={shareTypeDialogOpen} onClose={onShareTypeDialogClose} />
     </>
   );
 }
@@ -217,7 +218,7 @@ const mapStateToProps = (state: AppState) => {
     isActionModalOpen: state.actionModal.isActionModalOpen,
     actionType: state.actionModal.actionType,
     card: state.card.card,
-    players: state.game.players,
+    room: state.room,
     currentPlayer: state.player,
     currentRoom: state.room.currentRoom
   }

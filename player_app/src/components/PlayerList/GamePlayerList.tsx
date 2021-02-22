@@ -13,7 +13,8 @@ interface GamePlayerListProps {
   currentPlayer: string | undefined,
   inverse?: boolean
   roomLeader: User | undefined,
-  hostages: Array<User>
+  hostages: Array<User>,
+  currentRoom: boolean
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -25,6 +26,22 @@ const useStyles = makeStyles((theme) => ({
 const GamePlayerList: React.FC<GamePlayerListProps> = ({roomLeader, hostages, currentPlayer, ...props}) => {
   const classes = useStyles();
 
+  let playersMinusLeaderAndHostages = props.players;
+  if( roomLeader ) {
+    playersMinusLeaderAndHostages = playersMinusLeaderAndHostages.filter((player) => roomLeader.userToken !== player.userToken);
+  }
+
+  if( hostages.length > 0 ) {
+    playersMinusLeaderAndHostages = playersMinusLeaderAndHostages.filter((player) => {
+      hostages.map((hostage) => {
+        if( hostage.userToken === player.userToken ) {
+          return false;
+        }
+      });
+      return true;
+    })
+  }
+
   return (
     <>
       <Grid container spacing={1}>
@@ -34,13 +51,13 @@ const GamePlayerList: React.FC<GamePlayerListProps> = ({roomLeader, hostages, cu
               Room Leader
             </Typography>
             {
-              (() => {
+              ((roomLeader) => {
                 if(roomLeader) {
                   return (
                     <PlayerListItem
                       player={roomLeader}
                       inverse={true}
-                      isMe={currentPlayer == roomLeader.userToken}
+                      isMe={currentPlayer === roomLeader.userToken}
                     />
                   )
                 } else {
@@ -53,7 +70,7 @@ const GamePlayerList: React.FC<GamePlayerListProps> = ({roomLeader, hostages, cu
                     </Alert>
                   );
                 }
-              })()
+              })(roomLeader)
             }
           </Paper>
         </Grid>
@@ -91,7 +108,7 @@ const GamePlayerList: React.FC<GamePlayerListProps> = ({roomLeader, hostages, cu
               inverse={true}
               currentPlayer={currentPlayer}
               host={props.host}
-              players={props.players || []} />
+              players={playersMinusLeaderAndHostages || []} />
           </Paper>
         </Grid>
       </Grid>
