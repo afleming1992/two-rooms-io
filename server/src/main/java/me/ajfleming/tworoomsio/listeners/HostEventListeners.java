@@ -2,16 +2,14 @@ package me.ajfleming.tworoomsio.listeners;
 
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.annotation.OnEvent;
+import lombok.RequiredArgsConstructor;
 import me.ajfleming.tworoomsio.controller.UserActionController;
 import me.ajfleming.tworoomsio.socket.event.RevealPlayerAssignmentEvent;
 
+@RequiredArgsConstructor
 public class HostEventListeners {
 
-  private UserActionController userActionController;
-
-  public HostEventListeners(UserActionController userActionController) {
-    this.userActionController = userActionController;
-  }
+  private final UserActionController userActionController;
 
   @OnEvent("NEXT_ROUND")
   public void onNextRound(SocketIOClient client) {

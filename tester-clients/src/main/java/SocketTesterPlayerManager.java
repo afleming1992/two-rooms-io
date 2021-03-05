@@ -40,8 +40,7 @@ public class SocketTesterPlayerManager {
   }
 
   private void joinGame(Socket socket, Player player) {
-    JoinGameEvent event = new JoinGameEvent();
-    event.setName(player.getName());
+    JoinGameEvent event = new JoinGameEvent(player.getName());
     socket.emit("JOIN_GAME", convertToJsonObject(event));
   }
 

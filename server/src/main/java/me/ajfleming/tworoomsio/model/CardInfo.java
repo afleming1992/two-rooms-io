@@ -1,7 +1,11 @@
 package me.ajfleming.tworoomsio.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@Getter
+@RequiredArgsConstructor
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum CardInfo {
   PRESIDENT("President",
@@ -30,32 +34,4 @@ public enum CardInfo {
   private final String howToWin;
   private final String cardImage;
   private final Team team;
-
-  CardInfo(String title, String subtitle, String howToWin, String cardImage, Team team) {
-    this.title = title;
-    this.howToWin = howToWin;
-    this.cardImage = cardImage;
-    this.team = team;
-    this.subtitle = subtitle;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public String getHowToWin() {
-    return howToWin;
-  }
-
-  public String getCardImage() {
-    return cardImage;
-  }
-
-  public Team getTeam() {
-    return team;
-  }
-
-  public String getSubtitle() {
-    return subtitle;
-  }
 }

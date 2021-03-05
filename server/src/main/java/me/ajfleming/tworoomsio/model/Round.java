@@ -1,28 +1,10 @@
 package me.ajfleming.tworoomsio.model;
 
+import lombok.Data;
+import lombok.Value;
+
+@Value
 public class Round {
-
-  private int roundNumber;
-  private int hostagesRequired;
-
-  public Round(int roundNumber, int hostagesRequired) {
-    this.roundNumber = roundNumber;
-    this.hostagesRequired = hostagesRequired;
-  }
-
-  public int getRoundNumber() {
-    return roundNumber;
-  }
-
-  public void setRoundNumber(final int roundNumber) {
-    this.roundNumber = roundNumber;
-  }
-
-  public int getHostagesRequired() {
-    return hostagesRequired;
-  }
-
-  public void setHostagesRequired(final int hostagesRequired) {
-    this.hostagesRequired = hostagesRequired;
-  }
+  int roundNumber;
+  int hostagesRequired;
 }

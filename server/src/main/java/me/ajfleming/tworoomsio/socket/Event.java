@@ -1,5 +1,8 @@
 package me.ajfleming.tworoomsio.socket;
 
+import lombok.Getter;
+
+@Getter
 public enum Event {
   JOIN_GAME("JOIN_GAME"),
   JOIN_GAME_SUCCESS("JOIN_GAME_SUCCESS"),
@@ -15,13 +18,9 @@ public enum Event {
   REJECT_SHARE("REJECT_SHARE"),
   PRIVATE_REVEAL("PRIVATE_REVEAL");
 
-  private String value;
+  private final String value;
 
   Event(String value) {
     this.value = value;
-  }
-
-  public String getValue() {
-    return value;
   }
 }

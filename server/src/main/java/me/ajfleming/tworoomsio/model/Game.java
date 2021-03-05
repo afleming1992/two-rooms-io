@@ -9,10 +9,13 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-import me.ajfleming.tworoomsio.exception.GameException;
+import lombok.Builder;
+import lombok.Data;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.timer.RoundTimer;
 
+@Data
+@Builder
 public class Game {
 
   private String id;
@@ -29,8 +32,8 @@ public class Game {
   private RoundTimer timer;
   private List<Round> roundData;
 
-  public boolean addPlayer(User user) {
-    return this.players.add(user);
+  public void addPlayer(User user) {
+    this.players.add(user);
   }
 
   public boolean reconnectPlayer(User reconnectingUser) {
@@ -50,17 +53,16 @@ public class Game {
         .collect(Collectors.toList());
   }
 
-  public void addShareRequest(final CardShareRequest request) throws GameException {
+  public void addShareRequest(final CardShareRequest request) {
     cardShareRequests.put(request.getId(), request);
   }
 
-  public Optional<CardShareRequest> getCardShareRequest(final String requestId)
-      throws GameException {
+  public Optional<CardShareRequest> getCardShareRequest(final String requestId) {
     return Optional.ofNullable(cardShareRequests.get(requestId));
   }
 
-  public boolean invalidateCardShareRequest(final String requestId) {
-    return cardShareRequests.remove(requestId) != null;
+  public void invalidateCardShareRequest(final String requestId) {
+    cardShareRequests.remove(requestId);
   }
 
   public Optional<User> findPlayer(String name) {
@@ -76,7 +78,7 @@ public class Game {
     if (search.isPresent()) {
       if (hasStarted() || isUserHost(search.get())) {
         // Soft Disconnect the User (Mark as Disconnected)
-        this.players.stream().forEach(user -> {
+        this.players.forEach(user -> {
           if (user.getUserToken().equals(userToken)) {
             user.disconnectPlayer();
           }
@@ -131,112 +133,29 @@ public class Game {
     return host.getUserToken().equals(user.getUserToken());
   }
 
-  public String getId() {
-    return id;
-  }
-
-  public User getHost() {
-    return host;
-  }
-
-  public int getRound() {
-    return round;
-  }
-
-  public List<User> getPlayers() {
-    return players;
-  }
-
-  public List<Card> getDeck() {
-    return deck;
-  }
-
-  public void setDeck(final List<Card> deck) {
-    this.deck = deck;
-  }
-
-  public Map<String, Card> getCardAssignments() {
-    return cardAssignments;
-  }
-
-  public void setCardAssignments(final Map<String, Card> cardAssignments) {
-    this.cardAssignments = cardAssignments;
-  }
-
-  public List<CardAssignment> getRevealedCardAssignments() {
-    return revealedCardAssignments;
-  }
-
-  public void setRevealedCardAssignments(final List<CardAssignment> revealedCardAssignments) {
-    this.revealedCardAssignments = revealedCardAssignments;
-  }
-
-  public int getTotalPlayerCount() {
-    return players.size();
-  }
-
   public void nextRound() {
     round++;
-  }
-
-  public RoundTimer getTimer() {
-    return timer;
-  }
-
-  public void setTimer(RoundTimer timer) {
-    this.timer = timer;
-  }
-
-  public List<Round> getRoundData() {
-    return roundData;
-  }
-
-  public void setRoundData(List<Round> roundData) {
-    this.roundData = roundData;
-  }
-
-  public int getNumberOfRounds() {
-    return numberOfRounds;
-  }
-
-  public void setNumberOfRounds(final int numberOfRounds) {
-    this.numberOfRounds = numberOfRounds;
   }
 
   public void resetCardShares() {
     this.cardShareRequests = new HashMap<>();
   }
 
-  public static class Builder {
+  public int getTotalPlayerCount() {
+    return this.players.size();
+  }
 
-    private final Game template;
-
-    public Builder() {
-      template = new Game();
-    }
-
-    public Builder newGame(User host) {
-      template.id = UUID.randomUUID().toString();
-      template.host = host;
-      template.round = 0;
-      template.players = new ArrayList<>();
-      template.deck = new ArrayList<>();
-      template.cardShareRequests = new HashMap<>();
-      template.revealedCardAssignments = new ArrayList<>();
-      template.numberOfRounds = 3;
+  public static class GameBuilder {
+    public GameBuilder newGame(User host) {
+      this.id = UUID.randomUUID().toString();
+      this.host = host;
+      this.round = 0;
+      this.players = new ArrayList<>();
+      this.deck = new ArrayList<>();
+      this.cardShareRequests = new HashMap<>();
+      this.revealedCardAssignments = new ArrayList<>();
+      this.numberOfRounds = 3;
       return this;
-    }
-
-    public Game build() {
-      Game game = new Game();
-      game.id = template.id;
-      game.host = template.host;
-      game.round = template.round;
-      game.players = template.players;
-      game.deck = template.deck;
-      game.cardShareRequests = template.cardShareRequests;
-      game.revealedCardAssignments = template.revealedCardAssignments;
-      return game;
     }
   }
 }

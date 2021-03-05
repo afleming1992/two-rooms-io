@@ -1,20 +1,13 @@
 package me.ajfleming.tworoomsio.service.sharing;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum CardShareType {
   COLOUR("COLOUR"),
   ROLE("ROLE");
 
-  private String value;
-
-  CardShareType(String value) {
-    this.value = value;
-  }
-
-  public String getValue() {
-    return value;
-  }
-
-  public void setValue(final String value) {
-    this.value = value;
-  }
+  private final String value;
 }
