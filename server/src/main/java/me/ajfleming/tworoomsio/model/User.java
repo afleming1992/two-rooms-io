@@ -3,13 +3,15 @@ package me.ajfleming.tworoomsio.model;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.UUID;
+import lombok.Data;
 
+@Data
 public class User {
 
   private String userToken;
   private String name;
   @JsonIgnore
-  private String userSecret;
+  private final String userSecret;
   @JsonIgnore
   private SocketIOClient client;
   @JsonIgnore
@@ -21,12 +23,6 @@ public class User {
     this.name = name;
     this.client = client;
     connected = true;
-  }
-
-  public User(String userToken, String userSecret, SocketIOClient client) {
-    this.userToken = userToken;
-    this.userSecret = userSecret;
-    this.client = client;
   }
 
   public boolean authenticateUser(String userToken, String userSecret) {
@@ -50,40 +46,8 @@ public class User {
     return getUserToken().equals(user.getUserToken());
   }
 
-  public String getUserToken() {
-    return userToken;
-  }
-
-  public void setUserToken(final String userToken) {
-    this.userToken = userToken;
-  }
-
   @JsonIgnore
   public UUID getSocketSessionId() {
     return this.getClient().getSessionId();
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(final String name) {
-    this.name = name;
-  }
-
-  public SocketIOClient getClient() {
-    return client;
-  }
-
-  public void setClient(final SocketIOClient client) {
-    this.client = client;
-  }
-
-  public boolean isConnected() {
-    return connected;
-  }
-
-  public String getUserSecret() {
-    return userSecret;
   }
 }

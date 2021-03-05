@@ -1,37 +1,18 @@
 package me.ajfleming.tworoomsio.socket.response;
 
+import lombok.Value;
+
+@Value
 public class Response {
 
   boolean success;
   String message;
 
   public static Response success(final String message) {
-    Response response = new Response();
-    response.setSuccess(true);
-    response.setMessage(message);
-    return response;
+    return new Response(true, message);
   }
 
   public static Response error(final String message) {
-    Response response = new Response();
-    response.setSuccess(false);
-    response.setMessage(message);
-    return response;
-  }
-
-  public boolean isSuccess() {
-    return success;
-  }
-
-  public void setSuccess(final boolean success) {
-    this.success = success;
-  }
-
-  public String getMessage() {
-    return message;
-  }
-
-  public void setMessage(final String message) {
-    this.message = message;
+    return new Response(false, message);
   }
 }

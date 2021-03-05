@@ -12,6 +12,7 @@ import me.ajfleming.tworoomsio.exception.UserException;
 import me.ajfleming.tworoomsio.model.Card;
 import me.ajfleming.tworoomsio.model.CardKey;
 import me.ajfleming.tworoomsio.model.Game;
+import me.ajfleming.tworoomsio.model.Game.GameBuilder;
 import me.ajfleming.tworoomsio.model.RoundMap;
 import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.service.deck.DeckBuilderService;
@@ -26,8 +27,8 @@ public class GameEngineImpl implements GameEngine {
   private static final int MAX_ROUNDS = 3;
   private final SocketIOServer socketServer;
   private Game game;
-  private DeckBuilderService deckBuilder;
-  private UserManager userManager;
+  private final DeckBuilderService deckBuilder;
+  private final UserManager userManager;
 
   public GameEngineImpl(SocketIOServer socketServer, UserManager userManager) {
     this.socketServer = socketServer;
@@ -38,7 +39,7 @@ public class GameEngineImpl implements GameEngine {
   @Override
   public void createNewGame(final User hostUser) throws GameException {
     if (game == null) {
-      game = new Game.Builder().newGame(hostUser).build();
+      game = Game.builder().newGame(hostUser).build();
     } else {
       throw new GameException("Game already in progress");
     }

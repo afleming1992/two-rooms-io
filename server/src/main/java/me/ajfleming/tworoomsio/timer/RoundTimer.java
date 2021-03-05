@@ -4,26 +4,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import lombok.Data;
 
+@Data
 public class RoundTimer {
 
   private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-  private long initialUnits;
+  private final long initialUnits;
+  private final TimeUnit unitType;
+  private final TimerTrigger onTick;
+  private final TimerTrigger onEnd;
   private boolean timerRunning;
   private long unitsLeft;
-  private TimeUnit unitType;
-  private TimerTrigger onTick;
-  private TimerTrigger onEnd;
   private ScheduledFuture<?> refreshTask;
-
-  public RoundTimer(int unitsLeft, TimeUnit unitType, TimerTrigger onTick, TimerTrigger onEnd) {
-    this.timerRunning = false;
-    this.initialUnits = unitsLeft;
-    this.unitsLeft = unitsLeft;
-    this.unitType = unitType;
-    this.onTick = onTick;
-    this.onEnd = onEnd;
-  }
 
   public void start() {
     if (unitsLeft > 0) {
@@ -49,17 +42,5 @@ public class RoundTimer {
       onTick.trigger(this);
       refreshTask = null;
     }
-  }
-
-  public boolean isTimerRunning() {
-    return timerRunning;
-  }
-
-  public long getUnitsLeft() {
-    return unitsLeft;
-  }
-
-  public long getInitialUnits() {
-    return initialUnits;
   }
 }

@@ -1,16 +1,9 @@
 package me.ajfleming.tworoomsio.socket.event;
 
+import lombok.Value;
 import me.ajfleming.tworoomsio.model.CardKey;
 
+@Value
 public class RevealPlayerAssignmentEvent {
-
   CardKey card;
-
-  public CardKey getCard() {
-    return card;
-  }
-
-  public void setCard(final CardKey card) {
-    this.card = card;
-  }
 }

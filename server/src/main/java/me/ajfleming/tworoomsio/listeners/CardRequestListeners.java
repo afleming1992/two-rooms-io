@@ -2,17 +2,16 @@ package me.ajfleming.tworoomsio.listeners;
 
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.annotation.OnEvent;
+import lombok.RequiredArgsConstructor;
 import me.ajfleming.tworoomsio.controller.UserActionController;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.socket.action.ShareDecisionRequest;
+import org.springframework.beans.factory.annotation.Required;
 
+@RequiredArgsConstructor
 public class CardRequestListeners {
 
-  private UserActionController userActionController;
-
-  public CardRequestListeners(UserActionController userActionController) {
-    this.userActionController = userActionController;
-  }
+  private final UserActionController userActionController;
 
   @OnEvent("REQUEST_SHARE")
   public void onRequestShare(SocketIOClient client, CardShareRequest request) {

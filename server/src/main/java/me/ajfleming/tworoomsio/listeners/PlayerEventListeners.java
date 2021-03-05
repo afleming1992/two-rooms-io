@@ -4,21 +4,19 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.annotation.OnConnect;
 import com.corundumstudio.socketio.annotation.OnDisconnect;
 import com.corundumstudio.socketio.annotation.OnEvent;
+import lombok.RequiredArgsConstructor;
 import me.ajfleming.tworoomsio.controller.UserActionController;
 import me.ajfleming.tworoomsio.socket.event.JoinGameEvent;
 import me.ajfleming.tworoomsio.socket.event.ReloadGameSessionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@RequiredArgsConstructor
 public class PlayerEventListeners {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PlayerEventListeners.class);
 
-  private UserActionController userActionController;
-
-  public PlayerEventListeners(UserActionController userActionController) {
-    this.userActionController = userActionController;
-  }
+  private final UserActionController userActionController;
 
   @OnConnect
   public void onConnect(SocketIOClient client) {

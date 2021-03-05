@@ -8,40 +8,35 @@ import me.ajfleming.tworoomsio.model.CardSet;
 
 public class DeckBuilderService {
 
-  private Map<CardSet, List<Card>> possibleCardSets = CardSetMapProvider.cardMap();
+  private final Map<CardSet, List<Card>> possibleCardSets = CardSetMapProvider.cardMap();
 
   public List<Card> buildDeck(int numberOfPlayers) {
-    List<Card> deck = new ArrayList<>();
 
     // Add President and Bomber
-    deck.addAll(possibleCardSets.get(CardSet.CORE));
+    List<Card> deck = new ArrayList<>(possibleCardSets.get(CardSet.CORE));
 
     // If Odd number of players, add Gambler
-    deck = addGamblerIfOddNumberOfPlayers(deck, numberOfPlayers);
+    addGamblerIfOddNumberOfPlayers(deck, numberOfPlayers);
 
     // Fill in remaining players with normal cards
-    deck = fillDeckWithMemberCards(deck, numberOfPlayers);
+    fillDeckWithMemberCards(deck, numberOfPlayers);
 
     return deck;
   }
 
-  private List<Card> addGamblerIfOddNumberOfPlayers(final List<Card> deck,
+  private void addGamblerIfOddNumberOfPlayers(final List<Card> deck,
       final int numberOfPlayers) {
     if (numberOfPlayers % 2 != 0) {
       deck.addAll(possibleCardSets.get(CardSet.GAMBLER));
     }
-
-    return deck;
   }
 
-  private List<Card> fillDeckWithMemberCards(final List<Card> deck, final int numberOfPlayers) {
+  private void fillDeckWithMemberCards(final List<Card> deck, final int numberOfPlayers) {
     var cardsRequired = numberOfPlayers - deck.size();
 
     while (cardsRequired > 1) {
       deck.addAll(possibleCardSets.get(CardSet.FILLER));
       cardsRequired = cardsRequired - 2;
     }
-
-    return deck;
   }
 }
