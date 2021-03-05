@@ -13,6 +13,8 @@ import org.springframework.context.annotation.Bean;
 public class TwoRoomsIoApplication {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TwoRoomsIoApplication.class);
+  //TODO: Change this to configurable outside of Code
+  private static final boolean DEV_MODE = true;
 
   public static void main(String[] args) {
     SpringApplication.run(TwoRoomsIoApplication.class, args);
