@@ -1,10 +1,10 @@
 package me.ajfleming.tworoomsio.socket.event;
 
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 public class ReloadGameSessionEvent {
-  String gameToken;
-  String playerToken;
-  String playerSecret;
+  private String gameToken;
+  private String playerToken;
+  private String playerSecret;
 }

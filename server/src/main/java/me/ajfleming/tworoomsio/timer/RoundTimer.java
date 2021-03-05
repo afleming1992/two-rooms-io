@@ -18,6 +18,15 @@ public class RoundTimer {
   private long unitsLeft;
   private ScheduledFuture<?> refreshTask;
 
+  public RoundTimer(int unitsLeft, TimeUnit unitType, TimerTrigger onTick, TimerTrigger onEnd) {
+    this.timerRunning = false;
+    this.initialUnits = unitsLeft;
+    this.unitsLeft = unitsLeft;
+    this.unitType = unitType;
+    this.onTick = onTick;
+    this.onEnd = onEnd;
+  }
+
   public void start() {
     if (unitsLeft > 0) {
       timerRunning = true;

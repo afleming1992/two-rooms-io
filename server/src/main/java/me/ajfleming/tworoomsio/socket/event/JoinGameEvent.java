@@ -1,8 +1,8 @@
 package me.ajfleming.tworoomsio.socket.event;
 
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 public class JoinGameEvent {
-  String name;
+  private String name;
 }
