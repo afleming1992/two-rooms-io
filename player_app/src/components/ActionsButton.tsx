@@ -1,12 +1,11 @@
 import React, {useState} from 'react';
 import {makeStyles} from "@material-ui/core";
-import {SpeedDial, SpeedDialAction, SpeedDialIcon} from '@material-ui/lab';
+import {SpeedDial, SpeedDialAction} from '@material-ui/lab';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faComments, faEye, faPeopleArrows, faPersonBooth, faTimes} from '@fortawesome/free-solid-svg-icons';
+import {faComments, faEye, faPeopleArrows, faPersonBooth} from '@fortawesome/free-solid-svg-icons';
 import {AppState} from "../redux/reducers";
-import {Action, bindActionCreators, Dispatch} from "redux";
 import {connect, useDispatch} from "react-redux";
-import actionModalCreators, {
+import {
   openNominateLeaderModal,
   openRevealModal,
   openShareModal
