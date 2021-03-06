@@ -9,13 +9,17 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.timer.RoundTimer;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Game {
 
   private String id;
