@@ -44,9 +44,9 @@ public class UserActionController {
 
     if (user.isPresent()) {
       try {
-        gameEngine.reloadPlayerIntoGame(event.getGameToken(), user.get());
+        gameEngine.reloadPlayerIntoGame(event.getGameId(), user.get());
         client.sendEvent("RELOAD_GAME_SESSION_SUCCESS",
-            new JoinGameResponse(event.getGameToken(), event.getPlayerToken(),
+            new JoinGameResponse(event.getGameId(), event.getPlayerToken(),
                 event.getPlayerSecret()));
       } catch (GameException e) {
         client.sendEvent("RELOAD_GAME_SESSION_ERROR", Response.error(e.getMessage()));
@@ -58,13 +58,7 @@ public class UserActionController {
   }
 
   public void disconnectPlayer(SocketIOClient client) {
-    userManager.handleDisconnectedClient(client).ifPresent(user -> {
-        try {
-          gameEngine.disconnectPlayer(user);
-        } catch (GameException e) {
-          client.sendEvent("DISCONNECT_ERROR", Response.error(e.getMessage()));
-        }
-    });
+    userManager.handleDisconnectedClient(client).ifPresent(gameEngine::disconnectPlayer);
   }
 
   public void startNextRound(final SocketIOClient client) {

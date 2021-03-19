@@ -1,8 +1,9 @@
 package me.ajfleming.tworoomsio.storage;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import me.ajfleming.tworoomsio.exception.GameException;
 import me.ajfleming.tworoomsio.model.Game;
@@ -39,5 +40,17 @@ public class GameCacheInMemoryImpl implements GameCache {
   @Override
   public void addGame(Game game) {
     games.put(game.getId(), game);
+  }
+
+  @Override
+  public void deleteGame(String gameId) {
+    games.remove(gameId);
+  }
+
+  @Override
+  public List<Game> getGamesPlayerIsIn(String playerToken) {
+    return games.values().stream()
+        .filter(game -> game.findPlayerByUserToken(playerToken).isPresent() )
+        .collect(Collectors.toList());
   }
 }

@@ -37,6 +37,9 @@ public class Game {
   private List<Round> roundData;
 
   public void addPlayer(User user) {
+    if( players == null ) {
+      players = new ArrayList<>();
+    }
     this.players.add(user);
   }
 

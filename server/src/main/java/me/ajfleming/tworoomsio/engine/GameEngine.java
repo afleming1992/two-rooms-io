@@ -17,7 +17,7 @@ public interface GameEngine {
 
   void reloadPlayerIntoGame(String gameToken, User user) throws GameException;
 
-  void disconnectPlayer(User user) throws GameException;
+  void disconnectPlayer(User user);
 
   void nextRound(User requestor) throws GameException;
 

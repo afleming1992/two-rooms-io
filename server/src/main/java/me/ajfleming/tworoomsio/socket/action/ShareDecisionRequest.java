@@ -2,6 +2,7 @@ package me.ajfleming.tworoomsio.socket.action;
 
 public class ShareDecisionRequest {
 
+  String gameId;
   String requestId;
 
   public String getRequestId() {

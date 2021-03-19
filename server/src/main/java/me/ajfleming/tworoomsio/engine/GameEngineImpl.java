@@ -100,15 +100,14 @@ public class GameEngineImpl implements GameEngine {
   }
 
   @Override
-  public void disconnectPlayer(final User user) throws GameException {
-    Game game = gameCache.getGame(currentGameId);
-    if (game != null) {
+  public void disconnectPlayer(final User user) {
+    List<Game> games = gameCache.getGamesPlayerIsIn(user.getUserToken());
+    for(Game game : games) {
       game.disconnectPlayer(user.getUserToken());
-      if (game.getPlayers().size() > 0) {
+      if (game.getTotalPlayerCount() > 0) {
         triggerGameUpdateEvent(game);
       } else {
-        // Shutdown Game
-        game = null;
+        gameCache.deleteGame(game.getId());
       }
     }
   }

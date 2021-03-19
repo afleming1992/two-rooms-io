@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ReloadGameSessionEvent {
-  private String gameToken;
+  private String gameId;
   private String playerToken;
   private String playerSecret;
 }
