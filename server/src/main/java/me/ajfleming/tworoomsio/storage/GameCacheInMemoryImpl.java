@@ -4,16 +4,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import lombok.Getter;
+import me.ajfleming.tworoomsio.exception.GameException;
 import me.ajfleming.tworoomsio.model.Game;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 /**
  * Game Cache implementation where the Game's are stored within Memory whilst the server is running
  */
+@Repository
 public class GameCacheInMemoryImpl implements GameCache {
 
   @Getter
   private final Map<String, Game> games;
 
+  @Autowired
   public GameCacheInMemoryImpl() {
     games = new HashMap<>();
   }
@@ -23,8 +28,12 @@ public class GameCacheInMemoryImpl implements GameCache {
   }
 
   @Override
-  public Optional<Game> getGame(String gameId) {
-    return Optional.ofNullable(games.get(gameId));
+  public Game getGame(String gameId) throws GameException {
+    if(games.containsKey(gameId)) {
+      return games.get(gameId);
+    } else {
+      throw new GameException("Game Not Found!");
+    }
   }
 
   @Override

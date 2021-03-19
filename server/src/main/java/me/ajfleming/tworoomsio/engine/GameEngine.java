@@ -2,6 +2,7 @@ package me.ajfleming.tworoomsio.engine;
 
 import me.ajfleming.tworoomsio.exception.GameException;
 import me.ajfleming.tworoomsio.model.CardKey;
+import me.ajfleming.tworoomsio.model.Game;
 import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 
@@ -10,21 +11,21 @@ import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
  */
 public interface GameEngine {
 
-  void createNewGame(User hostUser) throws GameException;
+  Game createNewGame(User hostUser) throws GameException;
 
   String addPlayerToGame(User user) throws GameException;
 
   void reloadPlayerIntoGame(String gameToken, User user) throws GameException;
 
-  void disconnectPlayer(User user);
+  void disconnectPlayer(User user) throws GameException;
 
   void nextRound(User requestor) throws GameException;
 
-  void startTimer(User requestor);
+  void startTimer(User requestor) throws GameException;
 
-  void pauseTimer(User requestor);
+  void pauseTimer(User requestor) throws GameException;
 
-  void restartTimer(User requestor);
+  void restartTimer(User requestor) throws GameException;
 
   CardShareRequest requestShare(User requestor, CardShareRequest request) throws GameException;
 

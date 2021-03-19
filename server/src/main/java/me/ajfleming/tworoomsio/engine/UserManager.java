@@ -7,7 +7,9 @@ import java.util.Optional;
 import me.ajfleming.tworoomsio.exception.UserException;
 import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.socket.event.ReloadGameSessionEvent;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserManager {
 
   /**

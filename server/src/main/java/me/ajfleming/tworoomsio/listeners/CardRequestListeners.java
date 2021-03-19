@@ -6,10 +6,12 @@ import lombok.RequiredArgsConstructor;
 import me.ajfleming.tworoomsio.controller.UserActionController;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.socket.action.ShareDecisionRequest;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
-public class CardRequestListeners {
+@Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class CardRequestListeners extends RequestListener {
 
   private final UserActionController userActionController;
 

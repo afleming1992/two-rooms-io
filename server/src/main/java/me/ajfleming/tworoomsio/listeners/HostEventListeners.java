@@ -5,9 +5,12 @@ import com.corundumstudio.socketio.annotation.OnEvent;
 import lombok.RequiredArgsConstructor;
 import me.ajfleming.tworoomsio.controller.UserActionController;
 import me.ajfleming.tworoomsio.socket.event.RevealPlayerAssignmentEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
-public class HostEventListeners {
+@Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class HostEventListeners extends RequestListener {
 
   private final UserActionController userActionController;
 

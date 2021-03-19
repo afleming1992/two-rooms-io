@@ -10,9 +10,12 @@ import me.ajfleming.tworoomsio.socket.event.JoinGameEvent;
 import me.ajfleming.tworoomsio.socket.event.ReloadGameSessionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
-public class PlayerEventListeners {
+@Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class PlayerEventListeners extends RequestListener {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(PlayerEventListeners.class);
 

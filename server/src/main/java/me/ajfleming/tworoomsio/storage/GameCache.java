@@ -1,6 +1,7 @@
 package me.ajfleming.tworoomsio.storage;
 
 import java.util.Optional;
+import me.ajfleming.tworoomsio.exception.GameException;
 import me.ajfleming.tworoomsio.model.Game;
 
 public interface GameCache {
@@ -10,7 +11,7 @@ public interface GameCache {
    * @param gameId The Unique Identifier of the Game
    * @return The Game Object representing the game
    */
-  Optional<Game> getGame(String gameId);
+  Game getGame(String gameId) throws GameException;
 
   /**
    * Updates the GameCache with an update to date version of the game
