@@ -39,7 +39,8 @@ export enum NotificationActions {
 export interface SocketAction extends Action {
     type: Actions,
     meta: {
-        remote: boolean
+        remote: boolean,
+        isGameRequest?: boolean
     },
     payload: Object
 }
