@@ -28,19 +28,19 @@ public class SocketTesterPlayerManager {
     this.players = players;
   }
 
-  public void init() {
+  public void init(String joinGameCode) {
     for( Player player : players ) {
       System.out.printf("Player %s joining game %n", player.getName());
       Socket socket = createNewSocket();
       setupListeners(socket, player);
       socket.connect();
-      joinGame(socket, player);
+      joinGame(socket, player, joinGameCode);
       player.setSocket(socket);
     }
   }
 
-  private void joinGame(Socket socket, Player player) {
-    JoinGameEvent event = new JoinGameEvent(player.getName());
+  private void joinGame(Socket socket, Player player, String joinCode) {
+    JoinGameEvent event = new JoinGameEvent(joinCode, player.getName());
     socket.emit("JOIN_GAME", convertToJsonObject(event));
   }
 
@@ -70,6 +70,10 @@ public class SocketTesterPlayerManager {
       } catch (JsonProcessingException e) {
         e.printStackTrace();
       }
+    });
+
+    socket.on("JOIN_GAME_ERROR", objects -> {
+      System.out.println(player.getName() + " didn't connect! :(");
     });
   }
 
