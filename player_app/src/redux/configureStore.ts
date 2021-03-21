@@ -5,6 +5,7 @@ import createSocketIoMiddleware from './middleware/socketMiddleware';
 import {actionListeners} from "./actions/listeners";
 import actionCreators from './actions/gameActionCreators';
 import {SessionState} from "./reducers/session";
+import {gameRequestMiddleware} from "./middleware/gameRequestMiddleware";
 
 declare global {
     interface Window {
@@ -15,8 +16,6 @@ declare global {
 const socket = io.connect();
 
 const socketIoMiddleware = createSocketIoMiddleware(socket, actionListeners());
-
-const middlewares = [socketIoMiddleware]
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -42,7 +41,7 @@ export default function configureStore() {
     let store = createStore(
         rootReducer,
         initialState,
-        composeEnhancers( applyMiddleware(...middlewares) )
+        composeEnhancers( applyMiddleware(gameRequestMiddleware, socketIoMiddleware) )
     )
 
     store.subscribe(() => {

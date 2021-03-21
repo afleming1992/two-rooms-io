@@ -5,5 +5,6 @@ import me.ajfleming.tworoomsio.model.CardKey;
 
 @Data
 public class RevealPlayerAssignmentEvent {
+  private String gameId;
   private CardKey card;
 }

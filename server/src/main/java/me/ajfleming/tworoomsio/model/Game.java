@@ -9,16 +9,21 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.timer.RoundTimer;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Game {
 
   private String id;
+  private String joinCode;
   private User host;
   private int round;
   private int numberOfRounds;
@@ -33,6 +38,9 @@ public class Game {
   private List<Round> roundData;
 
   public void addPlayer(User user) {
+    if( players == null ) {
+      players = new ArrayList<>();
+    }
     this.players.add(user);
   }
 
@@ -146,7 +154,7 @@ public class Game {
   }
 
   public static class GameBuilder {
-    public GameBuilder newGame(User host) {
+    public GameBuilder newGame(User host, String joinCode) {
       this.id = UUID.randomUUID().toString();
       this.host = host;
       this.round = 0;
@@ -155,6 +163,7 @@ public class Game {
       this.cardShareRequests = new HashMap<>();
       this.revealedCardAssignments = new ArrayList<>();
       this.numberOfRounds = 3;
+      this.joinCode = joinCode;
       return this;
     }
   }

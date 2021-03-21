@@ -6,10 +6,12 @@ import lombok.RequiredArgsConstructor;
 import me.ajfleming.tworoomsio.controller.UserActionController;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.socket.action.ShareDecisionRequest;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@RequiredArgsConstructor
-public class CardRequestListeners {
+@Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class CardRequestListeners extends RequestListener {
 
   private final UserActionController userActionController;
 
@@ -20,12 +22,12 @@ public class CardRequestListeners {
 
   @OnEvent("ACCEPT_SHARE")
   public void onAcceptShare(SocketIOClient client, ShareDecisionRequest request) {
-    userActionController.acceptShare(client, request.getRequestId());
+    userActionController.acceptShare(client, request.getGameId(), request.getRequestId());
   }
 
   @OnEvent("REJECT_SHARE")
   public void onRejectShare(SocketIOClient client, ShareDecisionRequest request) {
-    userActionController.rejectShare(client, request.getRequestId());
+    userActionController.rejectShare(client, request.getGameId(), request.getRequestId());
   }
 
   @OnEvent("PRIVATE_REVEAL")

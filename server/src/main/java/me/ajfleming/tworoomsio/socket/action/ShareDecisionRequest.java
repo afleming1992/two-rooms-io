@@ -1,14 +1,9 @@
 package me.ajfleming.tworoomsio.socket.action;
 
+import lombok.Data;
+
+@Data
 public class ShareDecisionRequest {
-
+  String gameId;
   String requestId;
-
-  public String getRequestId() {
-    return requestId;
-  }
-
-  public void setRequestId(final String requestId) {
-    this.requestId = requestId;
-  }
 }

@@ -2,7 +2,6 @@ package me.ajfleming.tworoomsio.engine;
 
 import static me.ajfleming.tworoomsio.timer.TimerUtils.setupTimer;
 
-import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import java.util.List;
 import java.util.Optional;
@@ -12,139 +11,135 @@ import me.ajfleming.tworoomsio.exception.UserException;
 import me.ajfleming.tworoomsio.model.Card;
 import me.ajfleming.tworoomsio.model.CardKey;
 import me.ajfleming.tworoomsio.model.Game;
-import me.ajfleming.tworoomsio.model.Game.GameBuilder;
 import me.ajfleming.tworoomsio.model.RoundMap;
 import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.service.deck.DeckBuilderService;
 import me.ajfleming.tworoomsio.service.deck.DeckDealerService;
+import me.ajfleming.tworoomsio.service.lobby.JoinCodeGenerator;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.service.sharing.CardShareType;
 import me.ajfleming.tworoomsio.socket.response.CardRevealResponse;
+import me.ajfleming.tworoomsio.storage.GameCache;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GameEngineImpl implements GameEngine {
 
   private static final int TOTAL_ROUND_SECONDS = 180;
-  private static final int MAX_ROUNDS = 3;
   private final SocketIOServer socketServer;
-  private Game game;
   private final DeckBuilderService deckBuilder;
   private final UserManager userManager;
+  private final GameCache gameCache;
+  private final JoinCodeGenerator joinCodeGenerator;
 
-  public GameEngineImpl(SocketIOServer socketServer, UserManager userManager) {
+  @Autowired
+  public GameEngineImpl(SocketIOServer socketServer, UserManager userManager, GameCache gameCache, JoinCodeGenerator joinCodeGenerator) {
     this.socketServer = socketServer;
     this.deckBuilder = new DeckBuilderService();
     this.userManager = userManager;
+    this.gameCache = gameCache;
+    this.joinCodeGenerator = joinCodeGenerator;
   }
 
   @Override
-  public void createNewGame(final User hostUser) throws GameException {
-    if (game == null) {
-      game = Game.builder().newGame(hostUser).build();
-    } else {
-      throw new GameException("Game already in progress");
-    }
+  public Game createNewGame(final User hostUser) {
+      Game game = Game.builder()
+          .newGame(hostUser, joinCodeGenerator.generateJoinCode())
+          .build();
+      return game;
   }
 
   @Override
-  public String addPlayerToGame(final User user) throws GameException {
-    if (game == null) {
-      createNewGame(user);
-    }
-
+  public void joinGame(final Game game, final User player) throws GameException {
     if (game.getRound() > 0) {
       throw new GameException("Game has already started");
     }
 
-    if (game.findPlayer(user.getName()).isPresent()) {
+    if (game.findPlayer(player.getName()).isPresent()) {
       throw new GameException(
           "Someone has already used that name! Maybe you have a popular name like Andrew? 🤔");
     }
 
-    game.addPlayer(user);
-    addPlayerToGameComms(user);
+    game.addPlayer(player);
+    addPlayerToGameComms(player, game);
     game.setDeck(deckBuilder.buildDeck(game.getTotalPlayerCount()));
-    triggerGameUpdateEvent();
-    return game.getId();
+    triggerGameUpdateEvent(game);
   }
 
   @Override
-  public void reloadPlayerIntoGame(String gameToken, User reconnectingUser)
+  public void reloadPlayerIntoGame(Game game, User player)
       throws GameException {
-    if (game == null || !game.getId().equals(gameToken)) {
-      throw new GameException(
-          "The game you're attempting to reload into doesn't exist anymore!");
-    }
-
-    if (!game.reconnectPlayer(reconnectingUser)) {
+    if (!game.reconnectPlayer(player)) {
       throw new GameException("Failed to reconnect to game");
     }
-    addPlayerToGameComms(reconnectingUser);
+    addPlayerToGameComms(player, game);
     try {
-      reloadPlayerGameData(reconnectingUser.getClient(), reconnectingUser);
+      reloadPlayerGameData(game, player);
     } catch (UserException e) {
       throw new GameException("Failed to reload user into game");
     }
 
-    triggerGameUpdateEvent();
+    triggerGameUpdateEvent(game);
   }
 
   @Override
-  public void disconnectPlayer(final User user) {
-    if (game != null) {
-      game.disconnectPlayer(user.getUserToken());
-      if (game.getPlayers().size() > 0) {
-        triggerGameUpdateEvent();
+  public void disconnectPlayer(final User player) {
+    List<Game> games = gameCache.getGamesPlayerIsIn(player.getUserToken());
+    for(Game game : games) {
+      game.disconnectPlayer(player.getUserToken());
+      if (game.getTotalPlayerCount() > 0) {
+        triggerGameUpdateEvent(game);
       } else {
-        // Shutdown Game
-        game = null;
+        gameCache.deleteGame(game.getId());
       }
     }
   }
 
   // Game Management Operations
 
-  private void startGame(final User requestor) throws GameException {
-    if (isGameReadyToStart() && game.isUserHost(requestor)) {
+  private void startGame(final Game game, final User requestor) throws GameException {
+    if (isGameReadyToStart(game) && game.isUserHost(requestor)) {
       game.nextRound();
       game.setRoundData(RoundMap.getRoundData(game.getTotalPlayerCount()));
       game.setCardAssignments(DeckDealerService.dealDeck(game.getDeck(), game.getPlayers()));
       game.setTimer(setupTimer(TOTAL_ROUND_SECONDS, game.getId(), socketServer));
-      triggerGameUpdateEvent();
+      triggerGameUpdateEvent(game);
     }
   }
 
-  private boolean isGameReadyToStart() {
+  private boolean isGameReadyToStart(Game game) {
     return game.getDeck().size() == game.getPlayers().size();
   }
 
   @Override
-  public void nextRound(final User requestor) throws GameException {
+  public void nextRound(Game game, User requestor) throws GameException {
     if (game.isUserHost(requestor)) {
       if (game.getRound() == 0) {
-        startGame(requestor);
+        startGame(game, requestor);
       } else {
         game.nextRound();
         game.setTimer(setupTimer(TOTAL_ROUND_SECONDS, game.getId(), socketServer));
       }
-      clearEventsAndRequests();
-      triggerGameUpdateEvent();
+      clearEventsAndRequests(game);
+      triggerGameUpdateEvent(game);
     }
   }
 
-  private void clearEventsAndRequests() throws GameException {
-    sendEventToGame("CLEAR_EVENTS", null);
+  private void clearEventsAndRequests(Game game) throws GameException {
+    sendEventToGame(game,"CLEAR_EVENTS", null);
     game.resetCardShares();
   }
 
   @Override
-  public void startTimer(final User requestor) {
+  public void startTimer(final Game game, final User requestor) throws GameException {
     if (game.isUserHost(requestor)) {
       game.getTimer().start();
     }
   }
 
   @Override
-  public void pauseTimer(final User requestor) {
+  public void pauseTimer(final Game game, final User requestor) {
     if (game.isUserHost(requestor)) {
       game.getTimer().stop();
     }
@@ -152,7 +147,7 @@ public class GameEngineImpl implements GameEngine {
   }
 
   @Override
-  public void restartTimer(final User requestor) {
+  public void restartTimer(final Game game, final User requestor) {
     if (game.isUserHost(requestor)) {
       if (game.getTimer().isTimerRunning()) {
         game.getTimer().stop();
@@ -160,11 +155,11 @@ public class GameEngineImpl implements GameEngine {
 
       game.setTimer(setupTimer(TOTAL_ROUND_SECONDS, game.getId(), socketServer));
     }
-    triggerGameUpdateEvent();
+    triggerGameUpdateEvent(game);
   }
 
   @Override
-  public void revealCardAssignment(final User host, final CardKey card) throws GameException {
+  public void revealCardAssignment(final Game game, final User host, final CardKey card) throws GameException {
     if (game.isUserHost(host)) {
       List<User> users = game.getUserAssignmentForCard(card);
       if (users.size() > 0) {
@@ -176,13 +171,13 @@ public class GameEngineImpl implements GameEngine {
             String.format("Card %s doesn't have a player assigned to it", card));
       }
     }
-    triggerGameUpdateEvent();
+    triggerGameUpdateEvent(game);
   }
 
   // Sharing Operations
 
   @Override
-  public CardShareRequest requestShare(final User requestor, final CardShareRequest request)
+  public CardShareRequest requestShare(final Game game, final User requestor, final CardShareRequest request)
       throws GameException {
     if (game.getTimer().isTimerRunning()) {
       Optional<User> recipient = game.findPlayerByUserToken(request.getRecipient());
@@ -205,12 +200,12 @@ public class GameEngineImpl implements GameEngine {
   }
 
   @Override
-  public void privateReveal(final User requestor, final CardShareRequest request)
+  public void privateReveal(final Game game, final User requestor, final CardShareRequest request)
       throws GameException {
     if (game.getTimer().isTimerRunning()) {
       Optional<User> user = game.findPlayerByUserToken(request.getRecipient());
       if (user.isPresent()) {
-        sendCardDataToPlayer(request, user.get(), requestor);
+        sendCardDataToPlayer(game, request, user.get(), requestor);
       } else {
         throw new GameException(
             "Failed to accept Private Reveal. Requestor isn't currently online");
@@ -221,13 +216,13 @@ public class GameEngineImpl implements GameEngine {
   }
 
   @Override
-  public void acceptShare(final User recipient, final String requestId) throws GameException {
-    CardShareRequest request = confirmIfShareAnswerIsAllowed(recipient, requestId);
+  public void acceptShare(final Game game, final User recipient, final String requestId) throws GameException {
+    CardShareRequest request = confirmIfShareAnswerIsAllowed(game, recipient, requestId);
 
     Optional<User> requestor = game.findPlayerByUserToken(request.getRequestor());
     if (requestor.isPresent()) {
-      sendCardDataToPlayer(request, requestor.get(), recipient);
-      sendCardDataToPlayer(request, recipient, requestor.get());
+      sendCardDataToPlayer(game, request, requestor.get(), recipient);
+      sendCardDataToPlayer(game, request, recipient, requestor.get());
       game.invalidateCardShareRequest(request.getId());
     } else {
       throw new GameException(
@@ -236,8 +231,8 @@ public class GameEngineImpl implements GameEngine {
   }
 
   @Override
-  public void rejectShare(final User recipient, final String requestId) throws GameException {
-    CardShareRequest request = confirmIfShareAnswerIsAllowed(recipient, requestId);
+  public void rejectShare(final Game game, final User recipient, final String requestId) throws GameException {
+    CardShareRequest request = confirmIfShareAnswerIsAllowed(game, recipient, requestId);
 
     Optional<User> requestor = game.findPlayerByUserToken(request.getRequestor());
     if (requestor.isPresent()) {
@@ -251,7 +246,7 @@ public class GameEngineImpl implements GameEngine {
     game.invalidateCardShareRequest(request.getId());
   }
 
-  private CardShareRequest confirmIfShareAnswerIsAllowed(User recipient, String requestId)
+  private CardShareRequest confirmIfShareAnswerIsAllowed(Game game, User recipient, String requestId)
       throws GameException {
     if (game.getTimer().isTimerRunning()) {
       Optional<CardShareRequest> cardShareRequest = game.getCardShareRequest(requestId);
@@ -267,7 +262,7 @@ public class GameEngineImpl implements GameEngine {
     }
   }
 
-  private void sendCardDataToPlayer(final CardShareRequest request, final User userToSend,
+  private void sendCardDataToPlayer(final Game game, final CardShareRequest request, final User userToSend,
       final User cardOwner) throws GameException {
     CardRevealResponse event;
     Optional<Card> card = game.getRoleAssignmentForUser(cardOwner.getUserToken());
@@ -301,19 +296,19 @@ public class GameEngineImpl implements GameEngine {
 
   // Helper Methods
 
-  private void triggerGameUpdateEvent() {
-    sendEventToGame("GAME_UPDATE", game);
+  private void triggerGameUpdateEvent(Game game) {
+    sendEventToGame(game,"GAME_UPDATE", game);
   }
 
-  private void sendEventToGame(String name, Object data) {
+  private void sendEventToGame(Game game, String name, Object data) {
     socketServer.getRoomOperations("game/" + game.getId()).sendEvent(name, data);
   }
 
-  private void addPlayerToGameComms(final User user) {
+  private void addPlayerToGameComms(final User user, final Game game) {
     user.getClient().joinRoom("game/" + game.getId());
   }
 
-  private void reloadPlayerGameData(final SocketIOClient client, final User user)
+  private void reloadPlayerGameData(final Game game, final User user)
       throws UserException {
     if (game.hasStarted()) {
       userManager.sendEvent(user.getUserToken(), "CARD_UPDATE",

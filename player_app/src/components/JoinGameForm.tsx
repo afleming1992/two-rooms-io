@@ -3,8 +3,9 @@ import {Button, CircularProgress, makeStyles, TextField} from "@material-ui/core
 import {green} from "@material-ui/core/colors";
 
 interface JoinGameFormProps {
-  onJoining(event: any): void,
+  onSubmit(event: any): void,
   onNameChange(event: any): void,
+  onGameCodeChange?(event: any): void | undefined,
   joining: boolean,
   errors: any
 }
@@ -41,16 +42,17 @@ const JoinGameForm: React.FC<JoinGameFormProps> = (props) => {
   const classes = useStyles();
 
   return (
-    <div className={classes.paper}>
-      <form className={classes.form} noValidate autoComplete="off" onSubmit={props.onJoining}>
-        <TextField name="name" error={ props.errors.isOpen } onChange={props.onNameChange} label="Name" fullWidth required variant="outlined" disabled={props.joining}/>
-        <div className={classes.buttonWrapper}>
-          <Button type="submit" size="large" fullWidth color="primary" className={classes.submit} variant="contained" disabled={props.joining}>Join Game</Button>
-          { props.joining && <CircularProgress size={26} className={classes.buttonProgress} /> }
-        </div>
-      </form>
-    </div>
-
+    <form className={classes.form} noValidate autoComplete="off" onSubmit={props.onSubmit}>
+      <TextField name="name" onChange={props.onNameChange} label="Name" fullWidth required variant="outlined" disabled={props.joining}/>
+      {
+        props.onGameCodeChange &&
+        <TextField name="gameCode" onChange={props.onGameCodeChange} label={"Game Code"} fullWidth required variant="outlined" disabled={props.joining} />
+      }
+      <div className={classes.buttonWrapper}>
+        <Button type="submit" size="large" fullWidth color="primary" className={classes.submit} variant="contained" disabled={props.joining}>Join Game</Button>
+        { props.joining && <CircularProgress size={26} className={classes.buttonProgress} /> }
+      </div>
+    </form>
   );
 };
 

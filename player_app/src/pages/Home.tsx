@@ -1,9 +1,9 @@
 import React, {useState} from "react";
-import {connect} from "react-redux";
-import {Container, makeStyles} from "@material-ui/core";
+import {connect, useDispatch} from "react-redux";
+import {Button, Container, makeStyles} from "@material-ui/core";
 import JoinGameForm from "../components/JoinGameForm";
 import {Action, bindActionCreators, Dispatch} from "redux";
-import actionCreators from "../redux/actions/gameActionCreators";
+import actionCreators, {createGame, joinGame} from "../redux/actions/gameActionCreators";
 
 interface HomeProps {
   joinGame: any,
@@ -18,24 +18,51 @@ const useStyles = makeStyles((theme) => ({
     fontFamily: "Bebas Neue",
     fontSize: 50,
     textAlign: "center"
-}}));
+  },
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  }
+}));
+
+enum HomeScreenView {
+  HOME="HOME",
+  CREATE_GAME="CREATE_GAME",
+  JOIN_GAME="JOIN_GAME"
+}
 
 const Home: React.FC<HomeProps> = (props) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
-  const [playerName, setPlayerName] = useState();
+  const [playerName, setPlayerName] = useState("");
+  const [gameCode, setGameCode] = useState("");
+  const [homeScreenView, setHomeScreenView] = useState(HomeScreenView.HOME);
 
+  const onCreateGame = (event:any) => {
+    event.preventDefault();
+    dispatch(createGame(playerName));
+  }
 
   const onJoining = (event:any) => {
-      event.preventDefault();
-      props.joinGame(playerName);
+    event.preventDefault();
+    dispatch(joinGame(playerName, gameCode.toUpperCase()));
   }
 
   const onNameChange = (event:any) => {
-      const {name, value} = event.target;
-      if( name === "name" ) {
-        setPlayerName(value);
-      }
+    const {name, value} = event.target;
+    if( name === "name" ) {
+      setPlayerName(value);
+    }
+  }
+
+  const onGameCodeChange = (event:any) => {
+    const {name, value} = event.target;
+    if( name === "gameCode" ) {
+      setGameCode(value);
+    }
   }
 
   return (
@@ -43,10 +70,31 @@ const Home: React.FC<HomeProps> = (props) => {
         <div className={classes.two_rooms_logo}>
           Two Rooms and a BOOM
         </div>
-        {
-           props.connected &&
-           <JoinGameForm onJoining={onJoining} onNameChange={onNameChange} joining={props.joining} errors={props.errors} />
-        }
+        <div className={classes.paper}>
+          {
+            props.connected &&
+            (() => {
+              switch (homeScreenView) {
+                case HomeScreenView.CREATE_GAME:
+                  return <JoinGameForm onSubmit={onCreateGame} onNameChange={onNameChange} joining={props.joining} errors={props.errors} />
+                case HomeScreenView.JOIN_GAME:
+                  return <JoinGameForm onSubmit={onJoining} onNameChange={onNameChange} onGameCodeChange={onGameCodeChange} joining={props.joining} errors={props.errors} />
+                default:
+                  return (
+                    <>
+                      <Button size="large" fullWidth color="primary" variant="contained" onClick={() => setHomeScreenView(HomeScreenView.JOIN_GAME)}>
+                        Join Game
+                      </Button>
+                      <br />
+                      <Button size="large" fullWidth color="primary" variant="contained" onClick={() => setHomeScreenView(HomeScreenView.CREATE_GAME)}>
+                        Create Game
+                      </Button>
+                    </>
+                  )
+              }
+            })()
+          }
+        </div>
       </Container>
   );
 }
