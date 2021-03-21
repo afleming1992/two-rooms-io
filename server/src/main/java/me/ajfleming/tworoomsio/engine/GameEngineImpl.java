@@ -2,7 +2,6 @@ package me.ajfleming.tworoomsio.engine;
 
 import static me.ajfleming.tworoomsio.timer.TimerUtils.setupTimer;
 
-import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +15,7 @@ import me.ajfleming.tworoomsio.model.RoundMap;
 import me.ajfleming.tworoomsio.model.User;
 import me.ajfleming.tworoomsio.service.deck.DeckBuilderService;
 import me.ajfleming.tworoomsio.service.deck.DeckDealerService;
+import me.ajfleming.tworoomsio.service.lobby.JoinCodeGenerator;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
 import me.ajfleming.tworoomsio.service.sharing.CardShareType;
 import me.ajfleming.tworoomsio.socket.response.CardRevealResponse;
@@ -27,71 +27,55 @@ import org.springframework.stereotype.Component;
 public class GameEngineImpl implements GameEngine {
 
   private static final int TOTAL_ROUND_SECONDS = 180;
-  private static final int MAX_ROUNDS = 3;
   private final SocketIOServer socketServer;
   private final DeckBuilderService deckBuilder;
   private final UserManager userManager;
-  private String currentGameId;
   private final GameCache gameCache;
+  private final JoinCodeGenerator joinCodeGenerator;
 
   @Autowired
-  public GameEngineImpl(SocketIOServer socketServer, UserManager userManager, GameCache gameCache) {
+  public GameEngineImpl(SocketIOServer socketServer, UserManager userManager, GameCache gameCache, JoinCodeGenerator joinCodeGenerator) {
     this.socketServer = socketServer;
     this.deckBuilder = new DeckBuilderService();
     this.userManager = userManager;
     this.gameCache = gameCache;
+    this.joinCodeGenerator = joinCodeGenerator;
   }
 
   @Override
   public Game createNewGame(final User hostUser) {
-      Game game = Game.builder().newGame(hostUser).build();
-      gameCache.addGame(game);
-
-      //TODO Remove this once we get GameId's being passed by the clients
-      this.currentGameId = game.getId();
+      Game game = Game.builder()
+          .newGame(hostUser, joinCodeGenerator.generateJoinCode())
+          .build();
       return game;
   }
 
   @Override
-  public String addPlayerToGame(final User user) throws GameException {
-    Game game;
-    if (currentGameId == null) {
-      game = createNewGame(user);
-    } else {
-      game = gameCache.getGame(currentGameId);
-    }
-
+  public void joinGame(final Game game, final User player) throws GameException {
     if (game.getRound() > 0) {
       throw new GameException("Game has already started");
     }
 
-    if (game.findPlayer(user.getName()).isPresent()) {
+    if (game.findPlayer(player.getName()).isPresent()) {
       throw new GameException(
           "Someone has already used that name! Maybe you have a popular name like Andrew? 🤔");
     }
 
-    game.addPlayer(user);
-    addPlayerToGameComms(user, game);
+    game.addPlayer(player);
+    addPlayerToGameComms(player, game);
     game.setDeck(deckBuilder.buildDeck(game.getTotalPlayerCount()));
     triggerGameUpdateEvent(game);
-    return game.getId();
   }
 
   @Override
-  public void reloadPlayerIntoGame(String gameToken, User reconnectingUser)
+  public void reloadPlayerIntoGame(Game game, User player)
       throws GameException {
-    Game game = gameCache.getGame(gameToken);
-    if (game == null) {
-      throw new GameException(
-          "The game you're attempting to reload into doesn't exist anymore!");
-    }
-
-    if (!game.reconnectPlayer(reconnectingUser)) {
+    if (!game.reconnectPlayer(player)) {
       throw new GameException("Failed to reconnect to game");
     }
-    addPlayerToGameComms(reconnectingUser, game);
+    addPlayerToGameComms(player, game);
     try {
-      reloadPlayerGameData(reconnectingUser.getClient(), game, reconnectingUser);
+      reloadPlayerGameData(game, player);
     } catch (UserException e) {
       throw new GameException("Failed to reload user into game");
     }
@@ -100,10 +84,10 @@ public class GameEngineImpl implements GameEngine {
   }
 
   @Override
-  public void disconnectPlayer(final User user) {
-    List<Game> games = gameCache.getGamesPlayerIsIn(user.getUserToken());
+  public void disconnectPlayer(final User player) {
+    List<Game> games = gameCache.getGamesPlayerIsIn(player.getUserToken());
     for(Game game : games) {
-      game.disconnectPlayer(user.getUserToken());
+      game.disconnectPlayer(player.getUserToken());
       if (game.getTotalPlayerCount() > 0) {
         triggerGameUpdateEvent(game);
       } else {
@@ -114,8 +98,7 @@ public class GameEngineImpl implements GameEngine {
 
   // Game Management Operations
 
-  private void startGame(final User requestor) throws GameException {
-    Game game = gameCache.getGame(currentGameId);
+  private void startGame(final Game game, final User requestor) throws GameException {
     if (isGameReadyToStart(game) && game.isUserHost(requestor)) {
       game.nextRound();
       game.setRoundData(RoundMap.getRoundData(game.getTotalPlayerCount()));
@@ -130,11 +113,10 @@ public class GameEngineImpl implements GameEngine {
   }
 
   @Override
-  public void nextRound(final User requestor) throws GameException {
-    Game game = gameCache.getGame(currentGameId);
+  public void nextRound(Game game, User requestor) throws GameException {
     if (game.isUserHost(requestor)) {
       if (game.getRound() == 0) {
-        startGame(requestor);
+        startGame(game, requestor);
       } else {
         game.nextRound();
         game.setTimer(setupTimer(TOTAL_ROUND_SECONDS, game.getId(), socketServer));
@@ -150,16 +132,14 @@ public class GameEngineImpl implements GameEngine {
   }
 
   @Override
-  public void startTimer(final User requestor) throws GameException {
-    Game game = gameCache.getGame(currentGameId);
+  public void startTimer(final Game game, final User requestor) throws GameException {
     if (game.isUserHost(requestor)) {
       game.getTimer().start();
     }
   }
 
   @Override
-  public void pauseTimer(final User requestor) throws GameException {
-    Game game = gameCache.getGame(currentGameId);
+  public void pauseTimer(final Game game, final User requestor) {
     if (game.isUserHost(requestor)) {
       game.getTimer().stop();
     }
@@ -167,8 +147,7 @@ public class GameEngineImpl implements GameEngine {
   }
 
   @Override
-  public void restartTimer(final User requestor) throws GameException {
-    Game game = gameCache.getGame(currentGameId);
+  public void restartTimer(final Game game, final User requestor) {
     if (game.isUserHost(requestor)) {
       if (game.getTimer().isTimerRunning()) {
         game.getTimer().stop();
@@ -180,8 +159,7 @@ public class GameEngineImpl implements GameEngine {
   }
 
   @Override
-  public void revealCardAssignment(final User host, final CardKey card) throws GameException {
-    Game game = gameCache.getGame(currentGameId);
+  public void revealCardAssignment(final Game game, final User host, final CardKey card) throws GameException {
     if (game.isUserHost(host)) {
       List<User> users = game.getUserAssignmentForCard(card);
       if (users.size() > 0) {
@@ -199,9 +177,8 @@ public class GameEngineImpl implements GameEngine {
   // Sharing Operations
 
   @Override
-  public CardShareRequest requestShare(final User requestor, final CardShareRequest request)
+  public CardShareRequest requestShare(final Game game, final User requestor, final CardShareRequest request)
       throws GameException {
-    Game game = gameCache.getGame(currentGameId);
     if (game.getTimer().isTimerRunning()) {
       Optional<User> recipient = game.findPlayerByUserToken(request.getRecipient());
       if (recipient.isPresent()) {
@@ -223,13 +200,12 @@ public class GameEngineImpl implements GameEngine {
   }
 
   @Override
-  public void privateReveal(final User requestor, final CardShareRequest request)
+  public void privateReveal(final Game game, final User requestor, final CardShareRequest request)
       throws GameException {
-    Game game = gameCache.getGame(currentGameId);
     if (game.getTimer().isTimerRunning()) {
       Optional<User> user = game.findPlayerByUserToken(request.getRecipient());
       if (user.isPresent()) {
-        sendCardDataToPlayer(request, user.get(), requestor);
+        sendCardDataToPlayer(game, request, user.get(), requestor);
       } else {
         throw new GameException(
             "Failed to accept Private Reveal. Requestor isn't currently online");
@@ -240,14 +216,13 @@ public class GameEngineImpl implements GameEngine {
   }
 
   @Override
-  public void acceptShare(final User recipient, final String requestId) throws GameException {
-    Game game = gameCache.getGame(currentGameId);
-    CardShareRequest request = confirmIfShareAnswerIsAllowed(recipient, requestId);
+  public void acceptShare(final Game game, final User recipient, final String requestId) throws GameException {
+    CardShareRequest request = confirmIfShareAnswerIsAllowed(game, recipient, requestId);
 
     Optional<User> requestor = game.findPlayerByUserToken(request.getRequestor());
     if (requestor.isPresent()) {
-      sendCardDataToPlayer(request, requestor.get(), recipient);
-      sendCardDataToPlayer(request, recipient, requestor.get());
+      sendCardDataToPlayer(game, request, requestor.get(), recipient);
+      sendCardDataToPlayer(game, request, recipient, requestor.get());
       game.invalidateCardShareRequest(request.getId());
     } else {
       throw new GameException(
@@ -256,9 +231,8 @@ public class GameEngineImpl implements GameEngine {
   }
 
   @Override
-  public void rejectShare(final User recipient, final String requestId) throws GameException {
-    Game game = gameCache.getGame(currentGameId);
-    CardShareRequest request = confirmIfShareAnswerIsAllowed(recipient, requestId);
+  public void rejectShare(final Game game, final User recipient, final String requestId) throws GameException {
+    CardShareRequest request = confirmIfShareAnswerIsAllowed(game, recipient, requestId);
 
     Optional<User> requestor = game.findPlayerByUserToken(request.getRequestor());
     if (requestor.isPresent()) {
@@ -272,9 +246,8 @@ public class GameEngineImpl implements GameEngine {
     game.invalidateCardShareRequest(request.getId());
   }
 
-  private CardShareRequest confirmIfShareAnswerIsAllowed(User recipient, String requestId)
+  private CardShareRequest confirmIfShareAnswerIsAllowed(Game game, User recipient, String requestId)
       throws GameException {
-    Game game = gameCache.getGame(currentGameId);
     if (game.getTimer().isTimerRunning()) {
       Optional<CardShareRequest> cardShareRequest = game.getCardShareRequest(requestId);
       if (cardShareRequest.isPresent() && cardShareRequest.get().getRecipient()
@@ -289,9 +262,8 @@ public class GameEngineImpl implements GameEngine {
     }
   }
 
-  private void sendCardDataToPlayer(final CardShareRequest request, final User userToSend,
+  private void sendCardDataToPlayer(final Game game, final CardShareRequest request, final User userToSend,
       final User cardOwner) throws GameException {
-    Game game = gameCache.getGame(currentGameId);
     CardRevealResponse event;
     Optional<Card> card = game.getRoleAssignmentForUser(cardOwner.getUserToken());
 
@@ -336,7 +308,7 @@ public class GameEngineImpl implements GameEngine {
     user.getClient().joinRoom("game/" + game.getId());
   }
 
-  private void reloadPlayerGameData(final SocketIOClient client, final Game game, final User user)
+  private void reloadPlayerGameData(final Game game, final User user)
       throws UserException {
     if (game.hasStarted()) {
       userManager.sendEvent(user.getUserToken(), "CARD_UPDATE",

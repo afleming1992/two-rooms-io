@@ -2,14 +2,27 @@ import {SocketAction, Actions} from "./types";
 import {CardShareType} from "../../domain/Sharing";
 import {User} from "../../domain/User";
 
-export const joinGame = (name: string): SocketAction => {
+export const createGame = (name: string): SocketAction => {
+    return {
+        type: Actions.CREATE_GAME,
+        meta: {
+            remote: true
+        },
+        payload: {
+            name
+        }
+    }
+}
+
+export const joinGame = (name: string, joinGameCode: string): SocketAction => {
     return {
         type: Actions.JOIN_GAME,
         meta: {
             remote: true
         },
         payload: {
-            name
+            name,
+            joinGameCode
         }
     }
 }

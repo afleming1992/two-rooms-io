@@ -22,12 +22,12 @@ public class CardRequestListeners extends RequestListener {
 
   @OnEvent("ACCEPT_SHARE")
   public void onAcceptShare(SocketIOClient client, ShareDecisionRequest request) {
-    userActionController.acceptShare(client, request.getRequestId());
+    userActionController.acceptShare(client, request.getGameId(), request.getRequestId());
   }
 
   @OnEvent("REJECT_SHARE")
   public void onRejectShare(SocketIOClient client, ShareDecisionRequest request) {
-    userActionController.rejectShare(client, request.getRequestId());
+    userActionController.rejectShare(client, request.getGameId(), request.getRequestId());
   }
 
   @OnEvent("PRIVATE_REVEAL")

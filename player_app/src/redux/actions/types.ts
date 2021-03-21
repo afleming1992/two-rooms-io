@@ -9,6 +9,7 @@ export enum ActionModalActions {
 export enum Actions {
     CONNECTED="CONNECTED",
     DISCONNECTED="DISCONNECTED",
+    CREATE_GAME="CREATE_GAME",
     JOIN_GAME = "JOIN_GAME",
     RELOAD_GAME_SESSION = "RELOAD_GAME_SESSION",
     HIDE_ERROR = "HIDE_ERROR",

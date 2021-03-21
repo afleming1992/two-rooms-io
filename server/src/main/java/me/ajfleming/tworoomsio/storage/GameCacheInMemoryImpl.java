@@ -38,6 +38,14 @@ public class GameCacheInMemoryImpl implements GameCache {
   }
 
   @Override
+  public Game getGameByJoinCode(String joinCode) throws GameException {
+    return games.values().stream()
+        .filter(game -> game.getJoinCode().equals(joinCode))
+        .findFirst()
+        .orElseThrow(() -> new GameException("Game not found!"));
+  }
+
+  @Override
   public void addGame(Game game) {
     games.put(game.getId(), game);
   }

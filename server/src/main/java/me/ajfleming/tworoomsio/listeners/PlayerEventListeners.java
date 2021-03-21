@@ -35,7 +35,7 @@ public class PlayerEventListeners extends RequestListener {
   @OnEvent("JOIN_GAME")
   public void onJoinGame(SocketIOClient client, JoinGameEvent event) {
     LOGGER.info("Client joined Game - " + client.getSessionId().toString());
-    userActionController.joinGame(client, event.getName());
+    userActionController.joinGame(client, event.getName(), event.getJoinGameCode());
   }
 
   @OnDisconnect

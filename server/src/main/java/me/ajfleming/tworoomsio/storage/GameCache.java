@@ -13,6 +13,8 @@ public interface GameCache {
    */
   Game getGame(String gameId) throws GameException;
 
+  Game getGameByJoinCode(String joinCode) throws GameException;
+
   /**
    * Updates the GameCache with an update to date version of the game
    * @param game The updated game object

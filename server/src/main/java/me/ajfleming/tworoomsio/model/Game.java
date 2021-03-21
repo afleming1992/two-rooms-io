@@ -23,6 +23,7 @@ import me.ajfleming.tworoomsio.timer.RoundTimer;
 public class Game {
 
   private String id;
+  private String joinCode;
   private User host;
   private int round;
   private int numberOfRounds;
@@ -153,7 +154,7 @@ public class Game {
   }
 
   public static class GameBuilder {
-    public GameBuilder newGame(User host) {
+    public GameBuilder newGame(User host, String joinCode) {
       this.id = UUID.randomUUID().toString();
       this.host = host;
       this.round = 0;
@@ -162,6 +163,7 @@ public class Game {
       this.cardShareRequests = new HashMap<>();
       this.revealedCardAssignments = new ArrayList<>();
       this.numberOfRounds = 3;
+      this.joinCode = joinCode;
       return this;
     }
   }

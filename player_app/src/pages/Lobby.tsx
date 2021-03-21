@@ -13,12 +13,14 @@ import {User} from "../domain/User";
 import DeckList from "../components/DeckList";
 import {Card} from "../domain/Card";
 import GameAppBar from "../components/GameAppBar";
+import JoinCodeBox from "../components/JoinCodeBox";
 
 interface LobbyProps {
   players: User[] | undefined
   deck: Card[] | undefined
   host: User | undefined,
-  currentPlayer: string | undefined
+  currentPlayer: string | undefined,
+  joinCode: string | undefined
 }
 
 const useStyles = makeStyles({
@@ -47,6 +49,9 @@ const Lobby: React.FC<LobbyProps> = (props) => {
     <Container className={classes.bottomNav} disableGutters={true} maxWidth={false}>
       <CssBaseline />
       <GameAppBar />
+      <div>
+        <JoinCodeBox joinCode={props.joinCode} />
+      </div>
       {
           tabView === LobbyTabView.PLAYERS && props.players !== undefined &&
           <PlayerLobby currentPlayer={props.currentPlayer} players={props.players} host={props.host} />
@@ -76,7 +81,8 @@ const mapStateToProps = (state: AppState) => {
         currentPlayer: state.player.userToken,
         players: state.game.players,
         deck: state.game.deck,
-        host: state.game.host
+        host: state.game.host,
+        joinCode: state.game.joinCode
     }
 }
 
