@@ -21,6 +21,8 @@ public class SocketIOTesterClient {
         .writeTimeout(0, TimeUnit.MILLISECONDS);
     options.callFactory = clientBuilder.build();
 
+    String joinCode = askForJoinCode();
+
     List<Player> players = new ArrayList<>();
     players.add( new Player() );
     players.add( new Player() );
@@ -33,7 +35,7 @@ public class SocketIOTesterClient {
     players.add( new AlwaysRejectsSharesPlayer() );
 
     SocketTesterPlayerManager manager = new SocketTesterPlayerManager(uri, options, players);
-    manager.init();
+    manager.init(joinCode);
 
     Scanner myObj = new Scanner(System.in);
     boolean loop = true;
@@ -48,5 +50,12 @@ public class SocketIOTesterClient {
     }
     manager.shutdown();
     System.exit(0);
+  }
+
+  private static String askForJoinCode() {
+    Scanner myObj = new Scanner(System.in);
+    System.out.println("Enter your join code:");
+    String[] command = myObj.nextLine().split(" ");
+    return command[0].toUpperCase(Locale.ROOT);
   }
 }
