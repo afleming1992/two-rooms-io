@@ -158,43 +158,33 @@ public class GameEngineImpl implements GameEngine {
 
   @Override
   public void startTimer(final Game game, final User requestor) throws GameException {
-    if (game.isUserHost(requestor)) {
-      game.getTimer().start();
-    }
+    enforceGameCheck(game.isUserHost(requestor), "You are not the host of the game!");
+    game.getTimer().start();
   }
 
   @Override
-  public void pauseTimer(final Game game, final User requestor) {
-    if (game.isUserHost(requestor)) {
+  public void pauseTimer(final Game game, final User requestor) throws GameException {
+    enforceGameCheck(game.isUserHost(requestor), "You are not the host of the game!");
+    game.getTimer().stop();
+  }
+
+  @Override
+  public void restartTimer(final Game game, final User requestor) throws GameException {
+    enforceGameCheck(game.isUserHost(requestor), "You are not the host of the game!");
+    if (game.getTimer().isTimerRunning()) {
       game.getTimer().stop();
     }
-
-  }
-
-  @Override
-  public void restartTimer(final Game game, final User requestor) {
-    if (game.isUserHost(requestor)) {
-      if (game.getTimer().isTimerRunning()) {
-        game.getTimer().stop();
-      }
-
-      game.setTimer(setupTimer(TOTAL_ROUND_SECONDS, game.getId(), socketServer));
-    }
+    game.setTimer(setupTimer(TOTAL_ROUND_SECONDS, game.getId(), socketServer));
     triggerGameUpdateEvent(game);
   }
 
   @Override
   public void revealCardAssignment(final Game game, final User host, final CardKey card) throws GameException {
-    if (game.isUserHost(host)) {
-      List<User> users = game.getUserAssignmentForCard(card);
-      if (users.size() > 0) {
-        for (User user : users) {
-          game.permanentRevealUserCard(user);
-        }
-      } else {
-        throw new GameException(
-            String.format("Card %s doesn't have a player assigned to it", card));
-      }
+    enforceGameCheck(game.isUserHost(host), "You are not the host of the game!");
+    List<User> users = game.getUserAssignmentForCard(card);
+    enforceGameCheck(users.size() > 0, String.format("Card %s doesn't have a player assigned to it", card));
+    for (User user : users) {
+      game.permanentRevealUserCard(user);
     }
     triggerGameUpdateEvent(game);
   }
