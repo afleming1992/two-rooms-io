@@ -208,7 +208,6 @@ public class GameEngineImpl implements GameEngine {
     enforceGameCheck(room.getLeader() == null, "Too late! A leader has already been nominated");
 
     room.setFirstLeader(nominee);
-    game.updateRoom(room);
     sendEventToRoom(room, "NEW_LEADER", new LeaderChangeEvent(nominee, nominator, "First Leader Nomination"));
   }
 
@@ -219,15 +218,13 @@ public class GameEngineImpl implements GameEngine {
     enforceGameCheck(room.isPlayerLeader(leader), "You are not the current leader");
     enforceGameCheck(!room.isPlayerLeader(hostage), "You can't nominate yourself to be a Hostage!");
     room.nominateHostage(hostage, game.getMaxHostages());
-    game.updateRoom(room);
     sendEventToRoom(room, "HOSTAGE_UPDATE", room.getHostages());
   }
 
   @Override
   public void performHostageSwitch(final Game game, final User host) throws GameException {
-    if (game.isUserHost(host)) {
-      HostageSwitchService.performHostageSwitch(game);
-    }
+    enforceGameCheck(game.getHost().is(host), "You are not the host of the game!");
+    HostageSwitchService.performHostageSwitch(game);
   }
 
   @Override

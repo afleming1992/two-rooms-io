@@ -13,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import me.ajfleming.tworoomsio.exception.GameException;
 import me.ajfleming.tworoomsio.model.room.Room;
 import me.ajfleming.tworoomsio.model.room.RoomName;
 import me.ajfleming.tworoomsio.service.sharing.CardShareRequest;
@@ -53,6 +52,7 @@ public class Game {
 
     this.players.stream().filter(user -> user.is(reconnectingUser)).forEach(user -> {
       user.reconnectPlayer(reconnectingUser.getClient());
+      reconnected.set(true);
       reconnected.set(true);
     });
 

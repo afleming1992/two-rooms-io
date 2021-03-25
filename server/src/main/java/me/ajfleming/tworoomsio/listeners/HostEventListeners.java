@@ -22,8 +22,8 @@ public class HostEventListeners extends RequestListener {
   }
 
   @OnEvent("START_GAME")
-  public void onStartGame(SocketIOClient client) {
-    userActionController.startGame(client);
+  public void onStartGame(SocketIOClient client, GameIdentityPayload game) {
+    userActionController.startGame(client, game.getGameId());
   }
 
   @OnEvent("END_ROUND")
