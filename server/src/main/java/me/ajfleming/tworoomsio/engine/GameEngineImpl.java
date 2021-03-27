@@ -79,6 +79,7 @@ public class GameEngineImpl implements GameEngine {
     addPlayerToGameComms(player, game);
     try {
       reloadPlayerGameData(game, player);
+      reloadRoomGameData(game, player);
     } catch (UserException e) {
       throw new GameException("Failed to reload user into game");
     }
@@ -449,6 +450,15 @@ public class GameEngineImpl implements GameEngine {
         user.sendEvent("JOIN_ROOM",
             new JoinRoomEvent(roomFind.get(), "Reconnection"));
         user.joinSocketRoom(roomFind.get().getChannelName());
+      }
+    }
+  }
+
+  private void reloadRoomGameData(final Game game, final User user) throws UserException {
+    if (game.hasStarted()) {
+      Optional<Room> room = game.findRoomUserIsIn(user);
+      if(room.isPresent()) {
+        userManager.sendEvent(user.getUserToken(), "ROOM_UPDATE", room.get());
       }
     }
   }

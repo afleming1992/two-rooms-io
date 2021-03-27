@@ -10,6 +10,27 @@ const initialState: NotificationsState = {
   notifications: new Array<AppNotification>()
 }
 
+const errorNotificationListeners = [
+  Listeners.CREATE_GAME_ERROR,
+  Listeners.JOIN_GAME_ERROR,
+  Listeners.START_GAME_ERROR,
+  Listeners.END_ROUND_ERROR,
+  Listeners.RELOAD_GAME_SESSION_ERROR,
+  Listeners.START_NEXT_ROUND_ERROR,
+  Listeners.START_TIMER_ERROR,
+  Listeners.PAUSE_TIMER_ERROR,
+  Listeners.RESTART_TIMER_ERROR,
+  Listeners.REVEAL_CARD_ASSIGNMENT_ERROR,
+  Listeners.REQUEST_SHARE_ERROR,
+  Listeners.ANSWER_SHARE_ERROR,
+  Listeners.NOMINATE_HOSTAGE_ERROR,
+  Listeners.NOMINATE_LEADER_ERROR,
+  Listeners.ABDICATE_LEADER_ERROR,
+  Listeners.ANSWER_LEADERSHIP_OFFER_ERROR,
+  Listeners.USURP_LEADER_ERROR,
+  Listeners.USURP_VOTE_ERROR
+]
+
 const addNotification = (state: NotificationsState, notification: AppNotification) => {
   return {
     ...state,
@@ -55,13 +76,14 @@ const notificationsReducer = (state: NotificationsState = initialState, action: 
       return addNotification(state, new AppNotification( `New Share Request Received`, {
         variant: 'info'
       }))
-    case Listeners.JOIN_GAME_ERROR:
-    case Listeners.REQUEST_SHARE_ERROR:
-      return addNotification(state, new AppNotification(`${action.data.message}`, {
-        variant: "error"
-      }));
     default:
-      return state;
+      if(Object.values(errorNotificationListeners).includes(action.type)){
+        return addNotification(state, new AppNotification(`${action.data.message}`, {
+          variant: "error"
+        }));
+      } else {
+        return state;
+      }
   }
 }
 

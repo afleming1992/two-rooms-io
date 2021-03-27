@@ -1,6 +1,7 @@
 import {User} from "../../domain/User";
 import {Listeners} from "../actions/listeners";
 import {RoomName} from "../../domain/Room";
+import {GameAction} from "../actions/types";
 
 export interface RoomState {
   currentRoom: RoomName | undefined,
@@ -18,8 +19,16 @@ const initialState: RoomState = {
 
 export default function roomReducer(state: RoomState = initialState, action: any) {
   switch( action.type ) {
+    case GameAction.CREATE_GAME:
+    case GameAction.JOIN_GAME:
+      return initialState;
     case Listeners.JOIN_ROOM:
-      return {...state, currentRoom: action.data.room};
+      return {
+        ...state,
+        currentRoom: action.data.room,
+        currentLeader: action.data.currentLeader,
+        hostages: action.data.hostages
+      };
     case Listeners.NEW_LEADER:
       return {...state, currentLeader: action.data.newLeader};
     case Listeners.HOSTAGE_UPDATE:
