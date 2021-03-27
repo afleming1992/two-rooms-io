@@ -65,7 +65,12 @@ public class UserActionController {
 
   public void startGame(SocketIOClient client, String gameId) {
     userManager.getUser(client).ifPresent(requestor -> {
-
+      try {
+        Game game = gameCache.getGame(gameId);
+        gameEngine.startGame(game, requestor);
+      } catch (GameException e) {
+        client.sendEvent("START_GAME_ERROR", Response.error(e.getMessage()));
+      }
     });
   }
 

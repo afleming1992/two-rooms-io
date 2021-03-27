@@ -14,7 +14,6 @@ import DeckList from "../components/DeckList";
 import {Card} from "../domain/Card";
 import GameAppBar from "../components/GameAppBar";
 import JoinCodeBox from "../components/JoinCodeBox";
-import clsx from "clsx";
 
 interface LobbyProps {
   players: User[] | undefined
@@ -54,9 +53,7 @@ const Lobby: React.FC<LobbyProps> = (props) => {
       <CssBaseline />
       <GameAppBar />
       <div className={classes.content}>
-        <div>
-          <JoinCodeBox joinCode={props.joinCode} />
-        </div>
+        <JoinCodeBox joinCode={props.joinCode} />
         {
           tabView === LobbyTabView.PLAYERS && props.players !== undefined &&
           <PlayerList currentPlayer={props.currentPlayer} players={props.players} host={props.host} />

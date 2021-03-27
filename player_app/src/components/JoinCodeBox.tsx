@@ -7,7 +7,8 @@ interface JoinGameBoxProps {
 
 const useStyles = makeStyles((theme) => ({
   gameCode: {
-    textAlign: "center"
+    textAlign: "center",
+    marginBottom: theme.spacing(1)
   }
 }));
 
@@ -15,12 +16,10 @@ const JoinGameBox: React.FC<JoinGameBoxProps> = ({joinCode}) => {
   const classes = useStyles();
 
   return (
-    <Container>
-      <Paper className={classes.gameCode}>
-        <Typography variant="h4">This Game's Code</Typography>
-        <Typography variant="h3">{joinCode}</Typography>
-      </Paper>
-    </Container>
+    <Paper className={classes.gameCode}>
+      <Typography variant="h4">This Game's Code</Typography>
+      <Typography variant="h3">{joinCode}</Typography>
+    </Paper>
   )
 }
 

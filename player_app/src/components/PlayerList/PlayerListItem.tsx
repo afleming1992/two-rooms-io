@@ -9,6 +9,7 @@ interface PlayerListItemProps {
     isHost?: boolean;
     isMe?: boolean;
     inverse: boolean;
+    showAvatar: boolean;
 }
 
 const useStyles = makeStyles( (theme) => ({
@@ -31,14 +32,17 @@ const InversePaper = styled(Paper)({
 
 
 
-const PlayerListItem : React.FC<PlayerListItemProps> = (props) => {
+const PlayerListItem : React.FC<PlayerListItemProps> = ({showAvatar, ...props}) => {
     const classes = useStyles();
 
     return (
       <ListItem className={classes.listItem} component={props.inverse ? InversePaper : Paper}>
-        <ListItemAvatar>
+        {
+          showAvatar &&
+          <ListItemAvatar>
             <PlayerAvatar player={ props.player } isHost={ props.isHost || false }/>
-        </ListItemAvatar>
+          </ListItemAvatar>
+        }
         <ListItemText className={classes.itemText} primary={ props.player.name } secondary={ props.isMe ? "(You)" : "" } />
       </ListItem>
     );

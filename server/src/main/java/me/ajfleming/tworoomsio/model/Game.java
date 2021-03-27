@@ -53,7 +53,6 @@ public class Game {
     this.players.stream().filter(user -> user.is(reconnectingUser)).forEach(user -> {
       user.reconnectPlayer(reconnectingUser.getClient());
       reconnected.set(true);
-      reconnected.set(true);
     });
 
     return reconnected.get();

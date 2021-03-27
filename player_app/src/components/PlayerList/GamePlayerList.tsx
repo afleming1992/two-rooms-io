@@ -55,6 +55,7 @@ const GamePlayerList: React.FC<GamePlayerListProps> = ({roomLeader, hostages, cu
                 if(roomLeader) {
                   return (
                     <PlayerListItem
+                      showAvatar={true}
                       player={roomLeader}
                       inverse={true}
                       isMe={currentPlayer === roomLeader.userToken}
@@ -84,7 +85,7 @@ const GamePlayerList: React.FC<GamePlayerListProps> = ({roomLeader, hostages, cu
                 if(hostages.length > 0) {
                   hostages.map((hostage) => {
                     return (
-                      <PlayerListItem player={hostage} inverse={false} />
+                      <PlayerListItem showAvatar={true} player={hostage} inverse={false} />
                     )
                   })
                 } else {

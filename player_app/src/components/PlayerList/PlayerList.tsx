@@ -5,12 +5,14 @@ import {
 } from "@material-ui/core";
 import { User } from "../../domain/User";
 import PlayerListItem from "./PlayerListItem";
+import JoinCodeBox from "../JoinCodeBox";
 
 interface PlayerListProps {
-  players: Array<User> ,
+  players: Array<User>,
   host?: User | undefined,
   currentPlayer: string | undefined,
-  inverse?: boolean
+  inverse?: boolean,
+  showAvatar?: boolean | undefined
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -19,7 +21,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const PlayerList: React.FC<PlayerListProps> = (props) => {
+const PlayerList: React.FC<PlayerListProps> = ({showAvatar, ...props}) => {
   const classes = useStyles();
 
   return (
@@ -29,6 +31,7 @@ const PlayerList: React.FC<PlayerListProps> = (props) => {
           return (
             <Grid item xs={12} sm={6}>
               <PlayerListItem
+                showAvatar={true}
                 inverse={props.inverse || false}
                 player={player}
                 isHost={ player.userToken === props.host?.userToken }

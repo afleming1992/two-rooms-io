@@ -56,10 +56,9 @@ public class GameEngineImpl implements GameEngine {
 
   @Override
   public Game createNewGame(final User hostUser) {
-    Game game = Game.builder()
+    return Game.builder()
         .newGame(hostUser, joinCodeGenerator.generateJoinCode())
         .build();
-    return game;
   }
 
   @Override

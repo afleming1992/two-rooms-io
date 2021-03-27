@@ -33,7 +33,8 @@ export const startGame = (): SocketAction => {
     return {
         type: GameAction.START_GAME,
         meta: {
-            remote: true
+            remote: true,
+            isGameRequest: true
         },
         payload: {}
     }
@@ -210,7 +211,8 @@ const voteAction = (actionType: GameAction, roomName: RoomName, vote: Vote) => {
     return {
         type: actionType,
         meta: {
-            remote: true
+            remote: true,
+            isGameRequest: true
         },
         payload: {
             room: roomName,
@@ -223,7 +225,8 @@ const nominateAction = (actionType: GameAction, roomName: RoomName, player: User
     return {
         type: actionType,
         meta: {
-            remote: true
+            remote: true,
+            isGameRequest: true
         },
         payload: {
             room: roomName,
