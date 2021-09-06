@@ -21,6 +21,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+    implementation("com.corundumstudio.socketio:netty-socketio:1.7.7")
+    implementation("org.apache.commons.commons-lang3:3.8.1")
 }
 
 tasks.withType<KotlinCompile> {
