@@ -1,6 +1,7 @@
 package me.ajfleming.tworoomsio.storage
 
 import me.ajfleming.tworoomsio.model.Game
+import me.ajfleming.tworoomsio.model.Player
 
 interface GameCache {
 
@@ -10,7 +11,7 @@ interface GameCache {
 
     fun addGame(game: Game)
 
-    fun getGamesPlayerIsIn(playerToken: String) : List<Game>
+    fun getGamesPlayerIsIn(playerToken: Player) : List<Game>
 
     fun deleteGame(gameId: String)
 }

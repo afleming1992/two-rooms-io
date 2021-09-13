@@ -3,7 +3,7 @@ package me.ajfleming.tworoomsio.model
 import com.corundumstudio.socketio.SocketIOClient
 import java.util.*
 
-class User constructor (
+class Player constructor (
     val name: String,
     var client: SocketIOClient
 ) {
@@ -19,8 +19,8 @@ class User constructor (
         client.sendEvent(eventName, payload)
     }
 
-    fun isThisUser(user: User): Boolean {
-        return userToken == user.userToken
+    fun isThisUser(player: Player): Boolean {
+        return userToken == player.userToken
     }
 
     fun disconnectPlayer() {

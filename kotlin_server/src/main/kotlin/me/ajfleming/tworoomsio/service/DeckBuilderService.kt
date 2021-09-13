@@ -2,12 +2,14 @@ package me.ajfleming.tworoomsio.service
 
 import me.ajfleming.tworoomsio.model.Card
 import me.ajfleming.tworoomsio.model.CardSet
+import org.springframework.stereotype.Component
 
+@Component
 class DeckBuilderService (
     val possibleCardSets: Map<CardSet, List<Card>> = cardSetMap
 ) {
 
-    fun buildDeck(numberOfPlayers: Int) {
+    fun buildDeck(numberOfPlayers: Int) : List<Card> {
         val deck : MutableList<Card> = mutableListOf()
         // Add President and Bomber
         possibleCardSets[CardSet.CORE]?.let { deck.addAll(it) }
@@ -17,6 +19,8 @@ class DeckBuilderService (
 
         // Fill in remaining players with normal cards
         fillDeckWithMemberCards(deck, numberOfPlayers)
+
+        return deck
     }
 
     fun addGamblerIfOddNumberOfPlayers(deck: MutableList<Card>, numberOfPlayers: Int) {

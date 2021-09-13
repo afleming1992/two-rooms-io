@@ -1,6 +1,7 @@
 package me.ajfleming.tworoomsio.storage
 
 import me.ajfleming.tworoomsio.model.Game
+import me.ajfleming.tworoomsio.model.Player
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -19,8 +20,8 @@ class GameCacheInMemoryImpl (
         games[game.id] = game
     }
 
-    override fun getGamesPlayerIsIn(playerToken: String): List<Game> {
-        return games.values.filter { game -> game.findPlayer(playerToken) != null }
+    override fun getGamesPlayerIsIn(player: Player): List<Game> {
+        return games.values.filter { game -> game.findPlayer(player.userToken) != null }
     }
 
     override fun deleteGame(gameId: String) {
