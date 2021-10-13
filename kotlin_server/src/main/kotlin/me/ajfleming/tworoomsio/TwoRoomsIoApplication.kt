@@ -9,11 +9,6 @@ import org.springframework.context.annotation.Bean
 
 @SpringBootApplication
 class TwoRoomsIoApplication {
-
-    fun main(args: Array<String>) {
-        runApplication<TwoRoomsIoApplication>(*args)
-    }
-
     @Bean
     fun socketIoConfig(): Configuration {
         val config = Configuration()
@@ -31,3 +26,8 @@ class TwoRoomsIoApplication {
         return SocketIOServer(config)
     }
 }
+
+fun main(args: Array<String>) {
+    runApplication<TwoRoomsIoApplication>(*args)
+}
+

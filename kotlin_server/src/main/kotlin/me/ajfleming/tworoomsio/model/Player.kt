@@ -7,12 +7,12 @@ class Player constructor (
     val name: String,
     var client: SocketIOClient
 ) {
-    val userToken = UUID.randomUUID().toString()
-    val userSecret = UUID.randomUUID().toString()
+    val id = UUID.randomUUID().toString()
+    val secret = UUID.randomUUID().toString()
     var connected = true;
 
     fun authenticate(userToken: String, userSecret: String): Boolean {
-        return this.userToken == userToken && this.userSecret == userSecret
+        return this.id == userToken && this.secret == userSecret
     }
 
     fun sendEvent(eventName: String, payload: Any) {
@@ -20,7 +20,7 @@ class Player constructor (
     }
 
     fun isThisUser(player: Player): Boolean {
-        return userToken == player.userToken
+        return id == player.id
     }
 
     fun disconnectPlayer() {

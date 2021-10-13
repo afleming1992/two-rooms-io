@@ -15,7 +15,7 @@ class DeckDealerService {
             shufflePlayers.forEach { player ->
                 val card = shuffledCards.removeAt(0)
                 player.client.sendEvent("CARD_UPDATE", card)
-                result[player.userToken] = card
+                result[player.id] = card
             }
 
             return result

@@ -1,7 +1,7 @@
 package me.ajfleming.tworoomsio.socket.event.sharing
 
 data class CardShareRequest(
-    val id: String,
+    var id: String,
     val gameId: String,
     val type: CardShareType,
     val requestor: String,

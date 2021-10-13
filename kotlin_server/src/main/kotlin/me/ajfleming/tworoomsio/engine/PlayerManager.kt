@@ -6,24 +6,24 @@ import org.springframework.stereotype.Component
 import kotlin.collections.HashMap
 
 @Component
-class UserManager(
+class PlayerManager(
     private var connectedUsers: HashMap<String, Player> = HashMap(),
     private var disconnectedUsers: HashMap<String, Player> = HashMap()
 ) {
-    fun createUser(client: SocketIOClient, name: String): Player {
+    fun create(client: SocketIOClient, name: String): Player {
         val user = Player(name, client)
-        connectedUsers[user.userToken] = user
+        connectedUsers[user.id] = user
         return user;
     }
 
-    fun getUser(client: SocketIOClient) : Player? {
+    fun findByClient(client: SocketIOClient) : Player? {
         return connectedUsers[sessionId(client)]
     }
 
     fun reconnect(client: SocketIOClient, userToken: String, userSecret: String) : Player? {
         var user = disconnectedUsers[userToken]
         if (user == null) {
-            user = findConnectedUserByUserToken(userToken)
+            user = findByPlayerToken(userToken)
             if (user != null) {
                user.client.disconnect()
             }
@@ -40,16 +40,22 @@ class UserManager(
         val user = connectedUsers[sessionId(client)]
         if (user != null) {
             user.disconnectPlayer()
-            disconnectedUsers[user.userToken] = user
+            disconnectedUsers[user.id] = user
         }
         return user
     }
 
-    fun findConnectedUserByUserToken(userToken: String) : Player? {
+    fun findByPlayerToken(userToken: String) : Player? {
         return connectedUsers[userToken]
     }
 
     private fun sessionId(client: SocketIOClient) : String {
         return client.sessionId.toString()
+    }
+
+    fun sendEvent(player: Player, eventName: String, payload: Any) {
+        findByPlayerToken(player.id)?.let {
+            it.sendEvent(eventName, payload)
+        }
     }
 }

@@ -21,7 +21,7 @@ class GameCacheInMemoryImpl (
     }
 
     override fun getGamesPlayerIsIn(player: Player): List<Game> {
-        return games.values.filter { game -> game.findPlayer(player.userToken) != null }
+        return games.values.filter { game -> game.findPlayer(player.id) != null }
     }
 
     override fun deleteGame(gameId: String) {
