@@ -28,6 +28,10 @@ class Game(
         return players.find { it.name == name }
     }
 
+    fun getCardShareRequest(requestId: String): CardShareRequest? {
+        return cardShareRequests[requestId]
+    }
+
     fun addPlayer(player: Player) {
         players.add(player)
     }
@@ -75,9 +79,14 @@ class Game(
         cardShareRequests[request.id] = request
     }
 
+    fun invalidateCardShareRequest(id: String) {
+        cardShareRequests.remove(id)
+    }
+
     fun getPlayerCount(): Int = players.size
     fun hasStarted(): Boolean = round > 0
     fun isAllSeatsFilled(): Boolean = deck.size == players.size
     fun isPlayerHost(player: Player): Boolean = host.isThisUser(player)
     fun nextRound() = round++
+
 }

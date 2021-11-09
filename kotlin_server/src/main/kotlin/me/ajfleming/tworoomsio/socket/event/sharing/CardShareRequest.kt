@@ -4,6 +4,6 @@ data class CardShareRequest(
     var id: String,
     val gameId: String,
     val type: CardShareType,
-    val requestor: String,
-    val recipient: String
+    val recipient: String,
+    var requestor: String? = null,
 )

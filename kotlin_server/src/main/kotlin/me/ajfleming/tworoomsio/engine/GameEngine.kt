@@ -10,6 +10,8 @@ import me.ajfleming.tworoomsio.service.DeckBuilderService
 import me.ajfleming.tworoomsio.service.DeckDealerService
 import me.ajfleming.tworoomsio.service.JoinCodeGenerator
 import me.ajfleming.tworoomsio.socket.event.sharing.CardShareRequest
+import me.ajfleming.tworoomsio.socket.event.sharing.CardShareType
+import me.ajfleming.tworoomsio.socket.response.CardRevealResponse
 import me.ajfleming.tworoomsio.storage.GameCache
 import me.ajfleming.tworoomsio.timer.RoundTimer.Companion.setupTimer
 import org.springframework.stereotype.Component
@@ -121,8 +123,32 @@ class GameEngine (
     fun privateReveal(game: Game, requestor: Player, request: CardShareRequest) {
         if(!game.timer?.timerRunning!!) throw GameException("Card Shares are blocked when game is paused")
         game.findPlayer(request.recipient)?.let {
-            sendCardDataToPlayer(game, request, it, requestor);
+            sendCardDataToPlayer(game, request, it, requestor)
         }
+    }
+    
+    fun acceptShare(game: Game, recipient: Player, requestId: String) {
+        val request: CardShareRequest = confirmIfShareAnswerIsAllowed(game, recipient, requestId)
+        val requestor = game.findPlayer(request.requestor) ?: throw GameException("Requestor not found")
+        sendCardDataToPlayer(game, request, requestor, recipient)
+        sendCardDataToPlayer(game, request, recipient, requestor)
+    }
+
+    fun rejectShare(game: Game, recipient: Player, requestId: String) {
+        val request = confirmIfShareAnswerIsAllowed(game, recipient, requestId)
+        game.findPlayer(request.requestor)?.let {
+            userManager.sendEvent(it, "SHARE_REQUEST_REJECTED", request)
+        }
+
+        game.invalidateCardShareRequest(request.id)
+    }
+
+    private fun confirmIfShareAnswerIsAllowed(game: Game, recipient: Player, requestId: String): CardShareRequest {
+        if(!game.timer?.timerRunning!!) throw GameException("Answering a Request is blocked when game is paused")
+        val cardShareRequest = game.getCardShareRequest(requestId) ?: throw GameException("Card Share Request not found")
+        if (recipient.isThisUser(cardShareRequest.recipient)) {
+           return cardShareRequest;
+        } else throw GameException("Card share request is no longer valid")
     }
 
     private fun sendCardDataToPlayer(
@@ -131,8 +157,8 @@ class GameEngine (
         recipient: Player,
         cardOwner: Player
     ) {
+        var eventName : String
         game.getRoleAssignment(cardOwner)?.let {
-            var eventName : String
             if(request.id.isEmpty()) {
                 eventName = "CARD_SHARE_ACCEPTED"
             } else {
@@ -140,9 +166,30 @@ class GameEngine (
                 eventName = "PRIVATE_REVEAL_RECEIVED"
             }
 
+            val event: CardRevealResponse = when(request.type) {
+                CardShareType.ROLE -> CardRevealResponse.roleShare(
+                    requestId = request.id,
+                    player = cardOwner,
+                    role = it
+                )
+                CardShareType.COLOUR -> CardRevealResponse.colourShare(
+                    requestId = request.id,
+                    player = cardOwner,
+                    role = it
+                )
+            }
 
+            try {
+                userManager.sendEvent(recipient, eventName, event);
+            } catch (e: Exception) {
+                throw GameException(e.message ?: "")
+            }
+        } ?: run {
+            throw GameException("Failed to find role assignment for user")
         }
     }
+
+    // Helper Methods
 
     private fun verifyHost(game: Game, host: Player) {
         if(!game.isPlayerHost(host)) throw GameException("You are not the host of this game!")

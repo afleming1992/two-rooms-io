@@ -23,6 +23,10 @@ class Player constructor (
         return id == player.id
     }
 
+    fun isThisUser(playerToken: String): Boolean {
+        return id == playerToken
+    }
+
     fun disconnectPlayer() {
         this.connected = false;
     }
