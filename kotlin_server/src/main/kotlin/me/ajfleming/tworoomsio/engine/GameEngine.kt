@@ -136,8 +136,8 @@ class GameEngine (
 
     fun rejectShare(game: Game, recipient: Player, requestId: String) {
         val request = confirmIfShareAnswerIsAllowed(game, recipient, requestId)
-        game.findPlayer(request.requestor)?.let {
-            userManager.sendEvent(it, "SHARE_REQUEST_REJECTED", request)
+        game.findPlayer(request.requestor)?.let { player ->
+            userManager.sendEvent(player, "SHARE_REQUEST_REJECTED", request)
         }
 
         game.invalidateCardShareRequest(request.id)
