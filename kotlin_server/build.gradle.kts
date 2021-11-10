@@ -24,6 +24,7 @@ dependencies {
 
     implementation("com.corundumstudio.socketio:netty-socketio:1.7.7")
     implementation("org.apache.commons:commons-lang3:3.12.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.+")
 }
 
 tasks.withType<KotlinCompile> {

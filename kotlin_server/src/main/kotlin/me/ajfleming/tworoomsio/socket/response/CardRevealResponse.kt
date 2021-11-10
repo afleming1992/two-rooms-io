@@ -5,7 +5,7 @@ import me.ajfleming.tworoomsio.model.Player
 import me.ajfleming.tworoomsio.model.Team
 import me.ajfleming.tworoomsio.socket.event.sharing.CardShareType
 
-data class CardRevealResponse(
+class CardRevealResponse(
     val isReveal: Boolean,
     val requestId: String? = null,
     val userToken: String,

@@ -1,6 +1,6 @@
 package me.ajfleming.tworoomsio.model
 
-data class Round (
+class Round (
     val roundNumber: Int,
     val hostagesRequired: Int
 ) {

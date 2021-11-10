@@ -1,5 +1,5 @@
 package me.ajfleming.tworoomsio.socket.response
 
-data class RequestShareResponse (
+class RequestShareResponse (
     var requestId: String? = null
 )
