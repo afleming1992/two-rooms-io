@@ -17,26 +17,10 @@ import org.springframework.stereotype.Component
 
 @Component
 class PlayerActionController(
-    val gameEngine: GameEngine,
-    val gameCache: GameCache,
-    val playerManager: PlayerManager
-) {
-
-    fun createGame(client: SocketIOClient, name: String) {
-        val player = playerManager.create(client, name)
-        try {
-            val game = gameEngine.createNewGame(player)
-            gameCache.addGame(game)
-            gameEngine.joinGame(game, player)
-            player.sendEvent(
-                "JOIN_GAME_SUCCESS",
-                JoinGameResponse(game.id, player.id, player.secret)
-            )
-        } catch (e: GameException) {
-            player.sendEvent("CREATE_GAME_ERROR", Response.error(e.message))
-        }
-    }
-
+    gameEngine: GameEngine,
+    gameCache: GameCache,
+    playerManager: PlayerManager
+) : GameActionController(gameEngine, gameCache, playerManager) {
     fun joinGame(client: SocketIOClient, name: String, joinGameCode: String) {
         val player = playerManager.create(client, name);
         try {
@@ -172,17 +156,5 @@ class PlayerActionController(
                 playerManager.sendEvent(requestor, "REQUEST_SHARE_ERROR", Response.error(e.message))
             }
         }
-    }
-
-    // Helper Functions
-
-    private fun getGameAndPlayer(client: SocketIOClient, gameId: String): Pair<Game, Player> {
-        val player = playerManager.findByClient(client);
-        val game = gameCache.getGame(gameId)
-
-        return if (player != null && game != null) Pair(
-            game,
-            player
-        ) else throw GameException("Game or Requestor could not be found")
     }
 }
