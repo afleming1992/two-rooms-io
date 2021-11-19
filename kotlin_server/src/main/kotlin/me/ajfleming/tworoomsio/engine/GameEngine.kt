@@ -39,6 +39,8 @@ class GameEngine (
         game.addPlayer(player)
         addPlayerToGameComms(player, game)
         game.deck = deckBuilderService.buildDeck(game.getPlayerCount())
+
+        pingGameUpdateEvent(game)
     }
 
     fun reloadPlayerIntoGame(game: Game, player: Player) {

@@ -1,6 +1,6 @@
 package me.ajfleming.tworoomsio.socket.event.game
 
 class JoinGameEvent(
-    val joinGameCode: String,
-    val name: String
+    var joinGameCode: String = "",
+    var name: String = ""
 )

@@ -1,5 +1,6 @@
 package me.ajfleming.tworoomsio.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import me.ajfleming.tworoomsio.socket.event.sharing.CardShareRequest
 import me.ajfleming.tworoomsio.timer.RoundTimer
 import java.util.*
@@ -14,7 +15,9 @@ class Game(
     var roundData: List<Round> = ArrayList(),
     var players: MutableList<Player> = ArrayList(),
     var deck: List<Card> = ArrayList(),
+    @JsonIgnore
     var cardShareRequests: MutableMap<String, CardShareRequest> = HashMap(),
+    @JsonIgnore
     var cardAssignments: Map<String, Card> = HashMap(),
     var revealedCardAssignments: MutableList<CardAssignment> = ArrayList(),
     var timer: RoundTimer? = null
